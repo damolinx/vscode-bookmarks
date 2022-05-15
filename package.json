@@ -42,14 +42,14 @@
         "menus": {
             "commandPalette": [
                 {
-                  "command": "bookmarks.addBookmark",
-                  "when": "editorIsOpen"
+                    "command": "bookmarks.addBookmark",
+                    "when": "editorIsOpen"
                 },
                 {
                     "command": "bookmarks.removeBookmark",
                     "when": "false"
                 }
-              ],
+            ],
             "view/item/context": [
                 {
                     "command": "bookmarks.addBookmark",
@@ -93,9 +93,7 @@
         "pretest": "npm run compile",
         "test": "node ./out/test/runTest.js"
     },
-    "dependencies": {
-        "vscode-uri": "^3.0.3"
-    },
+    "dependencies": {},
     "devDependencies": {
         "@types/mocha": "^9.1.1",
         "@types/node": "^12.20.52",
