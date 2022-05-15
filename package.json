@@ -69,7 +69,8 @@
             "explorer": [
                 {
                     "id": "bookmarks",
-                    "name": "Bookmarks"
+                    "name": "Bookmarks",
+                    "icon": "$(bookmark)"
                 }
             ]
         }
