@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { Bookmark, BookmarkKind } from "./bookmark";
 
-const MEMENTO_KEY_NAME = "bookmarks";
+export const MEMENTO_KEY_NAME = "bookmarks";
 
 export interface BookmarkEvent {
   bookmark?: Bookmark;
