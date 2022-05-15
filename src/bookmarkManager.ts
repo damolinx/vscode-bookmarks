@@ -27,6 +27,14 @@ export class BookmarkManager implements vscode.Disposable {
   }
 
   /**
+   * Has Bookmarks.
+   */
+  public hasBookmarks(kind?: BookmarkKind): boolean {
+    return this.getMementos(kind)
+      .some(({memento}) => memento.get<string[]>(MEMENTO_KEY_NAME)?.length);
+  }
+
+  /**
    * Get Bookmarks.
    */
   public getBookmarks(kind?: BookmarkKind): Bookmark[] {

@@ -50,7 +50,12 @@ export function activate(context: vscode.ExtensionContext) {
   vscode.commands.registerCommand(
     "bookmarks.removeAllBookmarks",
     async (group?: BookmarkKind | BookmarkGroup) => {
-      const kind = (typeof group === "string") ? group : (group instanceof BookmarkGroup) ? group.kind : undefined;
-      await bookmarkManager.removeAllBookmarksAsync(kind);
+      const kind = (group instanceof BookmarkGroup) ? group.kind : group;
+      if (bookmarkManager.hasBookmarks(kind)) {
+        const option = await vscode.window.showInformationMessage("Are you sure you want to remove all bookmarks?", "Yes", "No");
+        if (option === "Yes") {
+          await bookmarkManager.removeAllBookmarksAsync(kind);
+        }
+      }
     });
 }
