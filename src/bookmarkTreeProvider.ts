@@ -64,10 +64,10 @@ export class BookmarkTreeProvider implements vscode.Disposable, vscode.TreeDataP
   public getChildren(element?: BookmarkGroup): vscode.ProviderResult<Bookmark[] | BookmarkGroup[]> {
     let children: Bookmark[] | BookmarkGroup[];
     if (!element) {
-      children = [
-        new BookmarkGroup('Global', 'global'),
-        new BookmarkGroup('Workspace', 'workspace'),
-      ];
+      children = [new BookmarkGroup('Global', 'global')];
+      if (vscode.workspace.workspaceFolders?.length) {
+        children.push(new BookmarkGroup('Workspace', 'workspace'));
+      }
     } else {
       children = this.manager.getBookmarks(element.kind).sort((a, b) => a.name.localeCompare(b.name));
     }
