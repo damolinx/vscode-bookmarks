@@ -86,12 +86,11 @@ export class BookmarkManager implements vscode.Disposable {
 
   /**
    * Remove an existing bookmark.
-   * @param bookmark Bookmark instance. 
-   * @param kind Kind to remove, or `undefined` to remove all.
+   * @param bookmark Bookmark instance. Set `kind` to undefined to remove-kind ocurrences. 
    */
-  public async removeBookmarkAsync(bookmark: Bookmark, kind?: BookmarkKind): Promise<void> {
+  public async removeBookmarkAsync(bookmark: Bookmark): Promise<void> {
     const uriStr = bookmark.uri.toString();
-    for (const { memento, kind: mementoKind } of this.getMementos(kind)) {
+    for (const { memento, kind: mementoKind } of this.getMementos(bookmark.kind)) {
       const bookmarks = memento.get<string[]>(MEMENTO_KEY_NAME, []);
       const filteredBookmarks = bookmarks.filter((b) => b !== uriStr);
       if (filteredBookmarks.length !== bookmarks.length) {

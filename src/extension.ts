@@ -25,9 +25,11 @@ export function activate(context: vscode.ExtensionContext) {
           uri = pathOrGroup;
         } else if (typeof pathOrGroup === "string") {
           uri = vscode.Uri.parse(pathOrGroup);
-        } else if (pathOrGroup instanceof BookmarkGroup) {
+        } else {
+          kind = (pathOrGroup instanceof BookmarkGroup) 
+            ? pathOrGroup.kind 
+            : vscode.workspace.workspaceFolders?.length ? 'workspace' : 'global'; 
           uri = vscode.window.activeTextEditor?.document.uri;
-          kind = pathOrGroup.kind;
         }
 
         if (uri) {

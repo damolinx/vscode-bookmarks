@@ -22,7 +22,7 @@
         "commands": [
             {
                 "command": "bookmarks.addBookmark",
-                "title": "Bookmark Document",
+                "title": "Bookmark Editor",
                 "category": "Bookmarks",
                 "icon": "$(add)"
             },
@@ -40,13 +40,16 @@
             }
         ],
         "menus": {
-            "view/title": [
+            "commandPalette": [
                 {
-                    "command": "bookmarks.removeAllBookmarks",
-                    "when": "view == bookmarks",
-                    "group": "navigation"
+                  "command": "bookmarks.addBookmark",
+                  "when": "editorIsOpen"
+                },
+                {
+                    "command": "bookmarks.removeBookmark",
+                    "when": "false"
                 }
-            ],
+              ],
             "view/item/context": [
                 {
                     "command": "bookmarks.addBookmark",
@@ -62,6 +65,13 @@
                     "command": "bookmarks.removeAllBookmarks",
                     "when": "view == bookmarks && viewItem == bookmarkGroup",
                     "group": "inline"
+                }
+            ],
+            "view/title": [
+                {
+                    "command": "bookmarks.removeAllBookmarks",
+                    "when": "view == bookmarks",
+                    "group": "navigation"
                 }
             ]
         },
