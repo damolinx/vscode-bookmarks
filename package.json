@@ -22,7 +22,7 @@
         "commands": [
             {
                 "command": "bookmarks.addBookmark",
-                "title": "Add",
+                "title": "Bookmark Document",
                 "category": "Bookmarks",
                 "icon": "$(add)"
             },
