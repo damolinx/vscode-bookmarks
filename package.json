@@ -50,7 +50,7 @@
             "view/item/context": [
                 {
                     "command": "bookmarks.addBookmark",
-                    "when": "view == bookmarks && viewItem == bookmarkGroup",
+                    "when": "view == bookmarks && viewItem == bookmarkGroup && editorIsOpen",
                     "group": "inline"
                 },
                 {
