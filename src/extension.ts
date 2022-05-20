@@ -11,10 +11,16 @@ export function activate(context: vscode.ExtensionContext) {
 
   const bookmarkManager = new BookmarkManager(context);
   const bookmarkTreeProvider = new BookmarkTreeProvider(bookmarkManager);
-  context.subscriptions.push(
-    vscode.window.registerTreeDataProvider('bookmarks', bookmarkTreeProvider));
-  context.subscriptions.push(bookmarkTreeProvider);
 
+  // Set up Tree View
+  context.subscriptions.push(
+    bookmarkManager,
+    bookmarkTreeProvider,
+    vscode.window.registerTreeDataProvider('bookmarks', bookmarkTreeProvider),
+    // This ensures node names reflect current workspaces.
+    vscode.workspace.onDidChangeWorkspaceFolders(() => bookmarkTreeProvider.refresh()));
+
+  // Register Commands
   context.subscriptions.push(
     vscode.commands.registerCommand(
       "bookmarks.addBookmark",
@@ -26,9 +32,9 @@ export function activate(context: vscode.ExtensionContext) {
         } else if (typeof pathOrGroup === "string") {
           uri = vscode.Uri.parse(pathOrGroup);
         } else {
-          kind = (pathOrGroup instanceof BookmarkGroup) 
-            ? pathOrGroup.kind 
-            : vscode.workspace.workspaceFolders?.length ? 'workspace' : 'global'; 
+          kind = (pathOrGroup instanceof BookmarkGroup)
+            ? pathOrGroup.kind
+            : vscode.workspace.workspaceFolders?.length ? 'workspace' : 'global';
           uri = vscode.window.activeTextEditor?.document.uri;
         }
 
@@ -37,27 +43,19 @@ export function activate(context: vscode.ExtensionContext) {
         } else {
           vscode.window.showWarningMessage("Found no open editor nor received a URI to bookmark");
         }
-      }));
-
-  context.subscriptions.push(
-    vscode.workspace.onDidChangeWorkspaceFolders(() => {
-      // This ensures node names include/exclude workspace name based on what workspace folders.
-      bookmarkTreeProvider.refresh();
-    }));
-
-  vscode.commands.registerCommand(
-    "bookmarks.removeBookmark",
-    (bookmark: Bookmark) => bookmarkManager.removeBookmarkAsync(bookmark));
-
-  vscode.commands.registerCommand(
-    "bookmarks.removeAllBookmarks",
-    async (group?: BookmarkKind | BookmarkGroup) => {
-      const kind = (group instanceof BookmarkGroup) ? group.kind : group;
-      if (bookmarkManager.hasBookmarks(kind)) {
-        const option = await vscode.window.showInformationMessage("Are you sure you want to remove all bookmarks?", "Yes", "No");
-        if (option === "Yes") {
-          await bookmarkManager.removeAllBookmarksAsync(kind);
+      }),
+    vscode.commands.registerCommand(
+      "bookmarks.removeBookmark",
+      (bookmark: Bookmark) => bookmarkManager.removeBookmarkAsync(bookmark)),
+    vscode.commands.registerCommand(
+      "bookmarks.removeAllBookmarks",
+      async (group?: BookmarkKind | BookmarkGroup) => {
+        const kind = (group instanceof BookmarkGroup) ? group.kind : group;
+        if (bookmarkManager.hasBookmarks(kind)) {
+          const option = await vscode.window.showInformationMessage("Are you sure you want to remove all bookmarks?", "Yes", "No");
+          if (option === "Yes") {
+            await bookmarkManager.removeAllBookmarksAsync(kind);
+          }
         }
-      }
-    });
+      }));
 }
