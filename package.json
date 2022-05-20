@@ -12,7 +12,9 @@
         "Other"
     ],
     "activationEvents": [
-        "onCommand:bookmarks.addBookmark",
+        "onCommand:bookmarks.addBookmark.global",
+        "onCommand:bookmarks.addBookmark.tree",
+        "onCommand:bookmarks.addBookmark.workspace",
         "onCommand:bookmarks.removeBookmark",
         "onCommand:bookmarks.removeAllBookmarks",
         "onView:bookmarks"
@@ -21,10 +23,19 @@
     "contributes": {
         "commands": [
             {
-                "command": "bookmarks.addBookmark",
-                "title": "Bookmark Editor",
-                "category": "Bookmarks",
+                "command": "bookmarks.addBookmark.global",
+                "title": "Bookmark Editor (Global)",
+                "category": "Bookmarks"
+            },
+            {
+                "command": "bookmarks.addBookmark.tree",
+                "title": "Bookmark Current Editor",
                 "icon": "$(add)"
+            },
+            {
+                "command": "bookmarks.addBookmark.workspace",
+                "title": "Bookmark Editor (Workspace)",
+                "category": "Bookmarks"
             },
             {
                 "command": "bookmarks.removeAllBookmarks",
@@ -42,8 +53,16 @@
         "menus": {
             "commandPalette": [
                 {
-                    "command": "bookmarks.addBookmark",
+                    "command": "bookmarks.addBookmark.global",
                     "when": "editorIsOpen"
+                },
+                {
+                    "command": "bookmarks.addBookmark.tree",
+                    "when": "false"
+                },
+                {
+                    "command": "bookmarks.addBookmark.workspace",
+                    "when": "editorIsOpen && workbenchState != empty"
                 },
                 {
                     "command": "bookmarks.removeBookmark",
@@ -52,7 +71,7 @@
             ],
             "view/item/context": [
                 {
-                    "command": "bookmarks.addBookmark",
+                    "command": "bookmarks.addBookmark.tree",
                     "when": "view == bookmarks && viewItem == bookmarkGroup && editorIsOpen",
                     "group": "inline"
                 },
