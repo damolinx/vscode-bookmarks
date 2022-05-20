@@ -11,12 +11,16 @@ export class BookmarkGroup {
 
 export class BookmarkTreeProvider implements vscode.Disposable, vscode.TreeDataProvider<Bookmark | BookmarkGroup> {
 
+  private readonly globalBookmarkGroup: BookmarkGroup;
+  private readonly workspaceBookmarkGroup: BookmarkGroup;
   private readonly onDidChangeTreeDataEmitter: vscode.EventEmitter<void | Bookmark>;
 
   constructor(private readonly manager: BookmarkManager) {
-    this.onDidChangeTreeDataEmitter = new vscode.EventEmitter<void | Bookmark>();
+    this.globalBookmarkGroup = new BookmarkGroup('Global', 'global');
+    this.workspaceBookmarkGroup = new BookmarkGroup('Workspace', 'workspace');
     this.manager.onDidAddBookmark(() => this.refresh());
     this.manager.onDidRemoveBookmark(() => this.refresh());
+    this.onDidChangeTreeDataEmitter = new vscode.EventEmitter<void | Bookmark>();
   }
 
   /**
@@ -31,6 +35,23 @@ export class BookmarkTreeProvider implements vscode.Disposable, vscode.TreeDataP
    */
   public get onDidChangeTreeData(): vscode.Event<void | Bookmark> {
     return this.onDidChangeTreeDataEmitter.event;
+  }
+
+  /**
+   * Get parent of `element`.
+   * @param element The element for which the parent has to be returned.
+   * @return Parent of `element`, or undefined if it is a root.
+   */
+  public getParent(element: Bookmark | BookmarkGroup): vscode.ProviderResult<BookmarkGroup | undefined> {
+    if (element instanceof Bookmark) {
+      switch (element.kind) {
+        case 'global':
+          return this.globalBookmarkGroup;
+        case 'workspace':
+          return this.workspaceBookmarkGroup;
+      }
+    }
+    return undefined;
   }
 
   /**
@@ -51,7 +72,7 @@ export class BookmarkTreeProvider implements vscode.Disposable, vscode.TreeDataP
       treeItem.resourceUri = element.uri;
     } else {
       treeItem.contextValue = `bookmarkGroup`;
-      treeItem.collapsibleState = this.manager.hasBookmarks(element.kind) 
+      treeItem.collapsibleState = this.manager.hasBookmarks(element.kind)
         ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.Collapsed;
     }
     return treeItem;
@@ -65,9 +86,9 @@ export class BookmarkTreeProvider implements vscode.Disposable, vscode.TreeDataP
   public getChildren(element?: BookmarkGroup): vscode.ProviderResult<Bookmark[] | BookmarkGroup[]> {
     let children: Bookmark[] | BookmarkGroup[];
     if (!element) {
-      children = [new BookmarkGroup('Global', 'global')];
+      children = [this.globalBookmarkGroup];
       if (vscode.workspace.workspaceFolders?.length) {
-        children.push(new BookmarkGroup('Workspace', 'workspace'));
+        children.push(this.workspaceBookmarkGroup);
       }
     } else {
       children = this.manager.getBookmarks(element.kind).sort((a, b) => a.name.localeCompare(b.name));
