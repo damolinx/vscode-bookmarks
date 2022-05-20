@@ -52,7 +52,7 @@ export class BookmarkTreeProvider implements vscode.Disposable, vscode.TreeDataP
     } else {
       treeItem.contextValue = `bookmarkGroup`;
       treeItem.collapsibleState = this.manager.hasBookmarks(element.kind) 
-        ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.None;
+        ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.Collapsed;
     }
     return treeItem;
   }
