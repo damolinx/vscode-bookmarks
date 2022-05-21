@@ -21,8 +21,7 @@ There is a `+` button available on every category node, `Global` and `Workspace`
 ## Removing One or All Bookmarks
 
 ### Commands
-There is only one command exposed to remove bookmarks, `Bookmarks: Remove All`. A prompt will show up to confirm removal to prevent unintended dataloss.
-It is currently not possible to remove a specific bookmark via commands, nor remove all bookmarks from a specific category.
+It is currently not possible to remove bookmarks via a command.
 
 ### Tree
 There is a `X` button next to each Bookmark, same as one one per category and one on the tree view header that allow you to remove all bookmarks under the selected parent.

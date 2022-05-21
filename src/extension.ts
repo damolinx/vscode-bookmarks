@@ -53,16 +53,5 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.commands.executeCommand("_bookmarks.addBookmark", pathOrUri, 'workspace')),
     vscode.commands.registerCommand(
       "bookmarks.removeBookmark",
-      (bookmark: Bookmark) => bookmarkManager.removeBookmarkAsync(bookmark)),
-    vscode.commands.registerCommand(
-      "bookmarks.removeAllBookmarks",
-      async (groupOrKind?: BookmarkKind | BookmarkGroup) => {
-        const kind = (groupOrKind instanceof BookmarkGroup) ? groupOrKind.kind : groupOrKind;
-        if (bookmarkManager.hasBookmarks(kind)) {
-          const option = await vscode.window.showInformationMessage("Are you sure you want to remove all bookmarks?", "Yes", "No");
-          if (option === "Yes") {
-            await bookmarkManager.removeAllBookmarksAsync(kind);
-          }
-        }
-      }));
+      (bookmark: Bookmark) => bookmarkManager.removeBookmarkAsync(bookmark)));
 }
