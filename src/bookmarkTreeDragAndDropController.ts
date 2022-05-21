@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { Bookmark } from "./bookmark";
+import { BookmarkGroup } from './bookmarkGroup';
 import { BookmarkManager } from "./bookmarkManager";
-import { BookmarkGroup } from './bookmarkTreeProvider';
 
 export class BookmarkTreeDragAndDropController implements vscode.TreeDragAndDropController<BookmarkGroup | Bookmark> {
   private readonly bookmarkManager: BookmarkManager;

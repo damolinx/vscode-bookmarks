@@ -1,8 +1,9 @@
 import * as vscode from 'vscode';
 import { Bookmark, BookmarkKind } from './bookmark';
+import { BookmarkGroup } from './bookmarkGroup';
 import { BookmarkManager } from './bookmarkManager';
 import { BookmarkTreeDragAndDropController } from './bookmarkTreeDragAndDropController';
-import { BookmarkGroup, BookmarkTreeProvider } from './bookmarkTreeProvider';
+import { BookmarkTreeProvider } from './bookmarkTreeProvider';
 
 /**
  * Extension startup. 

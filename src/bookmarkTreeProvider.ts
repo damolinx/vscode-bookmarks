@@ -1,23 +1,19 @@
 import * as vscode from "vscode";
-import { Bookmark, BookmarkKind } from "./bookmark";
+import { Bookmark } from "./bookmark";
+import { BookmarkGroup } from "./bookmarkGroup";
 import { BookmarkManager } from "./bookmarkManager";
-
-export class BookmarkGroup {
-  constructor(public readonly name: string,
-    public readonly kind: BookmarkKind) {
-
-  }
-}
 
 export class BookmarkTreeProvider implements vscode.Disposable, vscode.TreeDataProvider<Bookmark | BookmarkGroup> {
 
-  private readonly globalBookmarkGroup: BookmarkGroup;
-  private readonly workspaceBookmarkGroup: BookmarkGroup;
+  private readonly manager: BookmarkManager;
   private readonly onDidChangeTreeDataEmitter: vscode.EventEmitter<void | Bookmark>;
 
-  constructor(private readonly manager: BookmarkManager) {
-    this.globalBookmarkGroup = new BookmarkGroup('Global', 'global');
-    this.workspaceBookmarkGroup = new BookmarkGroup('Workspace', 'workspace');
+  /**
+   * Constructor.
+   * @param manager Bookmark manager.
+   */
+  constructor(manager: BookmarkManager) {
+    this.manager = manager;
     this.manager.onDidAddBookmark(() => this.refresh());
     this.manager.onDidRemoveBookmark(() => this.refresh());
     this.onDidChangeTreeDataEmitter = new vscode.EventEmitter<void | Bookmark>();
@@ -43,15 +39,7 @@ export class BookmarkTreeProvider implements vscode.Disposable, vscode.TreeDataP
    * @return Parent of `element`, or undefined if it is a root.
    */
   public getParent(element: Bookmark | BookmarkGroup): vscode.ProviderResult<BookmarkGroup | undefined> {
-    if (element instanceof Bookmark) {
-      switch (element.kind) {
-        case 'global':
-          return this.globalBookmarkGroup;
-        case 'workspace':
-          return this.workspaceBookmarkGroup;
-      }
-    }
-    return undefined;
+    return (element instanceof Bookmark) ? element.group : undefined;
   }
 
   /**
@@ -87,9 +75,9 @@ export class BookmarkTreeProvider implements vscode.Disposable, vscode.TreeDataP
   public getChildren(element?: BookmarkGroup): vscode.ProviderResult<Bookmark[] | BookmarkGroup[]> {
     let children: Bookmark[] | BookmarkGroup[];
     if (!element) {
-      children = [this.globalBookmarkGroup];
+      children = [this.manager.getBookmarkGroup('global')!];
       if (vscode.workspace.workspaceFolders?.length) {
-        children.push(this.workspaceBookmarkGroup);
+        children.push(this.manager.getBookmarkGroup('workspace')!);
       }
     } else {
       children = this.manager.getBookmarks(element.kind).sort((a, b) => a.name.localeCompare(b.name));
