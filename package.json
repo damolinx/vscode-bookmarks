@@ -15,6 +15,7 @@
         "onCommand:bookmarks.addBookmark.global",
         "onCommand:bookmarks.addBookmark.tree",
         "onCommand:bookmarks.addBookmark.workspace",
+        "onCommand:bookmarks.copy.path",
         "onCommand:bookmarks.removeBookmark",
         "onView:bookmarks"
     ],
@@ -24,7 +25,8 @@
             {
                 "command": "bookmarks.addBookmark.global",
                 "title": "Bookmark Editor (Global)",
-                "category": "Bookmarks"
+                "category": "Bookmarks",
+                "icon": "$(add)"
             },
             {
                 "command": "bookmarks.addBookmark.tree",
@@ -34,7 +36,13 @@
             {
                 "command": "bookmarks.addBookmark.workspace",
                 "title": "Bookmark Editor (Workspace)",
-                "category": "Bookmarks"
+                "category": "Bookmarks",
+                "icon": "$(add)"
+            },
+            {
+                "command": "bookmarks.copy.path",
+                "title": "Copy Path",
+                "icon": "$(copy)"
             },
             {
                 "command": "bookmarks.removeBookmark",
@@ -71,7 +79,11 @@
                     "command": "bookmarks.addBookmark.tree",
                     "when": "view == bookmarks && viewItem == bookmarkGroup && editorIsOpen",
                     "group": "inline"
-                },  
+                },
+                {
+                    "command": "bookmarks.copy.path",
+                    "when": "view == bookmarks && viewItem == bookmark"
+                },
                 {
                     "command": "bookmarks.removeBookmark",
                     "when": "view == bookmarks && viewItem == bookmark"

@@ -28,7 +28,7 @@ export function activate(context: vscode.ExtensionContext) {
       () => bookmarkTreeProvider.refresh()),
     // Reveal a node when added.
     bookmarkManager.onDidAddBookmark(
-      (bookmarks) =>  bookmarks && bookmarkTreeView.reveal(bookmarks[0])));
+      (bookmarks) => bookmarks && bookmarkTreeView.reveal(bookmarks[0])));
 
   // Register Commands
   context.subscriptions.push(
@@ -59,6 +59,10 @@ export function activate(context: vscode.ExtensionContext) {
       "bookmarks.addBookmark.workspace",
       (pathOrUri?: string | vscode.Uri) =>
         vscode.commands.executeCommand("_bookmarks.addBookmark", pathOrUri, 'workspace')),
+    vscode.commands.registerCommand(
+      "bookmarks.copy.path",
+      (bookmark: Bookmark) => vscode.env.clipboard.writeText(
+        bookmark.uri.scheme === 'file' ? bookmark.uri.fsPath : bookmark.uri.toString())),
     vscode.commands.registerCommand(
       "bookmarks.removeBookmark",
       (bookmark: Bookmark) => bookmarkManager.removeBookmarkAsync(bookmark)));
