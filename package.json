@@ -65,8 +65,16 @@
             "view/item/context": [
                 {
                     "command": "bookmarks.addBookmark.tree",
+                    "when": "view == bookmarks && viewItem == bookmarkGroup && editorIsOpen"
+                },
+                {
+                    "command": "bookmarks.addBookmark.tree",
                     "when": "view == bookmarks && viewItem == bookmarkGroup && editorIsOpen",
                     "group": "inline"
+                },  
+                {
+                    "command": "bookmarks.removeBookmark",
+                    "when": "view == bookmarks && viewItem == bookmark"
                 },
                 {
                     "command": "bookmarks.removeBookmark",
