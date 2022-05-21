@@ -92,7 +92,7 @@ export class BookmarkManager implements vscode.Disposable {
  */
   public hasBookmarks(kind?: BookmarkKind): boolean {
     return this.bookmarkGroups
-      .some((group) => group.kind === kind && group.bookmarksCount);
+      .some((group) => (!kind || group.kind === kind) && group.bookmarksCount);
   }
 
   /**
