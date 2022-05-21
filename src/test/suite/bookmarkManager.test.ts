@@ -1,9 +1,10 @@
 import * as assert from 'assert';
 import { basename } from 'path';
 import { Uri } from 'vscode';
-import { Bookmark } from '../../bookmark';
 
-import { BookmarkManager, MEMENTO_KEY_NAME } from '../../bookmarkManager';
+import { Bookmark } from '../../bookmark';
+import { MEMENTO_KEY_NAME } from '../../bookmarkGroup';
+import { BookmarkManager } from '../../bookmarkManager';
 
 suite(`Suite: ${basename(__filename)}`, () => {
   let restorables: Array<{ restore: () => void }>;
@@ -29,7 +30,6 @@ suite(`Suite: ${basename(__filename)}`, () => {
     const expectedWorkspace = ["file://workspace/file1", "file://workspace/file2"];
 
     const manager = createBookmarkManager(expectedGlobal, expectedWorkspace);
-
     assert.strictEqual(manager.hasBookmarks('global'), true);
     assert.strictEqual(manager.hasBookmarks('workspace'), true);
     assert.strictEqual(manager.hasBookmarks(), true);

@@ -2,8 +2,6 @@ import * as vscode from "vscode";
 import { Bookmark, BookmarkKind } from "./bookmark";
 import { BookmarkGroup, createBookmarkGroup } from "./bookmarkGroup";
 
-export const MEMENTO_KEY_NAME = "bookmarks";
-
 export class BookmarkManager implements vscode.Disposable {
   private readonly bookmarkGroups: ReadonlyArray<BookmarkGroup>;
   private readonly onDidAddBookmarkEmitter: vscode.EventEmitter<Bookmark[] | undefined>;
