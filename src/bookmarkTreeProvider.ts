@@ -70,6 +70,7 @@ export class BookmarkTreeProvider implements vscode.Disposable, vscode.TreeDataP
       };
       treeItem.contextValue = 'bookmark';
       treeItem.resourceUri = element.uri;
+      treeItem.tooltip = element.uri.toString();
     } else {
       treeItem.contextValue = `bookmarkGroup`;
       treeItem.collapsibleState = this.manager.hasBookmarks(element.kind)

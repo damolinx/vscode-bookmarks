@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { Bookmark, BookmarkKind } from './bookmark';
 import { BookmarkManager } from './bookmarkManager';
+import { BookmarkTreeDragAndDropController } from './bookmarkTreeDragAndDropController';
 import { BookmarkGroup, BookmarkTreeProvider } from './bookmarkTreeProvider';
 
 /**
@@ -12,8 +13,8 @@ export function activate(context: vscode.ExtensionContext) {
   const bookmarkManager = new BookmarkManager(context);
   const bookmarkTreeProvider = new BookmarkTreeProvider(bookmarkManager);
   const bookmarkTreeView = vscode.window.createTreeView('bookmarks', {
+    dragAndDropController: new BookmarkTreeDragAndDropController(bookmarkManager),
     treeDataProvider: bookmarkTreeProvider,
-    // TODO: dragAndDropController?: TreeDragAndDropController<T>;    
   });
 
   // Set up Tree View
@@ -21,8 +22,12 @@ export function activate(context: vscode.ExtensionContext) {
     bookmarkManager,
     bookmarkTreeProvider,
     bookmarkTreeView,
-    // This ensures node names reflect current workspaces.
-    vscode.workspace.onDidChangeWorkspaceFolders(() => bookmarkTreeProvider.refresh()));
+    // Ensures node names reflect current workspace by refreshing tree.
+    vscode.workspace.onDidChangeWorkspaceFolders(
+      () => bookmarkTreeProvider.refresh()),
+    // Reveal a node when added.
+    bookmarkManager.onDidAddBookmark(
+      (bookmarks) =>  bookmarks && bookmarkTreeView.reveal(bookmarks[0])));
 
   // Register Commands
   context.subscriptions.push(
@@ -36,7 +41,9 @@ export function activate(context: vscode.ExtensionContext) {
             : vscode.window.activeTextEditor?.document.uri;
         if (uri) {
           const bookmark = await bookmarkManager.addBookmarkAsync(uri, kind);
-          bookmarkTreeView.reveal(bookmark);
+          if (!bookmark) {
+            bookmarkTreeView.reveal(bookmarkManager.getBookmark(uri, kind));
+          }
         }
       }),
     vscode.commands.registerCommand(
