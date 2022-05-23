@@ -16,7 +16,9 @@
         "onCommand:bookmarks.addBookmark.tree",
         "onCommand:bookmarks.addBookmark.workspace",
         "onCommand:bookmarks.copy.path",
-        "onCommand:bookmarks.removeBookmark",
+        "onCommand:bookmarks.removeBookmark.global",
+        "onCommand:bookmarks.removeBookmark.tree",
+        "onCommand:bookmarks.removeBookmark.workspace",
         "onView:bookmarks"
     ],
     "main": "./out/extension.js",
@@ -45,10 +47,22 @@
                 "icon": "$(copy)"
             },
             {
-                "command": "bookmarks.removeBookmark",
+                "command": "bookmarks.removeBookmark.global",
+                "title": "Remove Bookmark (Global)",
+                "category": "Bookmarks",
+                "icon": "$(remove-close)"
+            },
+            {
+                "command": "bookmarks.removeBookmark.tree",
                 "title": "Remove Bookmark",
                 "category": "Bookmarks",
-                "icon": "$(close)"
+                "icon": "$(remove-close)"
+            },
+            {
+                "command": "bookmarks.removeBookmark.workspace",
+                "title": "Remove Bookmark (Workspace)",
+                "category": "Bookmarks",
+                "icon": "$(remove-close)"
             }
         ],
         "menus": {
@@ -66,7 +80,15 @@
                     "when": "editorIsOpen && workbenchState != empty"
                 },
                 {
-                    "command": "bookmarks.removeBookmark",
+                    "command": "bookmarks.removeBookmark.global",
+                    "when": "false"
+                },
+                {
+                    "command": "bookmarks.removeBookmark.tree",
+                    "when": "false"
+                },
+                {
+                    "command": "bookmarks.removeBookmark.workspace",
                     "when": "false"
                 }
             ],
@@ -85,11 +107,11 @@
                     "when": "view == bookmarks && viewItem == bookmark"
                 },
                 {
-                    "command": "bookmarks.removeBookmark",
+                    "command": "bookmarks.removeBookmark.tree",
                     "when": "view == bookmarks && viewItem == bookmark"
                 },
                 {
-                    "command": "bookmarks.removeBookmark",
+                    "command": "bookmarks.removeBookmark.tree",
                     "when": "view == bookmarks && viewItem == bookmark",
                     "group": "inline"
                 }

@@ -15,6 +15,9 @@ A *bookmark* is a reference to a document that is saved in the context of the cu
 ### Commands
 There are two commands available to add a bookmark, `Bookmarks: Bookmark Editor (Global)` and `Bookmarks: Bookmark Editor (Workspace)`, both working on the currently active editor and adding a bookmark to the appropriate category.
 
+#### Programatic access
+The following commads are exposed for other extensions to use: `bookmarks.addBookmark.global` and`bookmarks.addBookmark.workspace`.  They have a single argument that is the path or URI to the file to bookmark. 
+
 ### Drag and Drop
 Editor can be dragged onto the right category, and they will be bookmarked (if they are not already). Additionally, it is also possible to drag items between categories to **move** them around. 
 
@@ -25,6 +28,9 @@ There is a `+` button available on every category node, `Global` and `Workspace`
 
 ### Commands
 It is currently not possible to remove bookmarks via a command.
+
+#### Programatic access
+The following commads are exposed for other extensions to use: `bookmarks.removeBookmark.global` and`bookmarks.removeBookmark.workspace`.  They have a single argument that is the path or URI to the file to remove.
 
 ### Tree
 There is a `X` button next to each Bookmark, same as one per category and one on the tree view header that allow you to remove all bookmarks under the selected parent.

@@ -13,8 +13,14 @@ export class Bookmark {
   public readonly uri: vscode.Uri;
   public readonly group: BookmarkGroup;
 
-  constructor(uri: vscode.Uri, group: BookmarkGroup) {
-    this.uri = uri;
+  /** 
+   * Constructor.
+   * @param pathOrUri URI to bookmark.
+   * @param group Parent group.
+   */
+  constructor(pathOrUri: string | vscode.Uri, group: BookmarkGroup) {
+    this.uri = (pathOrUri instanceof vscode.Uri)
+      ? pathOrUri : vscode.Uri.parse(pathOrUri);
     this.group = group;
   }
 

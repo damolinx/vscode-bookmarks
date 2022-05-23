@@ -34,36 +34,42 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand(
       "_bookmarks.addBookmark",
-      async (pathOrUri: string | vscode.Uri | undefined, kind: BookmarkKind) => {
-        const uri: vscode.Uri | undefined = (pathOrUri instanceof vscode.Uri)
-          ? pathOrUri
-          : (typeof pathOrUri === "string")
-            ? vscode.Uri.parse(pathOrUri)
-            : vscode.window.activeTextEditor?.document.uri;
-        if (uri) {
-          const bookmark = await bookmarkManager.addBookmarkAsync(uri, kind);
+      async (pathOrUriOrUndefined: string | vscode.Uri | undefined, kind: BookmarkKind): Promise<void> => {
+        const pathOrUri: string | vscode.Uri | undefined = (pathOrUriOrUndefined)
+          ? pathOrUriOrUndefined
+          : vscode.window.activeTextEditor?.document.uri;
+        if (pathOrUri) {
+          const bookmark = await bookmarkManager.addBookmarkAsync(pathOrUri, kind);
           if (!bookmark) {
-            bookmarkTreeView.reveal(bookmarkManager.getBookmark(uri, kind));
+            bookmarkTreeView.reveal(bookmarkManager.getBookmark(pathOrUri, kind));
           }
         }
       }),
     vscode.commands.registerCommand(
       "bookmarks.addBookmark.global",
-      (pathOrUri?: string | vscode.Uri) =>
+      (pathOrUri?: string | vscode.Uri): Thenable<void> =>
         vscode.commands.executeCommand("_bookmarks.addBookmark", pathOrUri, 'global')),
     vscode.commands.registerCommand(
       "bookmarks.addBookmark.tree",
-      (group: BookmarkGroup) =>
+      (group: BookmarkGroup): Thenable<void> =>
         vscode.commands.executeCommand("_bookmarks.addBookmark", undefined, group.kind)),
     vscode.commands.registerCommand(
       "bookmarks.addBookmark.workspace",
-      (pathOrUri?: string | vscode.Uri) =>
+      (pathOrUri?: string | vscode.Uri): Thenable<void> =>
         vscode.commands.executeCommand("_bookmarks.addBookmark", pathOrUri, 'workspace')),
     vscode.commands.registerCommand(
       "bookmarks.copy.path",
-      (bookmark: Bookmark) => vscode.env.clipboard.writeText(
+      (bookmark: Bookmark): Thenable<void> => vscode.env.clipboard.writeText(
         bookmark.uri.scheme === 'file' ? bookmark.uri.fsPath : bookmark.uri.toString())),
     vscode.commands.registerCommand(
-      "bookmarks.removeBookmark",
-      (bookmark: Bookmark) => bookmarkManager.removeBookmarkAsync(bookmark)));
+      "bookmarks.removeBookmark.global",
+      (pathOrUri: string | vscode.Uri): Promise<boolean> =>
+        bookmarkManager.removeBookmarkAsync(pathOrUri, 'global')),
+    vscode.commands.registerCommand(
+      "bookmarks.removeBookmark.tree",
+      (bookmark: Bookmark): Promise<boolean> => bookmarkManager.removeBookmarkAsync(bookmark)),
+    vscode.commands.registerCommand(
+      "bookmarks.removeBookmark.workspace",
+      (pathOrUri: string | vscode.Uri): Promise<boolean> =>
+        bookmarkManager.removeBookmarkAsync(pathOrUri, 'workspace')));
 }
