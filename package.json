@@ -1,65 +1,80 @@
 {
-    "name": "damolinx.bookmarks",
-    "displayName": "Bookmarks",
-    "description": "Bookmarks for VS Code",
+    "name": "damolinx-bookmarks",
+    "displayName": "Bookmarks for VSCode",
+    "description": "Bookmarks for VSCode",
     "version": "0.0.9",
     "publisher": "damolinx",
-    "repository": "https://github.com/damolinx/vscode-bookmarks",
+    "preview": true,
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/damolinx/vscode-bookmarks"
+    },
+    "bugs": {
+        "url": "https://github.com/damolinx/vscode-bookmarks/issues"
+    },
     "engines": {
         "vscode": "^1.60.0"
     },
     "categories": [
         "Other"
     ],
+    "keywords": [
+        "bookmark",
+        "bookmarks"
+    ],
+    "extensionKind": [
+        "ui",
+        "workspace"
+    ],
     "activationEvents": [
-        "onCommand:damolinx.bookmarks.addBookmark.global",
-        "onCommand:damolinx.bookmarks.addBookmark.tree",
-        "onCommand:damolinx.bookmarks.addBookmark.workspace",
-        "onCommand:damolinx.bookmarks.copy.path",
-        "onCommand:damolinx.bookmarks.removeBookmark.global",
-        "onCommand:damolinx.bookmarks.removeBookmark.tree",
-        "onCommand:damolinx.bookmarks.removeBookmark.workspace",
+        "onCommand:bookmarks.addBookmark.global",
+        "onCommand:bookmarks.addBookmark.tree",
+        "onCommand:bookmarks.addBookmark.workspace",
+        "onCommand:bookmarks.copy.path",
+        "onCommand:bookmarks.removeBookmark.global",
+        "onCommand:bookmarks.removeBookmark.tree",
+        "onCommand:bookmarks.removeBookmark.workspace",
         "onView:bookmarks"
     ],
     "main": "./out/extension.js",
     "contributes": {
         "commands": [
             {
-                "command": "damolinx.bookmarks.addBookmark.global",
+                "command": "bookmarks.addBookmark.global",
                 "title": "Bookmark Editor (Global)",
                 "category": "Bookmarks",
                 "icon": "$(add)"
             },
             {
-                "command": "damolinx.bookmarks.addBookmark.tree",
+                "command": "bookmarks.addBookmark.tree",
                 "title": "Bookmark Current Editor",
                 "icon": "$(add)"
             },
             {
-                "command": "damolinx.bookmarks.addBookmark.workspace",
+                "command": "bookmarks.addBookmark.workspace",
                 "title": "Bookmark Editor (Workspace)",
                 "category": "Bookmarks",
                 "icon": "$(add)"
             },
             {
-                "command": "damolinx.bookmarks.copy.path",
+                "command": "bookmarks.copy.path",
                 "title": "Copy Path",
                 "icon": "$(copy)"
             },
             {
-                "command": "damolinx.bookmarks.removeBookmark.global",
+                "command": "bookmarks.removeBookmark.global",
                 "title": "Remove Bookmark (Global)",
                 "category": "Bookmarks",
                 "icon": "$(remove-close)"
             },
             {
-                "command": "damolinx.bookmarks.removeBookmark.tree",
+                "command": "bookmarks.removeBookmark.tree",
                 "title": "Remove Bookmark",
                 "category": "Bookmarks",
                 "icon": "$(remove-close)"
             },
             {
-                "command": "damolinx.bookmarks.removeBookmark.workspace",
+                "command": "bookmarks.removeBookmark.workspace",
                 "title": "Remove Bookmark (Workspace)",
                 "category": "Bookmarks",
                 "icon": "$(remove-close)"
@@ -68,50 +83,50 @@
         "menus": {
             "commandPalette": [
                 {
-                    "command": "damolinx.bookmarks.addBookmark.global",
+                    "command": "bookmarks.addBookmark.global",
                     "when": "editorIsOpen"
                 },
                 {
-                    "command": "damolinx.bookmarks.addBookmark.tree",
+                    "command": "bookmarks.addBookmark.tree",
                     "when": "false"
                 },
                 {
-                    "command": "damolinx.bookmarks.addBookmark.workspace",
+                    "command": "bookmarks.addBookmark.workspace",
                     "when": "editorIsOpen && workbenchState != empty"
                 },
                 {
-                    "command": "damolinx.bookmarks.removeBookmark.global",
+                    "command": "bookmarks.removeBookmark.global",
                     "when": "false"
                 },
                 {
-                    "command": "damolinx.bookmarks.removeBookmark.tree",
+                    "command": "bookmarks.removeBookmark.tree",
                     "when": "false"
                 },
                 {
-                    "command": "damolinx.bookmarks.removeBookmark.workspace",
+                    "command": "bookmarks.removeBookmark.workspace",
                     "when": "false"
                 }
             ],
             "view/item/context": [
                 {
-                    "command": "damolinx.bookmarks.addBookmark.tree",
+                    "command": "bookmarks.addBookmark.tree",
                     "when": "view == bookmarks && viewItem == bookmarkGroup && editorIsOpen"
                 },
                 {
-                    "command": "damolinx.bookmarks.addBookmark.tree",
+                    "command": "bookmarks.addBookmark.tree",
                     "when": "view == bookmarks && viewItem == bookmarkGroup && editorIsOpen",
                     "group": "inline"
                 },
                 {
-                    "command": "damolinx.bookmarks.copy.path",
+                    "command": "bookmarks.copy.path",
                     "when": "view == bookmarks && viewItem == bookmark"
                 },
                 {
-                    "command": "damolinx.bookmarks.removeBookmark.tree",
+                    "command": "bookmarks.removeBookmark.tree",
                     "when": "view == bookmarks && viewItem == bookmark"
                 },
                 {
-                    "command": "damolinx.bookmarks.removeBookmark.tree",
+                    "command": "bookmarks.removeBookmark.tree",
                     "when": "view == bookmarks && viewItem == bookmark",
                     "group": "inline"
                 }
