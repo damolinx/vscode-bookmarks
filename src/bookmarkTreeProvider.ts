@@ -39,7 +39,10 @@ export class BookmarkTreeProvider implements vscode.Disposable, vscode.TreeDataP
    * @return Parent of `element`, or undefined if it is a root.
    */
   public getParent(element: Bookmark | BookmarkGroup): vscode.ProviderResult<BookmarkGroup | undefined> {
-    return (element instanceof Bookmark) ? element.group : undefined;
+    const group = (element instanceof Bookmark) 
+    ? this.manager.getBookmarkGroup(element.kind)
+    : undefined;
+    return group;
   }
 
   /**

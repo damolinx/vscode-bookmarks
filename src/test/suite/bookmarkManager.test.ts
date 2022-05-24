@@ -47,8 +47,8 @@ suite(`Suite: ${basename(__filename)}`, () => {
     const expectedGlobal = ["file://global/file1", "file://global/file22"];
     const expectedWorkspace = ["file://workspace/file1", "file://workspace/file2"];
     const manager = createBookmarkManager(expectedGlobal, expectedWorkspace);
-    const expectedGlobalBookmarks = expectedGlobal.map(s => new Bookmark(Uri.parse(s), manager.getBookmarkGroup('global')!));
-    const expectedWorkspaceBookmarks = expectedWorkspace.map(s => new Bookmark(Uri.parse(s), manager.getBookmarkGroup('workspace')!));
+    const expectedGlobalBookmarks = expectedGlobal.map(s => new Bookmark(Uri.parse(s), 'global'));
+    const expectedWorkspaceBookmarks = expectedWorkspace.map(s => new Bookmark(Uri.parse(s), 'workspace'));
 
     assert.deepStrictEqual(manager.getBookmarks('global'), expectedGlobalBookmarks);
     assert.deepStrictEqual(manager.getBookmarks('workspace'), expectedWorkspaceBookmarks);

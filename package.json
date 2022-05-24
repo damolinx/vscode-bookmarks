@@ -1,65 +1,65 @@
 {
-    "name": "bookmarks",
+    "name": "damolinx.bookmarks",
     "displayName": "Bookmarks",
     "description": "Bookmarks for VS Code",
-    "version": "0.0.1",
-    "publisher": "",
+    "version": "0.0.9",
+    "publisher": "damolinx",
     "repository": "https://github.com/damolinx/vscode-bookmarks",
     "engines": {
-        "vscode": "^1.42.0"
+        "vscode": "^1.60.0"
     },
     "categories": [
         "Other"
     ],
     "activationEvents": [
-        "onCommand:bookmarks.addBookmark.global",
-        "onCommand:bookmarks.addBookmark.tree",
-        "onCommand:bookmarks.addBookmark.workspace",
-        "onCommand:bookmarks.copy.path",
-        "onCommand:bookmarks.removeBookmark.global",
-        "onCommand:bookmarks.removeBookmark.tree",
-        "onCommand:bookmarks.removeBookmark.workspace",
+        "onCommand:damolinx.bookmarks.addBookmark.global",
+        "onCommand:damolinx.bookmarks.addBookmark.tree",
+        "onCommand:damolinx.bookmarks.addBookmark.workspace",
+        "onCommand:damolinx.bookmarks.copy.path",
+        "onCommand:damolinx.bookmarks.removeBookmark.global",
+        "onCommand:damolinx.bookmarks.removeBookmark.tree",
+        "onCommand:damolinx.bookmarks.removeBookmark.workspace",
         "onView:bookmarks"
     ],
     "main": "./out/extension.js",
     "contributes": {
         "commands": [
             {
-                "command": "bookmarks.addBookmark.global",
+                "command": "damolinx.bookmarks.addBookmark.global",
                 "title": "Bookmark Editor (Global)",
                 "category": "Bookmarks",
                 "icon": "$(add)"
             },
             {
-                "command": "bookmarks.addBookmark.tree",
+                "command": "damolinx.bookmarks.addBookmark.tree",
                 "title": "Bookmark Current Editor",
                 "icon": "$(add)"
             },
             {
-                "command": "bookmarks.addBookmark.workspace",
+                "command": "damolinx.bookmarks.addBookmark.workspace",
                 "title": "Bookmark Editor (Workspace)",
                 "category": "Bookmarks",
                 "icon": "$(add)"
             },
             {
-                "command": "bookmarks.copy.path",
+                "command": "damolinx.bookmarks.copy.path",
                 "title": "Copy Path",
                 "icon": "$(copy)"
             },
             {
-                "command": "bookmarks.removeBookmark.global",
+                "command": "damolinx.bookmarks.removeBookmark.global",
                 "title": "Remove Bookmark (Global)",
                 "category": "Bookmarks",
                 "icon": "$(remove-close)"
             },
             {
-                "command": "bookmarks.removeBookmark.tree",
+                "command": "damolinx.bookmarks.removeBookmark.tree",
                 "title": "Remove Bookmark",
                 "category": "Bookmarks",
                 "icon": "$(remove-close)"
             },
             {
-                "command": "bookmarks.removeBookmark.workspace",
+                "command": "damolinx.bookmarks.removeBookmark.workspace",
                 "title": "Remove Bookmark (Workspace)",
                 "category": "Bookmarks",
                 "icon": "$(remove-close)"
@@ -68,50 +68,50 @@
         "menus": {
             "commandPalette": [
                 {
-                    "command": "bookmarks.addBookmark.global",
+                    "command": "damolinx.bookmarks.addBookmark.global",
                     "when": "editorIsOpen"
                 },
                 {
-                    "command": "bookmarks.addBookmark.tree",
+                    "command": "damolinx.bookmarks.addBookmark.tree",
                     "when": "false"
                 },
                 {
-                    "command": "bookmarks.addBookmark.workspace",
+                    "command": "damolinx.bookmarks.addBookmark.workspace",
                     "when": "editorIsOpen && workbenchState != empty"
                 },
                 {
-                    "command": "bookmarks.removeBookmark.global",
+                    "command": "damolinx.bookmarks.removeBookmark.global",
                     "when": "false"
                 },
                 {
-                    "command": "bookmarks.removeBookmark.tree",
+                    "command": "damolinx.bookmarks.removeBookmark.tree",
                     "when": "false"
                 },
                 {
-                    "command": "bookmarks.removeBookmark.workspace",
+                    "command": "damolinx.bookmarks.removeBookmark.workspace",
                     "when": "false"
                 }
             ],
             "view/item/context": [
                 {
-                    "command": "bookmarks.addBookmark.tree",
+                    "command": "damolinx.bookmarks.addBookmark.tree",
                     "when": "view == bookmarks && viewItem == bookmarkGroup && editorIsOpen"
                 },
                 {
-                    "command": "bookmarks.addBookmark.tree",
+                    "command": "damolinx.bookmarks.addBookmark.tree",
                     "when": "view == bookmarks && viewItem == bookmarkGroup && editorIsOpen",
                     "group": "inline"
                 },
                 {
-                    "command": "bookmarks.copy.path",
+                    "command": "damolinx.bookmarks.copy.path",
                     "when": "view == bookmarks && viewItem == bookmark"
                 },
                 {
-                    "command": "bookmarks.removeBookmark.tree",
+                    "command": "damolinx.bookmarks.removeBookmark.tree",
                     "when": "view == bookmarks && viewItem == bookmark"
                 },
                 {
-                    "command": "bookmarks.removeBookmark.tree",
+                    "command": "damolinx.bookmarks.removeBookmark.tree",
                     "when": "view == bookmarks && viewItem == bookmark",
                     "group": "inline"
                 }
@@ -140,7 +140,7 @@
         "@types/glob": "^7.1.1",
         "@types/mocha": "^9.1.1",
         "@types/node": "^12.20.52",
-        "@types/vscode": "^1.67.0",
+        "@types/vscode": "^1.60.0",
         "@typescript-eslint/eslint-plugin": "^4.16.0",
         "@typescript-eslint/parser": "^4.16.0",
         "@vscode/test-electron": "^1.6.1",

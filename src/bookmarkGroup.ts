@@ -36,7 +36,7 @@ export class BookmarkGroup {
       const uriStr = uri.toString();
       if (!savedUris.includes(uriStr)) {
         savedUris.push(uriStr);
-        addedBookmarks.push(new Bookmark(uri, this));
+        addedBookmarks.push(new Bookmark(uri, this.kind));
       }
     }
     if (addedBookmarks.length) {
@@ -47,9 +47,8 @@ export class BookmarkGroup {
 
   /**
    * Number of bookmarks in group.
-   * @returns 
    */
-  public get bookmarksCount(): number {
+  public getBookmarkCount(): number {
     return this.memento.get<string[]>(MEMENTO_KEY_NAME)?.length || 0;
   }
 
@@ -65,7 +64,7 @@ export class BookmarkGroup {
    * Get {@link Bookmark} associated with {@param uri}.
    */
   public getBookmark(uri: vscode.Uri): Bookmark | undefined {
-    return this.contains(uri) ? new Bookmark(uri, this) : undefined;
+    return this.contains(uri) ? new Bookmark(uri, this.kind) : undefined;
   }
 
   /**
@@ -73,7 +72,7 @@ export class BookmarkGroup {
    */
   public getBookmarks(): Bookmark[] {
     return this.memento.get<string[]>(MEMENTO_KEY_NAME, [])
-      .map((s) => new Bookmark(vscode.Uri.parse(s), this));
+      .map((s) => new Bookmark(vscode.Uri.parse(s), this.kind));
   }
 
   /**

@@ -97,7 +97,7 @@ export class BookmarkManager implements vscode.Disposable {
  */
   public hasBookmarks(kind?: BookmarkKind): boolean {
     return this.bookmarkGroups
-      .some((group) => (!kind || group.kind === kind) && group.bookmarksCount);
+      .some((group) => (!kind || group.kind === kind) && group.getBookmarkCount());
   }
 
   /**
@@ -128,7 +128,7 @@ export class BookmarkManager implements vscode.Disposable {
       if (!group) {
         throw new Error(`Unknown 'kind': ${kind}`);
       }
-      bookmark = new Bookmark(pathOrUriOrBookmark, group);
+      bookmark = new Bookmark(pathOrUriOrBookmark, group.kind);
     }
 
     const removedBookmarks = await this.removeBookmarksAsync([bookmark]);
@@ -142,7 +142,7 @@ export class BookmarkManager implements vscode.Disposable {
   public async removeBookmarksAsync(bookmarks: Bookmark[]): Promise<Bookmark[]> {
     const removedBookmarks: Bookmark[] = [];
     for (const group of this.bookmarkGroups) {
-      const groupBookmarks = bookmarks.filter((b) => b.group === group);
+      const groupBookmarks = bookmarks.filter((bookmark) => bookmark.kind === group.kind);
       if (groupBookmarks.length) {
         removedBookmarks.push(...await group.removeBookmarksAsync(groupBookmarks));
       }

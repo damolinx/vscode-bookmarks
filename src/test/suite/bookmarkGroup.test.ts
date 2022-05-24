@@ -27,7 +27,7 @@ suite(`Suite: ${basename(__filename)}`, () => {
     const expectedBookmarkUri = Uri.parse("file://global/file1");
     const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento([]));
     const result = await bookmarkGroup.addBookmarksAsync([expectedBookmarkUri]);
-    assert.deepStrictEqual(result, [new Bookmark(expectedBookmarkUri, bookmarkGroup)]);
+    assert.deepStrictEqual(result, [new Bookmark(expectedBookmarkUri, bookmarkGroup.kind)]);
   });
 
   test('addBookmarksAsync: existing', async () => {
@@ -43,7 +43,7 @@ suite(`Suite: ${basename(__filename)}`, () => {
     const expectedGlobal = ["file://global/file1", "file://global/file2"];
     const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento(expectedGlobal));
     const result = await bookmarkGroup.addBookmarksAsync([expectedBookmarkUri]);
-    assert.deepStrictEqual(result, [new Bookmark(expectedBookmarkUri, bookmarkGroup)]);
+    assert.deepStrictEqual(result, [new Bookmark(expectedBookmarkUri, bookmarkGroup.kind)]);
   });
 
   test('addBookmarksAsync: some existing', async () => {
@@ -53,18 +53,7 @@ suite(`Suite: ${basename(__filename)}`, () => {
     const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento(expectedGlobal));
 
     const result = await bookmarkGroup.addBookmarksAsync([expectedBookmarkUri, bookmarkUri]);
-    assert.deepStrictEqual(result, [new Bookmark(expectedBookmarkUri, bookmarkGroup)]);
-  });
-
-  test('bookmarksCount: empty', () => {
-    const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento([]));
-    assert.strictEqual(bookmarkGroup.bookmarksCount, 0);
-  });
-
-  test('bookmarksCount: existing', () => {
-    const expectedGlobal = ["file://global/file1", "file://global/file2"];
-    const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento(expectedGlobal));
-    assert.strictEqual(bookmarkGroup.bookmarksCount, expectedGlobal.length);
+    assert.deepStrictEqual(result, [new Bookmark(expectedBookmarkUri, bookmarkGroup.kind)]);
   });
 
   test('contains: empty', () => {
@@ -96,7 +85,7 @@ suite(`Suite: ${basename(__filename)}`, () => {
     const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento(expectedGlobal));
     assert.deepStrictEqual(
       bookmarkGroup.getBookmark(expectedBookmarkUri),
-      new Bookmark(expectedBookmarkUri, bookmarkGroup));
+      new Bookmark(expectedBookmarkUri, bookmarkGroup.kind));
   });
 
   test('getBookmark: non-existing', () => {
@@ -110,7 +99,18 @@ suite(`Suite: ${basename(__filename)}`, () => {
     const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento(expectedGlobal));
     assert.deepStrictEqual(
       bookmarkGroup.getBookmarks(),
-      expectedGlobal.map((uri) => new Bookmark(Uri.parse(uri), bookmarkGroup)));
+      expectedGlobal.map((uri) => new Bookmark(Uri.parse(uri), bookmarkGroup.kind)));
+  });
+
+  test('getBookmarkCount: empty', () => {
+    const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento([]));
+    assert.strictEqual(bookmarkGroup.getBookmarkCount(), 0);
+  });
+
+  test('getBookmarkCount: existing', () => {
+    const expectedGlobal = ["file://global/file1", "file://global/file2"];
+    const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento(expectedGlobal));
+    assert.strictEqual(bookmarkGroup.getBookmarkCount(), expectedGlobal.length);
   });
 
   test('getBookmarks: empty', () => {
@@ -123,13 +123,13 @@ suite(`Suite: ${basename(__filename)}`, () => {
     const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento(expectedGlobal));
     assert.deepStrictEqual(
       bookmarkGroup.getBookmarks(),
-      expectedGlobal.map((uri) => new Bookmark(Uri.parse(uri), bookmarkGroup)));
+      expectedGlobal.map((uri) => new Bookmark(Uri.parse(uri), bookmarkGroup.kind)));
   });
 
   test('removeBookmarksAsync: empty', async () => {
     const expectedBookmarkUri = Uri.parse("file://global/file1");
     const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento([]));
-    const bookmark = new Bookmark(expectedBookmarkUri, bookmarkGroup);
+    const bookmark = new Bookmark(expectedBookmarkUri, bookmarkGroup.kind);
     const result = await bookmarkGroup.removeBookmarksAsync([bookmark]);
     assert.deepStrictEqual(result, []);
   });
@@ -138,7 +138,7 @@ suite(`Suite: ${basename(__filename)}`, () => {
     const expectedBookmarkUri = Uri.parse("file://global/file3");
     const expectedGlobal = ["file://global/file1", "file://global/file2", expectedBookmarkUri.toString()];
     const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento(expectedGlobal));
-    const expectedBookmark = new Bookmark(expectedBookmarkUri, bookmarkGroup);
+    const expectedBookmark = new Bookmark(expectedBookmarkUri, bookmarkGroup.kind);
     const result = await bookmarkGroup.removeBookmarksAsync([expectedBookmark]);
     assert.deepStrictEqual(result, [expectedBookmark]);
   });
@@ -147,7 +147,7 @@ suite(`Suite: ${basename(__filename)}`, () => {
     const expectedBookmarkUri = Uri.parse("file://global/file3");
     const expectedGlobal = ["file://global/file1", "file://global/file2"];
     const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento(expectedGlobal));
-    const bookmark = new Bookmark(expectedBookmarkUri, bookmarkGroup);
+    const bookmark = new Bookmark(expectedBookmarkUri, bookmarkGroup.kind);
     const result = await bookmarkGroup.removeBookmarksAsync([bookmark]);
     assert.deepStrictEqual(result, []);
   });
@@ -158,8 +158,8 @@ suite(`Suite: ${basename(__filename)}`, () => {
     const expectedGlobal = ["file://global/file1", expectedBookmarkUri.toString(), "file://global/file3"];
     const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento(expectedGlobal));
 
-    const bookmark = new Bookmark(bookmarkUri, bookmarkGroup);
-    const expectedBookmark = new Bookmark(expectedBookmarkUri, bookmarkGroup);
+    const bookmark = new Bookmark(bookmarkUri, bookmarkGroup.kind);
+    const expectedBookmark = new Bookmark(expectedBookmarkUri, bookmarkGroup.kind);
     const result = await bookmarkGroup.removeBookmarksAsync([expectedBookmark, bookmark]);
     assert.deepStrictEqual(result, [expectedBookmark]);
   });

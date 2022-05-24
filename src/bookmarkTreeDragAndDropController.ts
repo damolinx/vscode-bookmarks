@@ -23,7 +23,9 @@ export class BookmarkTreeDragAndDropController implements vscode.TreeDragAndDrop
 
   async handleDrop(target: BookmarkGroup | Bookmark | undefined, dataTransfer: vscode.DataTransfer, _token: vscode.CancellationToken): Promise<void> {
     let droppedUris: vscode.Uri[] | undefined;
-    const draggedBookmarks: Bookmark[] | undefined = dataTransfer.get('application/vnd.code.tree.bookmarks')?.value;
+    const kind = target?.kind || (vscode.workspace.workspaceFolders?.length ? 'workspace' : 'global');
+    const draggedBookmarks = (<Bookmark[] | undefined>dataTransfer.get('application/vnd.code.tree.bookmarks')?.value)
+      ?.filter((b) => b.kind != kind);
     if (draggedBookmarks) {
       droppedUris = draggedBookmarks.map((b) => b.uri);
     } else {
@@ -43,7 +45,6 @@ export class BookmarkTreeDragAndDropController implements vscode.TreeDragAndDrop
 
     // Add URIs to Target Kind.
     if (droppedUris?.length) {
-      const kind = target?.kind || vscode.workspace.workspaceFolders?.length ? 'workspace' : 'global';
       await this.bookmarkManager.addBookmarksAsync(droppedUris, kind);
     }
 

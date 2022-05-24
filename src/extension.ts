@@ -28,12 +28,12 @@ export function activate(context: vscode.ExtensionContext) {
       () => bookmarkTreeProvider.refresh()),
     // Reveal a node when added.
     bookmarkManager.onDidAddBookmark(
-      (bookmarks) => bookmarks && bookmarkTreeView.reveal(bookmarks[0])));
+      async (bookmarks) => bookmarks && await bookmarkTreeView.reveal(bookmarks[0])));
 
   // Register Commands
   context.subscriptions.push(
     vscode.commands.registerCommand(
-      "_bookmarks.addBookmark",
+      "_damolinx.bookmarks.addBookmark",
       async (pathOrUriOrUndefined: string | vscode.Uri | undefined, kind: BookmarkKind): Promise<void> => {
         const pathOrUri: string | vscode.Uri | undefined = (pathOrUriOrUndefined)
           ? pathOrUriOrUndefined
@@ -46,30 +46,30 @@ export function activate(context: vscode.ExtensionContext) {
         }
       }),
     vscode.commands.registerCommand(
-      "bookmarks.addBookmark.global",
+      "damolinx.bookmarks.addBookmark.global",
       (pathOrUri?: string | vscode.Uri): Thenable<void> =>
-        vscode.commands.executeCommand("_bookmarks.addBookmark", pathOrUri, 'global')),
+        vscode.commands.executeCommand("_damolinx.bookmarks.addBookmark", pathOrUri, 'global')),
     vscode.commands.registerCommand(
-      "bookmarks.addBookmark.tree",
+      "damolinx.bookmarks.addBookmark.tree",
       (group: BookmarkGroup): Thenable<void> =>
-        vscode.commands.executeCommand("_bookmarks.addBookmark", undefined, group.kind)),
+        vscode.commands.executeCommand("_damolinx.bookmarks.addBookmark", undefined, group.kind)),
     vscode.commands.registerCommand(
-      "bookmarks.addBookmark.workspace",
+      "damolinx.bookmarks.addBookmark.workspace",
       (pathOrUri?: string | vscode.Uri): Thenable<void> =>
-        vscode.commands.executeCommand("_bookmarks.addBookmark", pathOrUri, 'workspace')),
+        vscode.commands.executeCommand("_damolinx.bookmarks.addBookmark", pathOrUri, 'workspace')),
     vscode.commands.registerCommand(
-      "bookmarks.copy.path",
+      "damolinx.bookmarks.copy.path",
       (bookmark: Bookmark): Thenable<void> => vscode.env.clipboard.writeText(
         bookmark.uri.scheme === 'file' ? bookmark.uri.fsPath : bookmark.uri.toString())),
     vscode.commands.registerCommand(
-      "bookmarks.removeBookmark.global",
+      "damolinx.bookmarks.removeBookmark.global",
       (pathOrUri: string | vscode.Uri): Promise<boolean> =>
         bookmarkManager.removeBookmarkAsync(pathOrUri, 'global')),
     vscode.commands.registerCommand(
-      "bookmarks.removeBookmark.tree",
+      "damolinx.bookmarks.removeBookmark.tree",
       (bookmark: Bookmark): Promise<boolean> => bookmarkManager.removeBookmarkAsync(bookmark)),
     vscode.commands.registerCommand(
-      "bookmarks.removeBookmark.workspace",
+      "damolinx.bookmarks.removeBookmark.workspace",
       (pathOrUri: string | vscode.Uri): Promise<boolean> =>
         bookmarkManager.removeBookmarkAsync(pathOrUri, 'workspace')));
 }

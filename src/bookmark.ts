@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-import { BookmarkGroup } from "./bookmarkGroup";
 
 /**
  * Supported Bookmark categories.
@@ -11,24 +10,17 @@ export type BookmarkKind = 'global' | 'workspace';
  */
 export class Bookmark {
   public readonly uri: vscode.Uri;
-  public readonly group: BookmarkGroup;
+  public readonly kind: BookmarkKind;
 
   /** 
    * Constructor.
    * @param pathOrUri URI to bookmark.
    * @param group Parent group.
    */
-  constructor(pathOrUri: string | vscode.Uri, group: BookmarkGroup) {
+  constructor(pathOrUri: string | vscode.Uri, kind: BookmarkKind) {
     this.uri = (pathOrUri instanceof vscode.Uri)
       ? pathOrUri : vscode.Uri.parse(pathOrUri);
-    this.group = group;
-  }
-
-  /**
-   * Bookmark kind.
-   */
-  public get kind(): BookmarkKind {
-    return this.group.kind;
+    this.kind = kind;
   }
 
   /**
