@@ -35,9 +35,15 @@ export function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(
       "_bookmarks.addBookmark",
       async (pathOrUriOrUndefined: string | vscode.Uri | undefined, kind: BookmarkKind): Promise<void> => {
-        const pathOrUri: string | vscode.Uri | undefined = (pathOrUriOrUndefined)
-          ? pathOrUriOrUndefined
-          : vscode.window.activeTextEditor?.document.uri;
+        let pathOrUri: string | vscode.Uri | undefined;
+
+        if (pathOrUriOrUndefined) {
+          pathOrUri = pathOrUriOrUndefined;
+        } else if (vscode.window.activeTextEditor) {
+          pathOrUri = vscode.window.activeTextEditor.document.uri.with(
+            { fragment: `L${vscode.window.activeTextEditor.selection.start.line + 1}` });
+        }
+
         if (pathOrUri) {
           const bookmark = await bookmarkManager.addBookmarkAsync(pathOrUri, kind);
           if (!bookmark) {

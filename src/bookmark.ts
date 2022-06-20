@@ -9,8 +9,20 @@ export type BookmarkKind = 'global' | 'workspace';
  * Bookmark.
  */
 export class Bookmark {
-  public readonly uri: vscode.Uri;
+
+  /**
+   * Bookmark kind.
+   */
   public readonly kind: BookmarkKind;
+  /**
+   * User-readable name. This value is tied to the current workspace
+   * so don't use it as Id. 
+   */
+  public readonly name: string;
+  /**
+   * Bookmark URI. Prefer this value to identify a bookmark.
+   */
+  public readonly uri: vscode.Uri;
 
   /** 
    * Constructor.
@@ -21,13 +33,9 @@ export class Bookmark {
     this.uri = (pathOrUri instanceof vscode.Uri)
       ? pathOrUri : vscode.Uri.parse(pathOrUri);
     this.kind = kind;
-  }
-
-  /**
-   * Bookmark name usef for UI. This value is tied to the current workspace
-   * so don't use to identify a  bookmark. 
-   */
-  public get name(): string {
-    return vscode.workspace.asRelativePath(this.uri);
+    const workspaceRelativePath = vscode.workspace.asRelativePath(this.uri)
+    this.name = this.uri.fragment 
+      ? `${workspaceRelativePath}:${this.uri.fragment.slice(1)}`
+      : workspaceRelativePath;
   }
 }
