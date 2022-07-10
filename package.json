@@ -137,6 +137,7 @@
                 {
                     "id": "bookmarks",
                     "name": "Bookmarks",
+                    "contextualTitle": "Bookmarks",
                     "icon": "$(bookmark)"
                 }
             ]
