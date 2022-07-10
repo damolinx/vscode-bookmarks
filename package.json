@@ -1,7 +1,7 @@
 {
     "name": "damolinx-bookmarks",
     "displayName": "Bookmarks for VSCode",
-    "description": "Bookmarks for VSCode",
+    "description": "Bookmarks is a VSCode extension that allows to create global and per-workspace file bookmarks.",
     "version": "0.0.10",
     "publisher": "damolinx",
     "preview": true,
