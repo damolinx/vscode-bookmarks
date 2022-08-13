@@ -1,7 +1,8 @@
 # Change Log
 
-## 0.1.0
+## 0.1.0/0.1.1
 - Non-preview release
+- Set `contextualTitle` so explorer tooltip is `Bookmarks`, not `Explorer`. 
 ## 0.0.10
 - Add line information to bookmarks.
 ## 0.0.9
