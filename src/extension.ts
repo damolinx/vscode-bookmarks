@@ -49,11 +49,11 @@ export function activate(context: vscode.ExtensionContext) {
         vscode.env.clipboard.writeText(
           bookmark.uri.scheme === "file" ? bookmark.uri.fsPath : bookmark.uri.toString())),
     vscode.commands.registerCommand(
-      "bookmarks.navigate.editor.next",
+      "bookmarks.navigate.next.editor",
       (pathOrUri?: string | vscode.Uri): Thenable<void> =>
         navigateAsync(bookmarkManager, true, pathOrUri)),
     vscode.commands.registerCommand(
-      "bookmarks.navigate.editor.previous",
+      "bookmarks.navigate.previous.editor",
       (pathOrUri?: string | vscode.Uri): Thenable<void> =>
         navigateAsync(bookmarkManager, false, pathOrUri)),
     vscode.commands.registerCommand(

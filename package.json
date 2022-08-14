@@ -30,8 +30,8 @@
     "onCommand:bookmarks.addBookmark.tree",
     "onCommand:bookmarks.addBookmark.workspace",
     "onCommand:bookmarks.copy.path",
-    "onCommand:bookmarks.navigate.editor.next",
-    "onCommand:bookmarks.navigate.editor.previous",
+    "onCommand:bookmarks.navigate.next.editor",
+    "onCommand:bookmarks.navigate.previous.editor",
     "onCommand:bookmarks.removeBookmark.global",
     "onCommand:bookmarks.removeBookmark.tree",
     "onCommand:bookmarks.removeBookmark.workspace",
@@ -63,13 +63,13 @@
         "icon": "$(copy)"
       },
       {
-        "command": "bookmarks.navigate.editor.next",
+        "command": "bookmarks.navigate.next.editor",
         "title": "Go to Next in Current Editor",
         "category": "Bookmarks",
         "icon": "$(arrow-down)"
       },
       {
-        "command": "bookmarks.navigate.editor.previous",
+        "command": "bookmarks.navigate.previous.editor",
         "title": "Go to Previous in Current Editor",
         "category": "Bookmarks",
         "icon": "$(arrow-up)"
@@ -112,13 +112,13 @@
           "when": "false"
         },
         {
-          "command": "bookmarks.navigate.editor.next",
+          "command": "bookmarks.navigate.next.editor",
           "when": "editorIsOpen"
         },
         {
-          "command": "bookmarks.navigate.editor.previous",
+          "command": "bookmarks.navigate.previous.editor",
           "when": "editorIsOpen"
-        },        
+        },
         {
           "command": "bookmarks.removeBookmark.global",
           "when": "false"

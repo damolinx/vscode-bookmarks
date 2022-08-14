@@ -45,6 +45,6 @@ There is a `X` button next to each Bookmark, same as one per category and one on
 There are two commands, `Bookmarks: Go to Next in Current Editor` and `Bookmarks: Go to Previous in Current Editor`, that can be used to jump between bookmarks set in current editor. 
 
 #### Programatic access
-The following commads are exposed for other extensions to use: `bookmarks.navigate.editor.next` and `bookmarks.navigate.editor.previous`. They take a single optional argument that is the path or URI to the file to navigate (it will be opened if needed).
+The following commads are exposed for other extensions to use: `bookmarks.navigate.next.editor` and `bookmarks.navigate.previous.editor`. They take a single optional argument that is the path or URI to the file to navigate (it will be opened if needed).
 
 
