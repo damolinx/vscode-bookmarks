@@ -15,8 +15,9 @@ export class Bookmark {
   public readonly kind: BookmarkKind;
   /**
    * Bookmark line number, if any. Lines numbers are 1-based. 
+   * If URL defines no line number, this defaults to 1.
    */
-  public readonly lineNumber: number | undefined;
+  public readonly lineNumber: number;
   /**
    * User-readable name. This value is tied to the current workspace
    * so don't use it as Id. 
@@ -39,21 +40,11 @@ export class Bookmark {
 
     const lineFragment = this.uri.fragment.substring(1);
     const lineNumber = parseInt(lineFragment);
-    this.lineNumber = Object.is(NaN, lineNumber) ? undefined : lineNumber;
+    this.lineNumber = Object.is(NaN, lineNumber) ? 1 : lineNumber;
 
     const workspaceRelativePath = vscode.workspace.asRelativePath(this.uri);
     this.name = lineFragment
       ? `${workspaceRelativePath}:${lineFragment}`
       : workspaceRelativePath;
-  }
-
-  /**
-   * Select line.
-   */
-  public selectLine(editor: vscode.TextEditor) {
-    const normalizedLineNumber = (this.lineNumber ?? 1) - 1;
-    const position = new vscode.Position(normalizedLineNumber, 0);
-    editor.selection = new vscode.Selection(position, position);
-    editor.revealRange(new vscode.Range(position, position));
   }
 }

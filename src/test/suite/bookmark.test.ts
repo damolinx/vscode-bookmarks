@@ -20,7 +20,7 @@ suite(`Suite: ${basename(__filename)}`, () => {
 
     const bookmarkGroup = new Bookmark(expectedUri, expectedKind);
     assert.strictEqual(bookmarkGroup.kind, expectedKind);
-    assert.strictEqual(bookmarkGroup.lineNumber, undefined);
+    assert.strictEqual(bookmarkGroup.lineNumber, 1);
     assert.strictEqual(bookmarkGroup.name, expectedName);
     assert.strictEqual(bookmarkGroup.uri.toString(), expectedUri);
   });
