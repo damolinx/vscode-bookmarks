@@ -99,19 +99,19 @@
         "command": "bookmarks.removeBookmarks.global",
         "title": "Remove All (Global)",
         "category": "Bookmarks",
-        "icon": "$(remove-close)"
+        "icon": "$(close-all)"
       },
       {
         "command": "bookmarks.removeBookmarks.tree",
         "title": "Remove All",
         "category": "Bookmarks",
-        "icon": "$(remove-close)"
+        "icon": "$(close-all)"
       },
       {
         "command": "bookmarks.removeBookmarks.workspace",
         "title": "Remove All (Workspace)",
         "category": "Bookmarks",
-        "icon": "$(remove-close)"
+        "icon": "$(close-all)"
       }
     ],
     "menus": {
