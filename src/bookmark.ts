@@ -14,7 +14,7 @@ export class Bookmark {
    */
   public readonly kind: BookmarkKind;
   /**
-   * Bookmark line number, if any.
+   * Bookmark line number, if any. Lines numbers are 1-based. 
    */
   public readonly lineNumber: number | undefined;
   /**
@@ -45,5 +45,15 @@ export class Bookmark {
     this.name = lineFragment
       ? `${workspaceRelativePath}:${lineFragment}`
       : workspaceRelativePath;
+  }
+
+  /**
+   * Select line.
+   */
+  public selectLine(editor: vscode.TextEditor) {
+    const normalizedLineNumber = (this.lineNumber ?? 1) - 1;
+    const position = new vscode.Position(normalizedLineNumber, 0);
+    editor.selection = new vscode.Selection(position, position);
+    editor.revealRange(new vscode.Range(position, position));
   }
 }

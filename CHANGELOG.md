@@ -1,5 +1,7 @@
 # Change Log
 
+## 0.2
+- Add `Bookmarks: Go to Next in Current Editor` and `Bookmarks: Go to Previous in Current Editor` commands.
 ## 0.1.0/0.1.1
 - Non-preview release
 - Set `contextualTitle` so explorer tooltip is `Bookmarks`, not `Explorer`. 

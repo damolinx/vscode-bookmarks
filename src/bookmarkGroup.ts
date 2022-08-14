@@ -61,14 +61,14 @@ export class BookmarkGroup {
   }
 
   /**
-   * Get {@link Bookmark} associated with {@param uri}.
+   * Get all {@link Bookmark} bookmarks associated with {@param uri}.
    */
   public getBookmark(uri: vscode.Uri): Bookmark | undefined {
     return this.contains(uri) ? new Bookmark(uri, this.kind) : undefined;
   }
 
   /**
-   * Get {@link Bookmark} associated with {@param uri}.
+   * Get all {@link Bookmark} bookmarks.
    */
   public getBookmarks(): Bookmark[] {
     return this.memento.get<string[]>(MEMENTO_KEY_NAME, [])

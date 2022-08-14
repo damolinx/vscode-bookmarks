@@ -1,168 +1,194 @@
 {
-    "name": "damolinx-bookmarks",
-    "displayName": "Bookmarks for VSCode",
-    "description": "Bookmarks is a VSCode extension that allows to create global and per-workspace file bookmarks.",
-    "version": "0.1.1",
-    "publisher": "damolinx",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/damolinx/vscode-bookmarks"
-    },
-    "bugs": {
-        "url": "https://github.com/damolinx/vscode-bookmarks/issues"
-    },
-    "engines": {
-        "vscode": "^1.60.0"
-    },
-    "categories": [
-        "Other"
+  "name": "damolinx-bookmarks",
+  "displayName": "Bookmarks for VSCode",
+  "description": "Bookmarks is a VSCode extension that allows to create global and per-workspace file bookmarks.",
+  "version": "0.1.1",
+  "publisher": "damolinx",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/damolinx/vscode-bookmarks"
+  },
+  "bugs": {
+    "url": "https://github.com/damolinx/vscode-bookmarks/issues"
+  },
+  "engines": {
+    "vscode": "^1.60.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "bookmark",
+    "bookmarks"
+  ],
+  "extensionKind": [
+    "ui",
+    "workspace"
+  ],
+  "activationEvents": [
+    "onCommand:bookmarks.addBookmark.global",
+    "onCommand:bookmarks.addBookmark.tree",
+    "onCommand:bookmarks.addBookmark.workspace",
+    "onCommand:bookmarks.copy.path",
+    "onCommand:bookmarks.navigate.editor.next",
+    "onCommand:bookmarks.navigate.editor.previous",
+    "onCommand:bookmarks.removeBookmark.global",
+    "onCommand:bookmarks.removeBookmark.tree",
+    "onCommand:bookmarks.removeBookmark.workspace",
+    "onView:bookmarks"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "bookmarks.addBookmark.global",
+        "title": "Bookmark Editor (Global)",
+        "category": "Bookmarks",
+        "icon": "$(add)"
+      },
+      {
+        "command": "bookmarks.addBookmark.tree",
+        "title": "Bookmark Current Editor",
+        "icon": "$(add)"
+      },
+      {
+        "command": "bookmarks.addBookmark.workspace",
+        "title": "Bookmark Editor (Workspace)",
+        "category": "Bookmarks",
+        "icon": "$(add)"
+      },
+      {
+        "command": "bookmarks.copy.path",
+        "title": "Copy Path",
+        "icon": "$(copy)"
+      },
+      {
+        "command": "bookmarks.navigate.editor.next",
+        "title": "Go to Next in Current Editor",
+        "category": "Bookmarks",
+        "icon": "$(arrow-down)"
+      },
+      {
+        "command": "bookmarks.navigate.editor.previous",
+        "title": "Go to Previous in Current Editor",
+        "category": "Bookmarks",
+        "icon": "$(arrow-up)"
+      },
+      {
+        "command": "bookmarks.removeBookmark.global",
+        "title": "Remove Bookmark (Global)",
+        "category": "Bookmarks",
+        "icon": "$(remove-close)"
+      },
+      {
+        "command": "bookmarks.removeBookmark.tree",
+        "title": "Remove Bookmark",
+        "category": "Bookmarks",
+        "icon": "$(remove-close)"
+      },
+      {
+        "command": "bookmarks.removeBookmark.workspace",
+        "title": "Remove Bookmark (Workspace)",
+        "category": "Bookmarks",
+        "icon": "$(remove-close)"
+      }
     ],
-    "keywords": [
-        "bookmark",
-        "bookmarks"
-    ],
-    "extensionKind": [
-        "ui",
-        "workspace"
-    ],
-    "activationEvents": [
-        "onCommand:bookmarks.addBookmark.global",
-        "onCommand:bookmarks.addBookmark.tree",
-        "onCommand:bookmarks.addBookmark.workspace",
-        "onCommand:bookmarks.copy.path",
-        "onCommand:bookmarks.removeBookmark.global",
-        "onCommand:bookmarks.removeBookmark.tree",
-        "onCommand:bookmarks.removeBookmark.workspace",
-        "onView:bookmarks"
-    ],
-    "main": "./out/extension.js",
-    "contributes": {
-        "commands": [
-            {
-                "command": "bookmarks.addBookmark.global",
-                "title": "Bookmark Editor (Global)",
-                "category": "Bookmarks",
-                "icon": "$(add)"
-            },
-            {
-                "command": "bookmarks.addBookmark.tree",
-                "title": "Bookmark Current Editor",
-                "icon": "$(add)"
-            },
-            {
-                "command": "bookmarks.addBookmark.workspace",
-                "title": "Bookmark Editor (Workspace)",
-                "category": "Bookmarks",
-                "icon": "$(add)"
-            },
-            {
-                "command": "bookmarks.copy.path",
-                "title": "Copy Path",
-                "icon": "$(copy)"
-            },
-            {
-                "command": "bookmarks.removeBookmark.global",
-                "title": "Remove Bookmark (Global)",
-                "category": "Bookmarks",
-                "icon": "$(remove-close)"
-            },
-            {
-                "command": "bookmarks.removeBookmark.tree",
-                "title": "Remove Bookmark",
-                "category": "Bookmarks",
-                "icon": "$(remove-close)"
-            },
-            {
-                "command": "bookmarks.removeBookmark.workspace",
-                "title": "Remove Bookmark (Workspace)",
-                "category": "Bookmarks",
-                "icon": "$(remove-close)"
-            }
-        ],
-        "menus": {
-            "commandPalette": [
-                {
-                    "command": "bookmarks.addBookmark.global",
-                    "when": "editorIsOpen"
-                },
-                {
-                    "command": "bookmarks.addBookmark.tree",
-                    "when": "false"
-                },
-                {
-                    "command": "bookmarks.addBookmark.workspace",
-                    "when": "editorIsOpen && workbenchState != empty"
-                },
-                {
-                    "command": "bookmarks.removeBookmark.global",
-                    "when": "false"
-                },
-                {
-                    "command": "bookmarks.removeBookmark.tree",
-                    "when": "false"
-                },
-                {
-                    "command": "bookmarks.removeBookmark.workspace",
-                    "when": "false"
-                }
-            ],
-            "view/item/context": [
-                {
-                    "command": "bookmarks.addBookmark.tree",
-                    "when": "view == bookmarks && viewItem == bookmarkGroup && editorIsOpen"
-                },
-                {
-                    "command": "bookmarks.addBookmark.tree",
-                    "when": "view == bookmarks && viewItem == bookmarkGroup && editorIsOpen",
-                    "group": "inline"
-                },
-                {
-                    "command": "bookmarks.copy.path",
-                    "when": "view == bookmarks && viewItem == bookmark"
-                },
-                {
-                    "command": "bookmarks.removeBookmark.tree",
-                    "when": "view == bookmarks && viewItem == bookmark"
-                },
-                {
-                    "command": "bookmarks.removeBookmark.tree",
-                    "when": "view == bookmarks && viewItem == bookmark",
-                    "group": "inline"
-                }
-            ]
+    "menus": {
+      "commandPalette": [
+        {
+          "command": "bookmarks.addBookmark.global",
+          "when": "editorIsOpen"
         },
-        "views": {
-            "explorer": [
-                {
-                    "id": "bookmarks",
-                    "name": "Bookmarks",
-                    "contextualTitle": "Bookmarks",
-                    "icon": "$(bookmark)"
-                }
-            ]
+        {
+          "command": "bookmarks.addBookmark.tree",
+          "when": "false"
+        },
+        {
+          "command": "bookmarks.addBookmark.workspace",
+          "when": "editorIsOpen && workbenchState != empty"
+        },
+        {
+          "command": "bookmarks.copy.path",
+          "when": "false"
+        },
+        {
+          "command": "bookmarks.navigate.editor.next",
+          "when": "editorIsOpen"
+        },
+        {
+          "command": "bookmarks.navigate.editor.previous",
+          "when": "editorIsOpen"
+        },        
+        {
+          "command": "bookmarks.removeBookmark.global",
+          "when": "false"
+        },
+        {
+          "command": "bookmarks.removeBookmark.tree",
+          "when": "false"
+        },
+        {
+          "command": "bookmarks.removeBookmark.workspace",
+          "when": "false"
         }
+      ],
+      "view/item/context": [
+        {
+          "command": "bookmarks.addBookmark.tree",
+          "when": "view == bookmarks && viewItem == bookmarkGroup && editorIsOpen"
+        },
+        {
+          "command": "bookmarks.addBookmark.tree",
+          "when": "view == bookmarks && viewItem == bookmarkGroup && editorIsOpen",
+          "group": "inline"
+        },
+        {
+          "command": "bookmarks.copy.path",
+          "when": "view == bookmarks && viewItem == bookmark"
+        },
+        {
+          "command": "bookmarks.removeBookmark.tree",
+          "when": "view == bookmarks && viewItem == bookmark"
+        },
+        {
+          "command": "bookmarks.removeBookmark.tree",
+          "when": "view == bookmarks && viewItem == bookmark",
+          "group": "inline"
+        }
+      ]
     },
-    "scripts": {
-        "vscode:prepublish": "npm run compile",
-        "compile": "tsc -p ./",
-        "lint": "eslint . --ext .ts,.tsx",
-        "watch": "tsc -watch -p ./",
-        "pretest": "npm run compile",
-        "test": "node ./out/test/runTest.js"
-    },
-    "dependencies": {},
-    "devDependencies": {
-        "@types/glob": "^7.2.0",
-        "@types/mocha": "^9.1.1",
-        "@types/node": "^18.7.3",
-        "@types/vscode": "^1.60.0",
-        "@typescript-eslint/eslint-plugin": "^5.33.0",
-        "@typescript-eslint/parser": "^5.33.0",
-        "@vscode/test-electron": "^2.1.5",
-        "eslint": "^8.21.0",
-        "glob": "^8.0.3",
-        "mocha": "^10.0.0",
-        "source-map-support": "^0.5.21",
-        "typescript": "^4.7.4"
+    "views": {
+      "explorer": [
+        {
+          "id": "bookmarks",
+          "name": "Bookmarks",
+          "contextualTitle": "Bookmarks",
+          "icon": "$(bookmark)"
+        }
+      ]
     }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "lint": "eslint . --ext .ts,.tsx",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile",
+    "test": "node ./out/test/runTest.js"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "@types/glob": "^7.2.0",
+    "@types/mocha": "^9.1.1",
+    "@types/node": "^18.7.3",
+    "@types/vscode": "^1.60.0",
+    "@typescript-eslint/eslint-plugin": "^5.33.0",
+    "@typescript-eslint/parser": "^5.33.0",
+    "@vscode/test-electron": "^2.1.5",
+    "eslint": "^8.21.0",
+    "glob": "^8.0.3",
+    "mocha": "^10.0.0",
+    "source-map-support": "^0.5.21",
+    "typescript": "^4.7.4"
+  }
 }
