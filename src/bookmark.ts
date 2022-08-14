@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 
 /**
- * Supported Bookmark categories.
+ * Supported Bookmark kinds.
  */
 export type BookmarkKind = 'global' | 'workspace';
 
@@ -9,11 +9,14 @@ export type BookmarkKind = 'global' | 'workspace';
  * Bookmark.
  */
 export class Bookmark {
-
   /**
    * Bookmark kind.
    */
   public readonly kind: BookmarkKind;
+  /**
+   * Bookmark line number, if any.
+   */
+  public readonly lineNumber: number | undefined;
   /**
    * User-readable name. This value is tied to the current workspace
    * so don't use it as Id. 
@@ -27,15 +30,20 @@ export class Bookmark {
   /** 
    * Constructor.
    * @param pathOrUri URI to bookmark.
-   * @param group Parent group.
+   * @param kind Bookmark kind.
    */
   constructor(pathOrUri: string | vscode.Uri, kind: BookmarkKind) {
+    this.kind = kind;
     this.uri = (pathOrUri instanceof vscode.Uri)
       ? pathOrUri : vscode.Uri.parse(pathOrUri);
-    this.kind = kind;
-    const workspaceRelativePath = vscode.workspace.asRelativePath(this.uri)
-    this.name = this.uri.fragment 
-      ? `${workspaceRelativePath}:${this.uri.fragment.slice(1)}`
+
+    const lineFragment = this.uri.fragment.substring(1);
+    const lineNumber = parseInt(lineFragment);
+    this.lineNumber = Object.is(NaN, lineNumber) ? undefined : lineNumber;
+
+    const workspaceRelativePath = vscode.workspace.asRelativePath(this.uri);
+    this.name = lineFragment
+      ? `${workspaceRelativePath}:${lineFragment}`
       : workspaceRelativePath;
   }
 }
