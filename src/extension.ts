@@ -70,16 +70,19 @@ export function activate(context: vscode.ExtensionContext) {
         bookmarkManager.removeBookmarkAsync(pathOrUri, "workspace")),
     vscode.commands.registerCommand(
       "bookmarks.removeBookmarks.global",
-      (): Promise<Bookmark[]> =>
-        bookmarkManager.removeAllBookmarksAsync("global")),
+      async (): Promise<vscode.Uri[]> =>
+        (await bookmarkManager.removeAllBookmarksAsync("global"))
+          .map(b => b.uri)),
     vscode.commands.registerCommand(
       "bookmarks.removeBookmarks.tree",
-      (bookmarkGroup: BookmarkGroup): Promise<Bookmark[]> =>
-        bookmarkManager.removeAllBookmarksAsync(bookmarkGroup.kind)),
+      async (bookmarkGroup: BookmarkGroup): Promise<vscode.Uri[]> =>
+        (await bookmarkManager.removeAllBookmarksAsync(bookmarkGroup.kind))
+          .map(b => b.uri)),
     vscode.commands.registerCommand(
       "bookmarks.removeBookmarks.workspace",
-      (): Promise<Bookmark[]> =>
-        bookmarkManager.removeAllBookmarksAsync("workspace")),
+      async (): Promise<vscode.Uri[]> =>
+        (await bookmarkManager.removeAllBookmarksAsync("workspace"))
+          .map(b => b.uri)),
   );
 }
 
