@@ -2,6 +2,9 @@ import * as vscode from "vscode";
 import { Bookmark, BookmarkKind } from "./bookmark";
 import { BookmarkGroup, createBookmarkGroup } from "./bookmarkGroup";
 
+/**
+ * Bookmark manager.
+ */
 export class BookmarkManager implements vscode.Disposable {
   private readonly bookmarkGroups: ReadonlyArray<BookmarkGroup>;
   private readonly onDidAddBookmarkEmitter: vscode.EventEmitter<Bookmark[] | undefined>;
@@ -30,27 +33,30 @@ export class BookmarkManager implements vscode.Disposable {
   /**
    * Add bookmark.
    * @param pathOrUri URI to bookmark.
-   * @param kind Bookmark category.
+   * @param kind Bookmark kind.
    * @returns {@link Bookmark} instance, if one was created.
    */
-  public async addBookmarkAsync(pathOrUri: string | vscode.Uri, kind: BookmarkKind): Promise<Bookmark | undefined> {
+  public async addBookmarkAsync(pathOrUri: string | vscode.Uri, kind: BookmarkKind):
+    Promise<Bookmark | undefined> {
     const uri = (pathOrUri instanceof vscode.Uri) ? pathOrUri : vscode.Uri.parse(pathOrUri);
     const addedBookmarks = await this.addBookmarksAsync([uri], kind);
-    return addedBookmarks && addedBookmarks[0];
+    return addedBookmarks[0];
   }
 
   /**
    * Add bookmarks.
    * @param uris URIs to bookmark. 
-   * @param kind Bookmark category.
+   * @param kind Bookmark kind.
    * @returns {@link Bookmark} instances that were created.
    */
-  public async addBookmarksAsync(uris: vscode.Uri[], kind: BookmarkKind): Promise<Bookmark[] | undefined> {
-    const addedBookmarks: Bookmark[] | undefined = (await this.bookmarkGroups
-      .find((group) => group.kind === kind)
-      ?.addBookmarksAsync(uris));
+  public async addBookmarksAsync(uris: vscode.Uri[], kind: BookmarkKind): Promise<Bookmark[]> {
+    const bookmarkGroup: BookmarkGroup | undefined =
+      this.bookmarkGroups.find((group) => group.kind === kind);
 
-    if (addedBookmarks?.length) {
+    const addedBookmarks: Bookmark[] = bookmarkGroup
+      ? await bookmarkGroup.addBookmarksAsync(uris) : [];
+
+    if (addedBookmarks.length) {
       this.onDidAddBookmarkEmitter.fire(addedBookmarks);
     }
     return addedBookmarks;
@@ -59,7 +65,7 @@ export class BookmarkManager implements vscode.Disposable {
   /**
    * Get Bookmark, if any.
    * @param pathOrUri URI to bookmark.
-   * @param kind Bookmark category.
+   * @param kind Bookmark kind.
    */
   public getBookmark(pathOrUri: string | vscode.Uri, kind: BookmarkKind): Bookmark | undefined {
     const group = this.getBookmarkGroup(kind);
@@ -73,8 +79,7 @@ export class BookmarkManager implements vscode.Disposable {
 
   /**
    * Get Bookmark group.
-   * @param uri URI to bookmark.
-   * @param kind Bookmark category.
+   * @param kind Bookmark kind.
    */
   public getBookmarkGroup(kind: BookmarkKind): BookmarkGroup | undefined {
     return this.bookmarkGroups
@@ -82,8 +87,8 @@ export class BookmarkManager implements vscode.Disposable {
   }
 
   /**
-   * Get all bookmarks of {@param kind} kind.
-  * @param kind Bookmark category. Use `undefined` to get all bookmarks.
+   * Get all bookmarks, filtered by {@param kind} if present. 
+   * @param kind Bookmark kind.
    */
   public getBookmarks(kind?: BookmarkKind): Bookmark[] {
     return this.bookmarkGroups
@@ -92,9 +97,9 @@ export class BookmarkManager implements vscode.Disposable {
   }
 
   /**
- * Has Bookmarks.
- * @param kind Bookmark category. Use `undefined` to check across all.
- */
+   * Has Bookmarks, of {@param kind} if present.
+   * @param kind Bookmark kind.
+   */
   public hasBookmarks(kind?: BookmarkKind): boolean {
     return this.bookmarkGroups
       .some((group) => (!kind || group.kind === kind) && group.getBookmarkCount());
@@ -117,7 +122,7 @@ export class BookmarkManager implements vscode.Disposable {
   /**
    * Remove bookmarks.
    * @param pathOrUriOrBookmark Bookmark to remove. 
-   * @param kind Kind of bookmark to remove.  Only applies when passing a `string` or {@link Uri}.
+   * @param kind Kind of bookmark to remove.  Only applies for `string` or {@link Uri}.
    */
   public async removeBookmarkAsync(pathOrUriOrBookmark: Bookmark | string | vscode.Uri, kind?: BookmarkKind): Promise<boolean> {
     let bookmark: Bookmark | undefined;
