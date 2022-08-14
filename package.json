@@ -35,6 +35,9 @@
     "onCommand:bookmarks.removeBookmark.global",
     "onCommand:bookmarks.removeBookmark.tree",
     "onCommand:bookmarks.removeBookmark.workspace",
+    "onCommand:bookmarks.removeBookmarks.global",
+    "onCommand:bookmarks.removeBookmarks.tree",
+    "onCommand:bookmarks.removeBookmarks.workspace",
     "onView:bookmarks"
   ],
   "main": "./out/extension.js",
@@ -91,6 +94,24 @@
         "title": "Remove Bookmark (Workspace)",
         "category": "Bookmarks",
         "icon": "$(remove-close)"
+      },
+      {
+        "command": "bookmarks.removeBookmarks.global",
+        "title": "Remove All (Global)",
+        "category": "Bookmarks",
+        "icon": "$(remove-close)"
+      },
+      {
+        "command": "bookmarks.removeBookmarks.tree",
+        "title": "Remove All",
+        "category": "Bookmarks",
+        "icon": "$(remove-close)"
+      },
+      {
+        "command": "bookmarks.removeBookmarks.workspace",
+        "title": "Remove All (Workspace)",
+        "category": "Bookmarks",
+        "icon": "$(remove-close)"
       }
     ],
     "menus": {
@@ -130,6 +151,10 @@
         {
           "command": "bookmarks.removeBookmark.workspace",
           "when": "false"
+        },
+        {
+          "command": "bookmarks.removeBookmarks.tree",
+          "when": "false"
         }
       ],
       "view/item/context": [
@@ -154,6 +179,10 @@
           "command": "bookmarks.removeBookmark.tree",
           "when": "view == bookmarks && viewItem == bookmark",
           "group": "inline"
+        },
+        {
+          "command": "bookmarks.removeBookmarks.tree",
+          "when": "view == bookmarks && viewItem == bookmarkGroup"
         }
       ]
     },

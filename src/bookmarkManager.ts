@@ -157,4 +157,24 @@ export class BookmarkManager implements vscode.Disposable {
     }
     return removedBookmarks;
   }
+
+  /**
+   * Remove all bookmarks, filtered by {@param kind} if present.
+   * @param kind Bookmark kind.
+   */
+  public async removeAllBookmarksAsync(kind?: BookmarkKind): Promise<Bookmark[]> {
+    const removedBookmarks: Bookmark[] = [];
+    const groups = kind
+      ? this.bookmarkGroups.filter((group) => group.kind === kind)
+      : this.bookmarkGroups;
+
+    for (const group of groups) {
+      removedBookmarks.push(...await group.removeAllBookmarksAsync());
+    }
+
+    if (removedBookmarks.length) {
+      this.onDidRemoveBookmarkEmitter.fire(removedBookmarks);
+    }
+    return removedBookmarks;
+  }
 }

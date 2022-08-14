@@ -31,13 +31,15 @@ There is a `+` button available on every category node, `Global` and `Workspace`
 ## Removing One or All Bookmarks
 
 ### Commands
-It is currently not possible to remove bookmarks using a command.
+There are two commands available: `Bookmarks: Remove All (Global)` and `Bookmarks: Remove All (Workspace)`.
 
 #### Programatic access
-The following commads are exposed for other extensions to use: `bookmarks.removeBookmark.global` and`bookmarks.removeBookmark.workspace`. They take a single argument that is the path or URI to the file to remove.
+The following commads are exposed for other extensions to use:
+- `bookmarks.removeBookmark.global` and`bookmarks.removeBookmark.workspace`. They take a single argument that is the path or URI to the file to remove.
+- `bookmarks.removeBookmarks.global` and`bookmarks.removeBookmarks.workspace`. They take no argument and remove all bookmarks from corresponding category.
 
 ### Tree
-There is a `X` button next to each Bookmark, same as one per category and one on the tree view header that allow you to remove all bookmarks under the selected parent.
+There is a `X` button next to each Bookmark, same as one per category and one on the tree view header that allow you to remove all bookmarks under the selected parent. Additionally, there is a `Remove All` on the drop down for each of the category nodes. 
 
 ## Navigation
 

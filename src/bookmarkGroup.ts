@@ -31,7 +31,7 @@ export class BookmarkGroup {
    */
   public async addBookmarksAsync(uris: vscode.Uri[]): Promise<Bookmark[]> {
     const addedBookmarks: Bookmark[] = [];
-    const savedUris = this.memento.get<string[]>(MEMENTO_KEY_NAME, []);
+    const savedUris = this.getMemento();
     for (const uri of uris) {
       const uriStr = uri.toString();
       if (!savedUris.includes(uriStr)) {
@@ -49,7 +49,7 @@ export class BookmarkGroup {
    * Number of bookmarks in group.
    */
   public getBookmarkCount(): number {
-    return this.memento.get<string[]>(MEMENTO_KEY_NAME)?.length || 0;
+    return this.getMemento().length;
   }
 
   /**
@@ -57,7 +57,7 @@ export class BookmarkGroup {
    */
   public contains(uri: vscode.Uri): boolean {
     const uriStr = uri.toString();
-    return !!this.memento.get<string[]>(MEMENTO_KEY_NAME)?.find((s) => s === uriStr);
+    return !!this.getMemento().find((s) => s === uriStr);
   }
 
   /**
@@ -71,7 +71,7 @@ export class BookmarkGroup {
    * Get all {@link Bookmark} bookmarks.
    */
   public getBookmarks(): Bookmark[] {
-    return this.memento.get<string[]>(MEMENTO_KEY_NAME, [])
+    return this.getMemento()
       .map((s) => new Bookmark(vscode.Uri.parse(s), this.kind));
   }
 
@@ -80,9 +80,9 @@ export class BookmarkGroup {
    */
   public async removeBookmarksAsync(bookmarks: Bookmark[]): Promise<Bookmark[]> {
     const removedBookmarks: Bookmark[] = [];
-    let uris = this.memento.get<string[]>(MEMENTO_KEY_NAME, []);
+    let uris = this.getMemento();
 
-    for(const bookmark of bookmarks) {
+    for (const bookmark of bookmarks) {
       const uriStr = bookmark.uri.toString();
       const filteredUris = uris.filter((s) => s !== uriStr);
       if (filteredUris.length != uris.length) {
@@ -95,5 +95,20 @@ export class BookmarkGroup {
       await this.memento.update(MEMENTO_KEY_NAME, uris);
     }
     return removedBookmarks;
+  }
+
+  /**
+   * Remove all bookmarks.
+   */
+  public async removeAllBookmarksAsync(): Promise<Bookmark[]> {
+    const removedBookmarks: Bookmark[] = this.getBookmarks();
+    await this.memento.update(MEMENTO_KEY_NAME, undefined);
+    return removedBookmarks;
+  }
+
+  private getMemento(): string[] {
+    // When testing `removeAllBookmarksAsync`, setting to `undefined`
+    // means we get that back instead of default to [] as documented.
+    return this.memento.get<string[]>(MEMENTO_KEY_NAME, []) || [];
   }
 }

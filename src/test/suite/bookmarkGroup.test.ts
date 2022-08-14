@@ -163,6 +163,25 @@ suite(`Suite: ${basename(__filename)}`, () => {
     const result = await bookmarkGroup.removeBookmarksAsync([expectedBookmark, bookmark]);
     assert.deepStrictEqual(result, [expectedBookmark]);
   });
+
+  test('removeBookmarksAsync: empty', async () => {
+    const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento([]));
+    assert.strictEqual(bookmarkGroup.getBookmarkCount(), 0);
+
+    const result = await bookmarkGroup.removeAllBookmarksAsync();
+    assert.deepStrictEqual(result, []);
+    assert.deepStrictEqual([], bookmarkGroup.getBookmarks());
+  });
+
+  test('removeBookmarksAsync: existing', async () => {
+    const expectedGlobal = ["file://global/file1", "file://global/file2"];
+    const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento(expectedGlobal));
+    assert.strictEqual(bookmarkGroup.getBookmarkCount(), expectedGlobal.length);
+
+    const result = await bookmarkGroup.removeAllBookmarksAsync();
+    assert.strictEqual(result.length, expectedGlobal.length);
+    assert.strictEqual(bookmarkGroup.getBookmarkCount(), 0);
+  });
 });
 
 function createMockMemento(uris: string[]): Memento {
