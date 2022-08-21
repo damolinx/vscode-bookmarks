@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { Bookmark } from './bookmark';
 import { BookmarkManager } from './bookmarkManager';
 
 export class BookmarkDecoratorController implements vscode.Disposable {
@@ -51,12 +52,35 @@ export class BookmarkDecoratorController implements vscode.Disposable {
 
     this.visibilityDisposable = vscode.Disposable.from(
       decorationType,
-      vscode.window.onDidChangeVisibleTextEditors((editors) => showDecoration(editors, this.manager))
+      vscode.window.onDidChangeVisibleTextEditors((editors) => showDecorations(this.manager, editors)),
+      this.manager.onDidAddBookmark((bookmarks) => refreshDecorations(this.manager, bookmarks)),
+      this.manager.onDidRemoveBookmark((bookmarks) => refreshDecorations(this.manager, bookmarks)),
     );
-    showDecoration(vscode.window.visibleTextEditors, this.manager);
+    refreshDecorations(this.manager);
     return;
 
-    function showDecoration(editors: ReadonlyArray<vscode.TextEditor>, manager: BookmarkManager): void {
+    function refreshDecorations(manager: BookmarkManager, bookmarks?: Bookmark[]) {
+      let affectedEditors: ReadonlyArray<vscode.TextEditor>;
+      if (bookmarks) {
+        const visibleEditors = new Set<vscode.TextEditor>();
+        bookmarks.forEach((bookmark) => {
+          const visibleEditor = vscode.window.visibleTextEditors.find((editor) =>
+            bookmark.matchesUri(editor.document.uri, true));
+          if (visibleEditor) {
+            visibleEditors.add(visibleEditor);
+          }
+        });
+        affectedEditors = [...visibleEditors];
+      } else {
+        affectedEditors = vscode.window.visibleTextEditors;
+      }
+
+      if (affectedEditors.length) {
+        showDecorations(manager, affectedEditors)
+      }
+    }
+
+    function showDecorations(manager: BookmarkManager, editors: ReadonlyArray<vscode.TextEditor>): void {
       editors.forEach((editor) => {
         const options: vscode.DecorationOptions[] = manager
           .getBookmarks({ ignoreLineNumber: true, uri: editor.document.uri })
