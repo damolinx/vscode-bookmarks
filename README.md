@@ -54,5 +54,5 @@ Bookmarks are naturally expected to be rendered with markers on the correspondin
 You can also use the `Hine In-Editor Markers` and `Show In-Editor Markers` actions on the `Bookmarks` view menu.
 
 <p align="center">
-  <img width="281" alt="image" src="https://user-images.githubusercontent.com/38414719/185772342-633602ea-f439-4f0a-9ed2-c78cfd41361e.png">
+  <img width="448" alt="image" src="https://user-images.githubusercontent.com/38414719/185772569-eebf133d-adfc-4ff2-9c20-9066508a3345.png">
 <p>
