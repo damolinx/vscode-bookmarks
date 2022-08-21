@@ -49,4 +49,8 @@ There are two commands, `Bookmarks: Go to Next in Current Editor` and `Bookmarks
 #### Programatic access
 The following commads are exposed for other extensions to use: `bookmarks.navigate.next.editor` and `bookmarks.navigate.previous.editor`. They take a single optional argument that is the path or URI to the file to navigate (it will be opened if needed).
 
+## Visualization
+Bookmarks are naturally expected to be rendered with markers on the corresponding editor gutter. This is support via the `Bookmarks: Toggle In-Editor Markers` command but it is disabled by default due to [VSCode #5923](https://github.com/Microsoft/vscode/issues/5923) which causes these markers to cover the breakpoint ones (unacceptable experience).
+You can also use the `Hine In-Editor Markers` and `Show In-Editor Markers` actions on the `Bookmarks` view menu.
+
 

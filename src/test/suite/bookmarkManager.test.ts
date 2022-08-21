@@ -1,6 +1,5 @@
 import * as assert from 'assert';
 import { basename } from 'path';
-import { Uri } from 'vscode';
 
 import { Bookmark } from '../../bookmark';
 import { MEMENTO_KEY_NAME } from '../../bookmarkGroup';
@@ -26,8 +25,8 @@ suite(`Suite: ${basename(__filename)}`, () => {
   });
 
   test('hasBookmarks: existing', async () => {
-    const expectedGlobal = ["file://global/file1", "file://global/file22"];
-    const expectedWorkspace = ["file://workspace/file1", "file://workspace/file2"];
+    const expectedGlobal = ["file:///global/file1", "file:///global/file2"];
+    const expectedWorkspace = ["file:///workspace/file1", "file:///workspace/file2"];
 
     const manager = createBookmarkManager(expectedGlobal, expectedWorkspace);
     assert.strictEqual(manager.hasBookmarks('global'), true);
@@ -38,21 +37,76 @@ suite(`Suite: ${basename(__filename)}`, () => {
   test('getBookmarks: empty', async () => {
     const manager = createBookmarkManager([], []);
 
-    assert.deepStrictEqual(manager.getBookmarks('global'), []);
-    assert.deepStrictEqual(manager.getBookmarks('workspace'), []);
+    assert.deepStrictEqual(manager.getBookmarks({ kind: 'global' }), []);
+    assert.deepStrictEqual(manager.getBookmarks({ kind: 'workspace' }), []);
     assert.deepStrictEqual(manager.getBookmarks(), []);
   });
 
-  test('getBookmarks: existing', async () => {
-    const expectedGlobal = ["file://global/file1", "file://global/file22"];
-    const expectedWorkspace = ["file://workspace/file1", "file://workspace/file2"];
+  test('getBookmarks(kind): existing', async () => {
+    const expectedGlobal = ["file:///global/file1", "file:///global/file2"];
+    const expectedWorkspace = ["file:///workspace/file1", "file:///workspace/file2"];
     const manager = createBookmarkManager(expectedGlobal, expectedWorkspace);
-    const expectedGlobalBookmarks = expectedGlobal.map(s => new Bookmark(Uri.parse(s), 'global'));
-    const expectedWorkspaceBookmarks = expectedWorkspace.map(s => new Bookmark(Uri.parse(s), 'workspace'));
+    const expectedGlobalBookmarks = expectedGlobal.map(s => new Bookmark(s, 'global'));
+    const expectedWorkspaceBookmarks = expectedWorkspace.map(s => new Bookmark(s, 'workspace'));
 
-    assert.deepStrictEqual(manager.getBookmarks('global'), expectedGlobalBookmarks);
-    assert.deepStrictEqual(manager.getBookmarks('workspace'), expectedWorkspaceBookmarks);
+    assert.deepStrictEqual(manager.getBookmarks({ kind: 'global' }), expectedGlobalBookmarks);
+    assert.deepStrictEqual(manager.getBookmarks({ kind: 'workspace' }), expectedWorkspaceBookmarks);
     assert.deepStrictEqual(manager.getBookmarks(), expectedGlobalBookmarks.concat(expectedWorkspaceBookmarks));
+  });
+
+  test('getBookmarks(URI, exact): existing', async () => {
+    const targetFile = "file:///test/file1";
+    const expectedGlobal = [`${targetFile}#L111`, targetFile];
+    const expectedWorkspace = [targetFile, `${targetFile}#L222`];
+    const manager = createBookmarkManager(expectedGlobal, expectedWorkspace);
+    const expectedGlobalBookmarks = expectedGlobal.map(s => new Bookmark(s, 'global'));
+    const expectedWorkspaceBookmarks = expectedWorkspace.map(s => new Bookmark(s, 'workspace'));
+
+    assert.deepStrictEqual(
+      manager.getBookmarks({ uri: expectedGlobalBookmarks[0].uri }),
+      [expectedGlobalBookmarks[0]]);
+    assert.deepStrictEqual(
+      manager.getBookmarks({ uri: expectedWorkspaceBookmarks[1].uri }),
+      [expectedWorkspaceBookmarks[1]]);
+    assert.deepStrictEqual(
+      manager.getBookmarks({ uri: expectedGlobalBookmarks[1].uri }),
+      [expectedGlobalBookmarks[1], expectedWorkspaceBookmarks[0]]);
+  });
+
+  test('getBookmarks(URI, ignoreLineNumber: true): existing', async () => {
+    const targetFile = "file:///test/file1";
+    const expectedGlobal = [`${targetFile}#L111`, targetFile];
+    const expectedWorkspace = [targetFile, `${targetFile}#L222`];
+    const manager = createBookmarkManager(expectedGlobal, expectedWorkspace);
+    const expectedGlobalBookmarks = expectedGlobal.map(s => new Bookmark(s, 'global'));
+    const expectedWorkspaceBookmarks = expectedWorkspace.map(s => new Bookmark(s, 'workspace'));
+    const expectedBookmarks = expectedGlobalBookmarks.concat(expectedWorkspaceBookmarks);
+
+    assert.deepStrictEqual(
+      manager.getBookmarks({ uri: expectedGlobalBookmarks[0].uri, ignoreLineNumber: true }),
+      expectedBookmarks);
+    assert.deepStrictEqual(
+      manager.getBookmarks({ uri: expectedWorkspaceBookmarks[1].uri, ignoreLineNumber: true }),
+      expectedBookmarks);
+  });
+
+  test('getBookmarks(kind, URI, ignoreLineNumber): existing', async () => {
+    const targetFile = "file:///test/file1";
+    const expectedGlobal = [`${targetFile}#L111`, targetFile];
+    const expectedWorkspace = [targetFile, `${targetFile}#L222`];
+    const manager = createBookmarkManager(expectedGlobal, expectedWorkspace);
+    const expectedGlobalBookmarks = expectedGlobal.map(s => new Bookmark(s, 'global'));
+    const expectedWorkspaceBookmarks = expectedWorkspace.map(s => new Bookmark(s, 'workspace'));
+
+    assert.deepStrictEqual(
+      manager.getBookmarks({ uri: expectedGlobalBookmarks[0].uri }),
+      [expectedGlobalBookmarks[0]]);
+    assert.deepStrictEqual(
+      manager.getBookmarks({ uri: expectedGlobalBookmarks[0].uri, kind: 'workspace' }),
+      []);
+    assert.deepStrictEqual(
+      manager.getBookmarks({ uri: expectedGlobalBookmarks[1].uri, ignoreLineNumber: true, kind: 'workspace' }),
+      expectedWorkspaceBookmarks);
   });
 });
 

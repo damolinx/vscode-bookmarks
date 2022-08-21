@@ -27,7 +27,7 @@ export class BookmarkGroup {
 
   /**
    * Add bookmarks.
-   * @returns Added bookmark. 
+   * @return Added bookmark. 
    */
   public async addBookmarksAsync(uris: vscode.Uri[]): Promise<Bookmark[]> {
     const addedBookmarks: Bookmark[] = [];
@@ -53,7 +53,7 @@ export class BookmarkGroup {
   }
 
   /**
-   * Group bookmarks {@param uri}.
+   * Checks if `uri` is part of current group (exact match only).
    */
   public contains(uri: vscode.Uri): boolean {
     const uriStr = uri.toString();
@@ -61,7 +61,7 @@ export class BookmarkGroup {
   }
 
   /**
-   * Get all {@link Bookmark} bookmarks associated with {@param uri}.
+   * Get all {@link Bookmark} bookmarks associated with `uri`.
    */
   public getBookmark(uri: vscode.Uri): Bookmark | undefined {
     return this.contains(uri) ? new Bookmark(uri, this.kind) : undefined;

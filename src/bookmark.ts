@@ -47,4 +47,15 @@ export class Bookmark {
       ? `${workspaceRelativePath}:${lineFragment}`
       : workspaceRelativePath;
   }
+
+  /**
+   * Tests whether `uri` matches current bookmark.
+   * @param uri URI to test against. 
+   * @param ignoreLineNumber Ignore line-number information.
+   */
+  public matchesUri(uri: vscode.Uri, ignoreLineNumber?: boolean): boolean {
+    return uri.authority === this.uri.authority
+      && uri.path === this.uri.path
+      && (ignoreLineNumber || uri.fragment === this.uri.fragment);
+  }
 }

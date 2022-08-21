@@ -2,6 +2,13 @@ import * as vscode from "vscode";
 import { Bookmark, BookmarkKind } from "./bookmark";
 import { BookmarkGroup, createBookmarkGroup } from "./bookmarkGroup";
 
+export type BookmarkFilter = {
+  /** Match URI */
+  ignoreLineNumber?: boolean;
+  kind?: BookmarkKind;
+  uri?: vscode.Uri;
+};
+
 /**
  * Bookmark manager.
  */
@@ -34,7 +41,7 @@ export class BookmarkManager implements vscode.Disposable {
    * Add bookmark.
    * @param pathOrUri URI to bookmark.
    * @param kind Bookmark kind.
-   * @returns {@link Bookmark} instance, if one was created.
+   * @return {@link Bookmark} instance, if one was created.
    */
   public async addBookmarkAsync(pathOrUri: string | vscode.Uri, kind: BookmarkKind):
     Promise<Bookmark | undefined> {
@@ -47,7 +54,7 @@ export class BookmarkManager implements vscode.Disposable {
    * Add bookmarks.
    * @param uris URIs to bookmark. 
    * @param kind Bookmark kind.
-   * @returns {@link Bookmark} instances that were created.
+   * @return {@link Bookmark} instances that were created.
    */
   public async addBookmarksAsync(uris: vscode.Uri[], kind: BookmarkKind): Promise<Bookmark[]> {
     const bookmarkGroup: BookmarkGroup | undefined =
@@ -69,12 +76,12 @@ export class BookmarkManager implements vscode.Disposable {
    */
   public getBookmark(pathOrUri: string | vscode.Uri, kind: BookmarkKind): Bookmark | undefined {
     const group = this.getBookmarkGroup(kind);
-    let removedBookmark: Bookmark | undefined;
+    let bookmark: Bookmark | undefined;
     if (group) {
       const uri = (pathOrUri instanceof vscode.Uri) ? pathOrUri : vscode.Uri.parse(pathOrUri);
-      removedBookmark = group.getBookmark(uri);
+      bookmark = group.getBookmarks().find(bookmark => bookmark.matchesUri(uri));
     }
-    return removedBookmark;
+    return bookmark;
   }
 
   /**
@@ -87,17 +94,22 @@ export class BookmarkManager implements vscode.Disposable {
   }
 
   /**
-   * Get all bookmarks, filtered by {@param kind} if present. 
-   * @param kind Bookmark kind.
+   * Get all bookmarks.
+   * @param filter Filters to apply.
    */
-  public getBookmarks(kind?: BookmarkKind): Bookmark[] {
-    return this.bookmarkGroups
-      .filter((group) => !kind || group.kind === kind)
+  public getBookmarks(filter: BookmarkFilter = {}): Bookmark[] {
+    let bookmarks = this.bookmarkGroups
+      .filter((group) => !filter.kind || filter.kind === group.kind)
       .flatMap((group) => group.getBookmarks());
+    if (filter.uri) {
+      bookmarks = bookmarks.filter(
+        (bookmark) => bookmark.matchesUri(filter.uri!, filter.ignoreLineNumber));
+    }
+    return bookmarks;
   }
 
   /**
-   * Has Bookmarks, of {@param kind} if present.
+   * Has Bookmarks, of `kind` if present.
    * @param kind Bookmark kind.
    */
   public hasBookmarks(kind?: BookmarkKind): boolean {
@@ -159,7 +171,7 @@ export class BookmarkManager implements vscode.Disposable {
   }
 
   /**
-   * Remove all bookmarks, filtered by {@param kind} if present.
+   * Remove all bookmarks, filtered by `kind` if present.
    * @param kind Bookmark kind.
    */
   public async removeAllBookmarksAsync(kind?: BookmarkKind): Promise<Bookmark[]> {

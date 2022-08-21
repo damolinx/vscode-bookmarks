@@ -29,14 +29,12 @@
     "onCommand:bookmarks.addBookmark.global",
     "onCommand:bookmarks.addBookmark.tree",
     "onCommand:bookmarks.addBookmark.workspace",
-    "onCommand:bookmarks.copy.path",
+    "onCommand:bookmarks.decorators.toggle",
     "onCommand:bookmarks.navigate.next.editor",
     "onCommand:bookmarks.navigate.previous.editor",
     "onCommand:bookmarks.removeBookmark.global",
-    "onCommand:bookmarks.removeBookmark.tree",
     "onCommand:bookmarks.removeBookmark.workspace",
     "onCommand:bookmarks.removeBookmarks.global",
-    "onCommand:bookmarks.removeBookmarks.tree",
     "onCommand:bookmarks.removeBookmarks.workspace",
     "onView:bookmarks"
   ],
@@ -64,6 +62,24 @@
         "command": "bookmarks.copy.path",
         "title": "Copy Path",
         "icon": "$(copy)"
+      },
+      {
+        "command": "bookmarks.decorators.hide",
+        "title": "Hide In-Editor Markers",
+        "category": "Bookmarks",
+        "icon": "$(eye-closed)"
+      },
+      {
+        "command": "bookmarks.decorators.show",
+        "title": "Show In-Editor Markers",
+        "category": "Bookmarks",
+        "icon": "$(eye)"
+      },
+      {
+        "command": "bookmarks.decorators.toggle",
+        "title": "Toggle In-Editor Markers",
+        "category": "Bookmarks",
+        "icon": "$(eye)"
       },
       {
         "command": "bookmarks.navigate.next.editor",
@@ -133,6 +149,18 @@
           "when": "false"
         },
         {
+          "command": "bookmarks.decorators.hide",
+          "when": "false"
+        },
+        {
+          "command": "bookmarks.decorators.show",
+          "when": "false"
+        },
+        {
+          "command": "bookmarks.decorators.toggle",
+          "when": "editorIsOpen"
+        },
+        {
           "command": "bookmarks.navigate.next.editor",
           "when": "editorIsOpen"
         },
@@ -183,6 +211,16 @@
         {
           "command": "bookmarks.removeBookmarks.tree",
           "when": "view == bookmarks && viewItem == bookmarkGroup"
+        }
+      ],
+      "view/title": [
+        {
+          "command": "bookmarks.decorators.hide",
+          "when": "bookmarks.decorators.visible"
+        },
+        {
+          "command": "bookmarks.decorators.show",
+          "when": "!bookmarks.decorators.visible"
         }
       ]
     },
