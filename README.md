@@ -53,4 +53,6 @@ The following commads are exposed for other extensions to use: `bookmarks.naviga
 Bookmarks are naturally expected to be rendered with markers on the corresponding editor gutter. This is support via the `Bookmarks: Toggle In-Editor Markers` command but it is disabled by default due to [VSCode #5923](https://github.com/Microsoft/vscode/issues/5923) which causes these markers to cover the breakpoint ones (unacceptable experience).
 You can also use the `Hine In-Editor Markers` and `Show In-Editor Markers` actions on the `Bookmarks` view menu.
 
-
+<p align="center">
+  <img width="281" alt="image" src="https://user-images.githubusercontent.com/38414719/185772342-633602ea-f439-4f0a-9ed2-c78cfd41361e.png">
+<p>
