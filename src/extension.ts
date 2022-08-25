@@ -7,7 +7,7 @@ import { BookmarkTreeDragAndDropController } from './bookmarkTreeDragAndDropCont
 import { BookmarkTreeProvider } from './bookmarkTreeProvider';
 
 /**
- * Extension startup. 
+ * Extension startup.
  * @param context Context.
  */
 export function activate(context: vscode.ExtensionContext) {
