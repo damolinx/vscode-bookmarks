@@ -1,5 +1,7 @@
 # Change Log
 
+## 0.2.1
+- Fix: Display `Show|Hide In-Editor Markers`actions only on `Bookmarks` view title. 
 ## 0.2.0
 - Add `Bookmarks: Go to Next in Current Editor` and `Bookmarks: Go to Previous in Current Editor` commands.
 - Add `Remove All` command to context menu of `Workspace` and `Global` tree nodes.

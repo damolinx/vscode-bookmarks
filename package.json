@@ -216,11 +216,11 @@
       "view/title": [
         {
           "command": "bookmarks.decorators.hide",
-          "when": "bookmarks.decorators.visible"
+          "when": "view == bookmarks && bookmarks.decorators.visible"
         },
         {
           "command": "bookmarks.decorators.show",
-          "when": "!bookmarks.decorators.visible"
+          "when": "view == bookmarks && !bookmarks.decorators.visible"
         }
       ]
     },
