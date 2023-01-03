@@ -12,9 +12,7 @@ suite(`Suite: ${basename(__filename)}`, () => {
     restorables = [];
   });
 
-  teardown(() => {
-    restorables.forEach((r) => r.restore());
-  });
+  teardown(() => restorables.forEach((r) => r.restore()));
 
   test('hasBookmarks: empty', async () => {
     const manager = createBookmarkManager([], []);

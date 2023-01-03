@@ -11,9 +11,7 @@ suite(`Suite: ${basename(__filename)}`, () => {
     restorables = [];
   });
 
-  teardown(() => {
-    restorables.forEach((r) => r.restore());
-  });
+  teardown(() => restorables.forEach((r) => r.restore()));
 
   test('basic props', () => {
     const expectedName = 'Test Group';

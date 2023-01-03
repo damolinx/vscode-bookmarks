@@ -6,6 +6,11 @@ import * as vscode from "vscode";
 export type BookmarkKind = 'global' | 'workspace';
 
 /**
+ * Default line-number when a
+ */
+export const DEFAULT_LINE_NUMBER = 1;
+
+/**
  * Bookmark.
  */
 export class Bookmark {
@@ -15,7 +20,7 @@ export class Bookmark {
   public readonly kind: BookmarkKind;
   /**
    * Bookmark line number, if any. Lines numbers are 1-based. 
-   * If URL defines no line number, this defaults to 1.
+   * If URL defines no line number, this defaults to `DEFAULT_LINE_NUMBER`.
    */
   public readonly lineNumber: number;
   /**
@@ -40,7 +45,7 @@ export class Bookmark {
 
     const lineFragment = this.uri.fragment.substring(1);
     const lineNumber = parseInt(lineFragment);
-    this.lineNumber = Object.is(NaN, lineNumber) ? 1 : lineNumber;
+    this.lineNumber = Object.is(NaN, lineNumber) ? DEFAULT_LINE_NUMBER : lineNumber;
 
     const workspaceRelativePath = vscode.workspace.asRelativePath(this.uri);
     this.name = lineFragment
