@@ -1,5 +1,6 @@
 # Change Log
-
+## 0.3.0
+- TBD
 ## 0.2.1
 - Fix: Display `Show|Hide In-Editor Markers`actions only on `Bookmarks` view title. 
 ## 0.2.0
