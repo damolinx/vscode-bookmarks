@@ -43,14 +43,16 @@ export class Bookmark {
     this.uri = (pathOrUri instanceof vscode.Uri)
       ? pathOrUri : vscode.Uri.parse(pathOrUri);
 
-    const lineFragment = this.uri.fragment.substring(1);
-    const lineNumber = parseInt(lineFragment);
-    this.lineNumber = Object.is(NaN, lineNumber) ? DEFAULT_LINE_NUMBER : lineNumber;
-
     const workspaceRelativePath = vscode.workspace.asRelativePath(this.uri);
-    this.name = lineFragment
-      ? `${workspaceRelativePath}:${lineFragment}`
-      : workspaceRelativePath;
+    const lineFragment = this.uri.fragment.substring(1);
+
+    if (lineFragment) {
+      this.lineNumber = parseInt(lineFragment);
+      this.name = `${workspaceRelativePath}:${lineFragment}`;
+    } else {
+      this.lineNumber = DEFAULT_LINE_NUMBER;
+      this.name = workspaceRelativePath;      
+    }
   }
 
   /**
