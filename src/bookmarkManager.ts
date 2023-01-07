@@ -61,7 +61,7 @@ export class BookmarkManager implements vscode.Disposable {
       this.bookmarkGroups.find((group) => group.kind === kind);
 
     const addedBookmarks: Bookmark[] = bookmarkGroup
-      ? await bookmarkGroup.addBookmarksAsync(uris) : [];
+      ? await bookmarkGroup.addAsync(uris) : [];
 
     if (addedBookmarks.length) {
       this.onDidAddBookmarkEmitter.fire(addedBookmarks);
@@ -79,7 +79,7 @@ export class BookmarkManager implements vscode.Disposable {
     let bookmark: Bookmark | undefined;
     if (group) {
       const uri = (pathOrUri instanceof vscode.Uri) ? pathOrUri : vscode.Uri.parse(pathOrUri);
-      bookmark = group.getBookmarks().find(bookmark => bookmark.matchesUri(uri));
+      bookmark = group.getAll().find(bookmark => bookmark.matchesUri(uri));
     }
     return bookmark;
   }
@@ -100,7 +100,7 @@ export class BookmarkManager implements vscode.Disposable {
   public getBookmarks(filter: BookmarkFilter = {}): Bookmark[] {
     let bookmarks = this.bookmarkGroups
       .filter((group) => !filter.kind || filter.kind === group.kind)
-      .flatMap((group) => group.getBookmarks());
+      .flatMap((group) => group.getAll());
     if (filter.uri) {
       bookmarks = bookmarks.filter(
         (bookmark) => bookmark.matchesUri(filter.uri!, filter.ignoreLineNumber));
@@ -114,7 +114,7 @@ export class BookmarkManager implements vscode.Disposable {
    */
   public hasBookmarks(kind?: BookmarkKind): boolean {
     return this.bookmarkGroups
-      .some((group) => (!kind || group.kind === kind) && group.getBookmarkCount());
+      .some((group) => (!kind || group.kind === kind) && group.count());
   }
 
   /**
@@ -161,7 +161,7 @@ export class BookmarkManager implements vscode.Disposable {
     for (const group of this.bookmarkGroups) {
       const groupBookmarks = bookmarks.filter((bookmark) => bookmark.kind === group.kind);
       if (groupBookmarks.length) {
-        removedBookmarks.push(...await group.removeBookmarksAsync(groupBookmarks));
+        removedBookmarks.push(...await group.removeAsync(groupBookmarks));
       }
     }
     if (removedBookmarks.length) {
@@ -181,7 +181,7 @@ export class BookmarkManager implements vscode.Disposable {
       : this.bookmarkGroups;
 
     for (const group of groups) {
-      removedBookmarks.push(...await group.removeAllBookmarksAsync());
+      removedBookmarks.push(...await group.removeAllAsync());
     }
 
     if (removedBookmarks.length) {

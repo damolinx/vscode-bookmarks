@@ -2,8 +2,8 @@ import * as assert from 'assert';
 import { basename } from 'path';
 import { Memento, Uri } from 'vscode';
 import { Bookmark } from '../../bookmark';
-import { V1_MEMENTO_KEY_NAME, V1_TYPE } from '../../bookmarkDatastore';
-import { BookmarkGroup} from '../../bookmarkGroup';
+import { V1_MEMENTO_KEY_NAME, V1_STORE_TYPE } from '../../bookmarkDatastore';
+import { BookmarkGroup } from '../../bookmarkGroup';
 
 suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   let restorables: Array<{ restore: () => void }>;
@@ -22,136 +22,93 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     assert.strictEqual(bookmarkGroup.name, expectedName);
   });
 
-  test('addBookmarksAsync: empty', async () => {
-    const expectedBookmarkUri = Uri.parse("file://global/file1");
-    const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento([]));
-    const result = await bookmarkGroup.addBookmarksAsync([expectedBookmarkUri]);
-    assert.deepStrictEqual(result, [new Bookmark(expectedBookmarkUri, bookmarkGroup.kind)]);
-  });
-
-  test('addBookmarksAsync: existing', async () => {
+  test('addAsync: existing', async () => {
     const bookmarkUri = Uri.parse("file://global/file3");
     const expectedGlobal = ["file://global/file1", "file://global/file2", bookmarkUri.toString()];
     const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento(expectedGlobal));
-    const result = await bookmarkGroup.addBookmarksAsync([bookmarkUri]);
+    const result = await bookmarkGroup.addAsync([bookmarkUri]);
     assert.deepStrictEqual(result, []);
   });
 
-  test('addBookmarksAsync: non-existing', async () => {
+  test('addAsync: non-existing', async () => {
     const expectedBookmarkUri = Uri.parse("file://global/file3");
     const expectedGlobal = ["file://global/file1", "file://global/file2"];
     const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento(expectedGlobal));
-    const result = await bookmarkGroup.addBookmarksAsync([expectedBookmarkUri]);
+    const result = await bookmarkGroup.addAsync([expectedBookmarkUri]);
     assert.deepStrictEqual(result, [new Bookmark(expectedBookmarkUri, bookmarkGroup.kind)]);
   });
 
-  test('addBookmarksAsync: some existing', async () => {
-    const bookmarkUri = Uri.parse("file://global/file2");
-    const expectedBookmarkUri = Uri.parse("file://global/file4");
-    const expectedGlobal = ["file://global/file1", bookmarkUri.toString(), "file://global/file3"];
-    const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento(expectedGlobal));
-
-    const result = await bookmarkGroup.addBookmarksAsync([expectedBookmarkUri, bookmarkUri]);
-    assert.deepStrictEqual(result, [new Bookmark(expectedBookmarkUri, bookmarkGroup.kind)]);
-  });
-
-  test('contains: empty', () => {
+  test('get: empty', () => {
     const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento([]));
-    assert.strictEqual(bookmarkGroup.contains(Uri.parse("file://global/file1")), false);
+    assert.strictEqual(bookmarkGroup.get(Uri.parse("file://global/file1")), undefined);
   });
 
-  test('contains: existing', () => {
-    const expectedBookmarkUri = Uri.parse("file://global/file3");
-    const expectedGlobal = ["file://global/file1", "file://global/file2", expectedBookmarkUri.toString()];
-    const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento(expectedGlobal));
-    assert.strictEqual(bookmarkGroup.contains(expectedBookmarkUri), true);
-  });
-
-  test('contains: non-existing', () => {
-    const expectedGlobal = ["file://global/file1", "file://global/file2"];
-    const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento(expectedGlobal));
-    assert.strictEqual(bookmarkGroup.contains(Uri.parse("file://global/file3")), false);
-  });
-
-  test('getBookmark: empty', () => {
-    const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento([]));
-    assert.strictEqual(bookmarkGroup.getBookmark(Uri.parse("file://global/file1")), undefined);
-  });
-
-  test('getBookmark: existing', () => {
+  test('get: existing', () => {
     const expectedBookmarkUri = Uri.parse("file://global/file3");
     const expectedGlobal = ["file://global/file1", "file://global/file2", expectedBookmarkUri.toString()];
     const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento(expectedGlobal));
     assert.deepStrictEqual(
-      bookmarkGroup.getBookmark(expectedBookmarkUri),
+      bookmarkGroup.get(expectedBookmarkUri),
       new Bookmark(expectedBookmarkUri, bookmarkGroup.kind));
   });
 
-  test('getBookmark: non-existing', () => {
+  test('get: non-existing', () => {
     const expectedGlobal = ["file://global/file1", "file://global/file2"];
     const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento(expectedGlobal));
-    assert.strictEqual(bookmarkGroup.getBookmark(Uri.parse("file://global/file3")), undefined);
+    assert.strictEqual(bookmarkGroup.get(Uri.parse("file://global/file3")), undefined);
   });
 
-  test('getBookmark: existing', () => {
+  test('count: empty', () => {
+    const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento([]));
+    assert.strictEqual(bookmarkGroup.count(), 0);
+  });
+
+  test('count: existing', () => {
+    const expectedGlobal = ["file://global/file1", "file://global/file2"];
+    const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento(expectedGlobal));
+    assert.strictEqual(bookmarkGroup.count(), expectedGlobal.length);
+  });
+
+  test('getAll: empty', () => {
+    const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento([]));
+    assert.deepStrictEqual(bookmarkGroup.getAll(), []);
+  });
+
+  test('getAll: existing', () => {
     const expectedGlobal = ["file://global/file1", "file://global/file2"];
     const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento(expectedGlobal));
     assert.deepStrictEqual(
-      bookmarkGroup.getBookmarks(),
+      bookmarkGroup.getAll(),
       expectedGlobal.map((uri) => new Bookmark(Uri.parse(uri), bookmarkGroup.kind)));
   });
 
-  test('getBookmarkCount: empty', () => {
-    const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento([]));
-    assert.strictEqual(bookmarkGroup.getBookmarkCount(), 0);
-  });
-
-  test('getBookmarkCount: existing', () => {
-    const expectedGlobal = ["file://global/file1", "file://global/file2"];
-    const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento(expectedGlobal));
-    assert.strictEqual(bookmarkGroup.getBookmarkCount(), expectedGlobal.length);
-  });
-
-  test('getBookmarks: empty', () => {
-    const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento([]));
-    assert.deepStrictEqual(bookmarkGroup.getBookmarks(), []);
-  });
-
-  test('getBookmarks: existing', () => {
-    const expectedGlobal = ["file://global/file1", "file://global/file2"];
-    const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento(expectedGlobal));
-    assert.deepStrictEqual(
-      bookmarkGroup.getBookmarks(),
-      expectedGlobal.map((uri) => new Bookmark(Uri.parse(uri), bookmarkGroup.kind)));
-  });
-
-  test('removeBookmarksAsync: empty', async () => {
+  test('removeAsync: empty', async () => {
     const expectedBookmarkUri = Uri.parse("file://global/file1");
     const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento([]));
     const bookmark = new Bookmark(expectedBookmarkUri, bookmarkGroup.kind);
-    const result = await bookmarkGroup.removeBookmarksAsync([bookmark]);
+    const result = await bookmarkGroup.removeAsync([bookmark]);
     assert.deepStrictEqual(result, []);
   });
 
-  test('removeBookmarksAsync: existing', async () => {
+  test('removeAsync: existing', async () => {
     const expectedBookmarkUri = Uri.parse("file://global/file3");
     const expectedGlobal = ["file://global/file1", "file://global/file2", expectedBookmarkUri.toString()];
     const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento(expectedGlobal));
     const expectedBookmark = new Bookmark(expectedBookmarkUri, bookmarkGroup.kind);
-    const result = await bookmarkGroup.removeBookmarksAsync([expectedBookmark]);
+    const result = await bookmarkGroup.removeAsync([expectedBookmark]);
     assert.deepStrictEqual(result, [expectedBookmark]);
   });
 
-  test('removeBookmarksAsync: non-existing', async () => {
+  test('removeAsync: non-existing', async () => {
     const expectedBookmarkUri = Uri.parse("file://global/file3");
     const expectedGlobal = ["file://global/file1", "file://global/file2"];
     const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento(expectedGlobal));
     const bookmark = new Bookmark(expectedBookmarkUri, bookmarkGroup.kind);
-    const result = await bookmarkGroup.removeBookmarksAsync([bookmark]);
+    const result = await bookmarkGroup.removeAsync([bookmark]);
     assert.deepStrictEqual(result, []);
   });
 
-  test('removeBookmarksAsync: some existing', async () => {
+  test('removeAsync: some existing', async () => {
     const bookmarkUri = Uri.parse("file://global/file2");
     const expectedBookmarkUri = Uri.parse("file://global/file4");
     const expectedGlobal = ["file://global/file1", expectedBookmarkUri.toString(), "file://global/file3"];
@@ -159,27 +116,27 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
 
     const bookmark = new Bookmark(bookmarkUri, bookmarkGroup.kind);
     const expectedBookmark = new Bookmark(expectedBookmarkUri, bookmarkGroup.kind);
-    const result = await bookmarkGroup.removeBookmarksAsync([expectedBookmark, bookmark]);
+    const result = await bookmarkGroup.removeAsync([expectedBookmark, bookmark]);
     assert.deepStrictEqual(result, [expectedBookmark]);
   });
 
-  test('removeAllBookmarksAsync: empty', async () => {
+  test('removeAllAsync: empty', async () => {
     const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento([]));
-    assert.strictEqual(bookmarkGroup.getBookmarkCount(), 0);
+    assert.strictEqual(bookmarkGroup.count(), 0);
 
-    const result = await bookmarkGroup.removeAllBookmarksAsync();
+    const result = await bookmarkGroup.removeAllAsync();
     assert.deepStrictEqual(result, []);
-    assert.deepStrictEqual([], bookmarkGroup.getBookmarks());
+    assert.deepStrictEqual([], bookmarkGroup.getAll());
   });
 
-  test('removeAllBookmarksAsync: existing', async () => {
+  test('removeAllAsync: existing', async () => {
     const expectedGlobal = ["file://global/file1", "file://global/file2"];
     const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento(expectedGlobal));
-    assert.strictEqual(bookmarkGroup.getBookmarkCount(), expectedGlobal.length);
+    assert.strictEqual(bookmarkGroup.count(), expectedGlobal.length);
 
-    const result = await bookmarkGroup.removeAllBookmarksAsync();
+    const result = await bookmarkGroup.removeAllAsync();
     assert.strictEqual(result.length, expectedGlobal.length);
-    assert.strictEqual(bookmarkGroup.getBookmarkCount(), 0);
+    assert.strictEqual(bookmarkGroup.count(), 0);
   });
 });
 
@@ -187,7 +144,7 @@ function createMockMemento(uris: string[]): Memento {
   let savedUris = uris.reduce((m, v) => {
     m[v] = {};
     return m;
-  }, <V1_TYPE>{});
+  }, <V1_STORE_TYPE>{});
   return <any>{
     get<T>(key: string, defaultValue: T) {
       assert.strictEqual(key, V1_MEMENTO_KEY_NAME);
