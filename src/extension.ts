@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { Bookmark, BookmarkKind } from './bookmark';
+import { BookmarkDatastore } from './bookmarkDatastore';
 import { BookmarkDecoratorController } from './bookmarkDecoratorController';
 import { BookmarkGroup } from './bookmarkGroup';
 import { BookmarkManager } from './bookmarkManager';
@@ -10,7 +11,7 @@ import { BookmarkTreeProvider } from './bookmarkTreeProvider';
  * Extension startup.
  * @param context Context.
  */
-export function activate(context: vscode.ExtensionContext) {
+export async function activate(context: vscode.ExtensionContext) {
 
   const manager = new BookmarkManager(context);
   const decoratorController = new BookmarkDecoratorController(context, manager);
@@ -19,6 +20,8 @@ export function activate(context: vscode.ExtensionContext) {
     dragAndDropController: new BookmarkTreeDragAndDropController(manager),
     treeDataProvider: treeProvider,
   });
+
+  await new BookmarkDatastore(context.globalState).upgradeAsync();
 
   context.subscriptions.push(
     decoratorController,

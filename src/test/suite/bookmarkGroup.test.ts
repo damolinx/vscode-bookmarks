@@ -2,9 +2,10 @@ import * as assert from 'assert';
 import { basename } from 'path';
 import { Memento, Uri } from 'vscode';
 import { Bookmark } from '../../bookmark';
-import { BookmarkGroup, MEMENTO_KEY_NAME } from '../../bookmarkGroup';
+import { V1_MEMENTO_KEY_NAME, V1_TYPE } from '../../bookmarkDatastore';
+import { BookmarkGroup} from '../../bookmarkGroup';
 
-suite(`Suite: ${basename(__filename)}`, () => {
+suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   let restorables: Array<{ restore: () => void }>;
 
   setup(() => {
@@ -162,7 +163,7 @@ suite(`Suite: ${basename(__filename)}`, () => {
     assert.deepStrictEqual(result, [expectedBookmark]);
   });
 
-  test('removeBookmarksAsync: empty', async () => {
+  test('removeAllBookmarksAsync: empty', async () => {
     const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento([]));
     assert.strictEqual(bookmarkGroup.getBookmarkCount(), 0);
 
@@ -171,7 +172,7 @@ suite(`Suite: ${basename(__filename)}`, () => {
     assert.deepStrictEqual([], bookmarkGroup.getBookmarks());
   });
 
-  test('removeBookmarksAsync: existing', async () => {
+  test('removeAllBookmarksAsync: existing', async () => {
     const expectedGlobal = ["file://global/file1", "file://global/file2"];
     const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento(expectedGlobal));
     assert.strictEqual(bookmarkGroup.getBookmarkCount(), expectedGlobal.length);
@@ -183,14 +184,17 @@ suite(`Suite: ${basename(__filename)}`, () => {
 });
 
 function createMockMemento(uris: string[]): Memento {
-  let savedUris = uris;
+  let savedUris = uris.reduce((m, v) => {
+    m[v] = {};
+    return m;
+  }, <V1_TYPE>{});
   return <any>{
-    get<T>(key: string, _defaultValue: T) {
-      assert.strictEqual(key, MEMENTO_KEY_NAME);
-      return savedUris;
+    get<T>(key: string, defaultValue: T) {
+      assert.strictEqual(key, V1_MEMENTO_KEY_NAME);
+      return savedUris ?? defaultValue;
     },
     update(key: string, value: any): Promise<void> {
-      assert.strictEqual(key, MEMENTO_KEY_NAME);
+      assert.strictEqual(key, V1_MEMENTO_KEY_NAME);
       savedUris = value;
       return Promise.resolve();
     }

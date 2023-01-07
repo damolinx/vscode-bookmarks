@@ -2,10 +2,10 @@ import * as assert from 'assert';
 import { basename } from 'path';
 
 import { Bookmark } from '../../bookmark';
-import { MEMENTO_KEY_NAME } from '../../bookmarkGroup';
+import { V1_MEMENTO_KEY_NAME, V1_TYPE } from '../../bookmarkDatastore';
 import { BookmarkManager } from '../../bookmarkManager';
 
-suite(`Suite: ${basename(__filename)}`, () => {
+suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   let restorables: Array<{ restore: () => void }>;
 
   setup(() => {
@@ -109,17 +109,27 @@ suite(`Suite: ${basename(__filename)}`, () => {
 });
 
 function createBookmarkManager(expectedGlobal: string[], expectedWorkspace: string[]) {
+  let global = expectedGlobal.reduce((m, v) => {
+    m[v] = {};
+    return m;
+  }, <V1_TYPE>{});
+
+  let workspace = expectedWorkspace.reduce((m, v) => {
+    m[v] = {};
+    return m;
+  }, <V1_TYPE>{});
+
   return new BookmarkManager(<any>{
     globalState: <any>{
       get<T>(key: string, _defaultValue: T) {
-        assert.strictEqual(key, MEMENTO_KEY_NAME);
-        return expectedGlobal;
+        assert.strictEqual(key, V1_MEMENTO_KEY_NAME);
+        return global;
       }
     },
     workspaceState: <any>{
       get<T>(key: string, _defaultValue: T) {
-        assert.strictEqual(key, MEMENTO_KEY_NAME);
-        return expectedWorkspace;
+        assert.strictEqual(key, V1_MEMENTO_KEY_NAME);
+        return workspace;
       }
     },
   });

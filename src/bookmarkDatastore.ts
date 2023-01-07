@@ -20,6 +20,24 @@ export class BookmarkDatastore {
   }
 
   /**
+   * Return bookmark data.
+   * @param defaultValue A value to return when there is no bookmark data.
+   * @return The stored or `defaultValue` value.
+   */
+  public get(defaultValue: V1_TYPE = {}): V1_TYPE {
+    return this.memento.get(V1_MEMENTO_KEY_NAME, defaultValue);
+  }
+
+  /**
+   * Store bookmark data. The value must be JSON-stringifyable. Using
+   * `undefined` as value removes the key from storage.
+   * @param value A value. MUST not contain cyclic references.
+   */
+  public async updateAsync(value?: V1_TYPE): Promise<void> {
+    await this.memento.update(V1_MEMENTO_KEY_NAME, value);
+  }
+
+  /**
    * Upgrade data store.
    */
   public async upgradeAsync(): Promise<boolean> {

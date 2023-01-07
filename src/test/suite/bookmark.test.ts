@@ -3,7 +3,7 @@ import { basename, normalize } from 'path';
 import { Uri } from 'vscode';
 import { Bookmark, DEFAULT_LINE_NUMBER } from '../../bookmark';
 
-suite(`Suite: ${basename(__filename)}`, () => {
+suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   let restorables: Array<{ restore: () => void }>;
 
   setup(() => {

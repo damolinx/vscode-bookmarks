@@ -3,7 +3,7 @@ import { basename } from 'path';
 import { Memento } from 'vscode';
 import { BookmarkDatastore, V0_MEMENTO_KEY_NAME, V1_MEMENTO_KEY_NAME, V1_TYPE } from '../../bookmarkDatastore';
 
-suite(`Suite: ${basename(__filename)}`, () => {
+suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   let restorables: Array<{ restore: () => void }>;
 
   setup(() => {
