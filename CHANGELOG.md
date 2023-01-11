@@ -1,6 +1,7 @@
 # Change Log
 ## 0.3.0
-- TBD
+- Add `Rename…` tree action to modify the _displayed_ name of a bookmark.
+- Rename `Remove Bookmark` tree action to `Remove` as there is no ambiguity.
 ## 0.2.1
 - Fix: Display `Show|Hide In-Editor Markers`actions only on `Bookmarks` view title. 
 ## 0.2.0

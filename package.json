@@ -82,6 +82,11 @@
         "icon": "$(eye)"
       },
       {
+        "command": "bookmarks.editBookmark.rename.tree",
+        "title": "Rename…",
+        "category": "Bookmarks"
+      },
+      {
         "command": "bookmarks.navigate.next.editor",
         "title": "Go to Next in Current Editor",
         "category": "Bookmarks",
@@ -101,7 +106,7 @@
       },
       {
         "command": "bookmarks.removeBookmark.tree",
-        "title": "Remove Bookmark",
+        "title": "Remove",
         "category": "Bookmarks",
         "icon": "$(remove-close)"
       },
@@ -161,6 +166,10 @@
           "when": "editorIsOpen"
         },
         {
+          "command": "bookmarks.editBookmark.rename.tree",
+          "when": "false"
+        },
+        {
           "command": "bookmarks.navigate.next.editor",
           "when": "editorIsOpen"
         },
@@ -197,6 +206,10 @@
         },
         {
           "command": "bookmarks.copy.path",
+          "when": "view == bookmarks && viewItem == bookmark"
+        },
+        {
+          "command": "bookmarks.editBookmark.rename.tree",
           "when": "view == bookmarks && viewItem == bookmark"
         },
         {

@@ -39,7 +39,13 @@ The following commads are exposed for other extensions to use:
 - `bookmarks.removeBookmarks.global` and`bookmarks.removeBookmarks.workspace`. They take no argument and remove all bookmarks from corresponding category.
 
 ### Tree
-There is a `X` button next to each Bookmark, same as one per category and one on the tree view header that allow you to remove all bookmarks under the selected parent. Additionally, there is a `Remove All` on the drop down for each of the category nodes. 
+There is a `X` button next to each Bookmark, same as one per category and one on the tree view header that allow you to remove all bookmarks under the selected parent. Additionally, there is a `Remove All` action on the drop down for each of the category nodes.
+
+## Change Bookmark Display Name
+It is possible to change the display name of a bookmark to a custom one. This does not rename the file and it is intended to help manage bookmarks. One limitation to be aware of is that custom names including file paths would not adapt dynamically based on current workspace.
+
+### Tree
+Use the `Rename…` action on the drop down for a given bookmark to change the name 
 
 ## Navigation
 

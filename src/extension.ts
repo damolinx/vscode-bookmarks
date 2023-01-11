@@ -55,6 +55,10 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.env.clipboard.writeText(
           bookmark.uri.scheme === "file" ? bookmark.uri.fsPath : bookmark.uri.toString())),
     vscode.commands.registerCommand(
+      "bookmarks.editBookmark.rename.tree",
+      (bookmark: Bookmark): Thenable<void> =>
+        renameBookmarkAsync(manager, bookmark)),
+    vscode.commands.registerCommand(
       "bookmarks.navigate.next.editor",
       (pathOrUri?: string | vscode.Uri): Thenable<void> =>
         navigateAsync(manager, true, pathOrUri)),
@@ -192,4 +196,18 @@ async function navigateAsync(
     editor.selection = new vscode.Selection(position, position);
     editor.revealRange(new vscode.Range(position, position));
   }
+}
+
+async function renameBookmarkAsync(
+  _bookmarkManager: BookmarkManager,
+  bookmark: Bookmark): Promise<void> {
+    const name = await vscode.window.showInputBox({
+      prompt: "Change bookmark display name",
+      placeHolder: "Provide a custom name",
+      title: "Rename Bookmark",
+      value: bookmark.name,
+    });
+    if (name) {
+      vscode.window.showWarningMessage("Rename is not supported yet");
+    }
 }
