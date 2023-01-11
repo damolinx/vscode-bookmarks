@@ -24,10 +24,10 @@ export class Bookmark {
    */
   public readonly lineNumber: number;
   /**
-   * User-readable name. This value is tied to the current workspace
-   * so don't use it as Id. 
+   * Bookmark name based on `uri`. This value changes dynamically based on
+   * the current workspace so don't use it as Id.
    */
-  public readonly name: string;
+  public readonly defaultName: string;
   /**
    * Bookmark URI. Prefer this value to identify a bookmark.
    */
@@ -48,11 +48,18 @@ export class Bookmark {
 
     if (lineFragment) {
       this.lineNumber = parseInt(lineFragment);
-      this.name = `${workspaceRelativePath}:${lineFragment}`;
+      this.defaultName = `${workspaceRelativePath}:${lineFragment}`;
     } else {
       this.lineNumber = DEFAULT_LINE_NUMBER;
-      this.name = workspaceRelativePath;      
+      this.defaultName = workspaceRelativePath;
     }
+  }
+
+  /**
+   * Get the bookmark name to use in UI elements.
+   */
+  public get displayName(): string {
+    return this.defaultName;
   }
 
   /**

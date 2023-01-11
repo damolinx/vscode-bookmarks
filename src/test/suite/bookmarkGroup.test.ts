@@ -19,7 +19,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     const expectedKind = 'global';
     const bookmarkGroup = new BookmarkGroup(expectedName, expectedKind, createMockMemento([]));
     assert.strictEqual(bookmarkGroup.kind, expectedKind);
-    assert.strictEqual(bookmarkGroup.name, expectedName);
+    assert.strictEqual(bookmarkGroup.displayName, expectedName);
   });
 
   test('addAsync: existing', async () => {

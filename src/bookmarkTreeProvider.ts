@@ -51,12 +51,12 @@ export class BookmarkTreeProvider implements vscode.Disposable, vscode.TreeDataP
    * @return TreeItem representation of the bookmark.
    */
   public getTreeItem(element: Bookmark | BookmarkGroup): vscode.TreeItem | Thenable<vscode.TreeItem> {
-    const treeItem: vscode.TreeItem = new vscode.TreeItem(element.name);
+    const treeItem: vscode.TreeItem = new vscode.TreeItem(element.displayName);
     if (element instanceof Bookmark) {
       treeItem.command = {
         title: "Open",
         command: "vscode.open",
-        tooltip: `Open ${element.name}`,
+        tooltip: `Open ${element.displayName}`,
         arguments: [element.uri],
       };
       treeItem.contextValue = 'bookmark';
@@ -84,7 +84,7 @@ export class BookmarkTreeProvider implements vscode.Disposable, vscode.TreeDataP
       }
     } else {
       children = this.manager.getBookmarks({ kind: element.kind })
-        .sort((a, b) => a.name.localeCompare(b.name));
+        .sort((a, b) => a.displayName.localeCompare(b.displayName));
     }
     return children;
   }

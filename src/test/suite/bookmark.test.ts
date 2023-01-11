@@ -21,8 +21,11 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
 
     assert.strictEqual(bookmark.kind, expectedKind);
     assert.strictEqual(bookmark.lineNumber, DEFAULT_LINE_NUMBER);
-    assert.strictEqual(bookmark.name, normalize(expectedPath));
     assert.strictEqual(bookmark.uri.toString(), expectedUri);
+
+    const normalizedExpectedPath = normalize(expectedPath);
+    assert.strictEqual(bookmark.defaultName, normalizedExpectedPath);
+    assert.strictEqual(bookmark.displayName, normalizedExpectedPath);
   });
 
   test('basic props (with line-number)', () => {
@@ -36,8 +39,11 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
 
     assert.strictEqual(bookmark.kind, expectedKind);
     assert.strictEqual(bookmark.lineNumber, expectedLineNumber);
-    assert.strictEqual(bookmark.name, normalize(expectedName));
     assert.strictEqual(bookmark.uri.toString(), expectedUri);
+
+    const normalizedExpectedName = normalize(expectedName);
+    assert.strictEqual(bookmark.defaultName, normalizedExpectedName);
+    assert.strictEqual(bookmark.displayName, normalizedExpectedName);
   });
 
   test('matchesUri', () => {

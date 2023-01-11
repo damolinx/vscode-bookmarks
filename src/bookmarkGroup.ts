@@ -15,13 +15,13 @@ export function createBookmarkGroup(context: ExtensionContext, kind: BookmarkKin
 
 export class BookmarkGroup {
   private readonly datastore: BookmarkDatastore;
+  public readonly displayName: string;
   public readonly kind: BookmarkKind;
-  public readonly name: string;
 
   constructor(name: string, kind: BookmarkKind, memento: Memento) {
     this.datastore = new BookmarkDatastore(memento);
+    this.displayName = name;
     this.kind = kind;
-    this.name = name;
   }
 
   /**

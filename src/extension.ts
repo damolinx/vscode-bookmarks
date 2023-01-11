@@ -205,7 +205,7 @@ async function renameBookmarkAsync(
       prompt: "Change bookmark display name",
       placeHolder: "Provide a custom name",
       title: "Rename Bookmark",
-      value: bookmark.name,
+      value: bookmark.displayName,
     });
     if (name) {
       vscode.window.showWarningMessage("Rename is not supported yet");
