@@ -15,6 +15,7 @@ export class BookmarkTreeProvider implements vscode.Disposable, vscode.TreeDataP
   constructor(manager: BookmarkManager) {
     this.manager = manager;
     this.manager.onDidAddBookmark(() => this.refresh());
+    this.manager.onDidChangeBookmark(() => this.refresh());
     this.manager.onDidRemoveBookmark(() => this.refresh());
     this.onDidChangeTreeDataEmitter = new vscode.EventEmitter<void | Bookmark>();
   }

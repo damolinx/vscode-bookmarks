@@ -199,7 +199,7 @@ async function navigateAsync(
 }
 
 async function renameBookmarkAsync(
-  _bookmarkManager: BookmarkManager,
+  bookmarkManager: BookmarkManager,
   bookmark: Bookmark): Promise<void> {
     const name = await vscode.window.showInputBox({
       prompt: "Change bookmark display name",
@@ -208,6 +208,7 @@ async function renameBookmarkAsync(
       value: bookmark.displayName,
     });
     if (name) {
+      await bookmarkManager.renameBookmarkAsync(bookmark, name);
       vscode.window.showWarningMessage("Rename is not supported yet");
     }
 }

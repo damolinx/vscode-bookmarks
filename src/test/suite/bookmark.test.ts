@@ -46,17 +46,35 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     assert.strictEqual(bookmark.displayName, normalizedExpectedName);
   });
 
+  test('basic props (displayName)', () => {
+    const expectedLineNumber = 6;
+    const expectedPath = '/workspace/test.txt';
+    const expectedUri = `file://${expectedPath}#L${expectedLineNumber}`;
+    const expectedName = `${expectedPath}:${expectedLineNumber}`;
+    const expectedDisplayName = 'Custom Name';
+
+    const bookmark = new Bookmark(expectedUri, 'global');
+    bookmark.displayName = expectedDisplayName;
+
+    const normalizedExpectedName = normalize(expectedName);
+    assert.strictEqual(bookmark.displayName, expectedDisplayName);
+    assert.strictEqual(bookmark.defaultName, normalizedExpectedName);
+
+    bookmark.displayName = undefined;
+    assert.strictEqual(bookmark.displayName, bookmark.defaultName);
+  });
+
   test('matchesUri', () => {
     const expectedLineNumber = 6;
     const expectedPath = '/workspace/test.txt';
     const expectedUriWithoutLineNumber = Uri.file(`file://${expectedPath}`);
-    const expectedUri = expectedUriWithoutLineNumber.with({fragment: `L${expectedLineNumber}`});
-  
+    const expectedUri = expectedUriWithoutLineNumber.with({ fragment: `L${expectedLineNumber}` });
+
     const bookmark = new Bookmark(expectedUri, 'global');
     assert.ok(bookmark.matchesUri(expectedUri));
     assert.ok(bookmark.matchesUri(expectedUri, true));
 
-    const differentLineUri = expectedUriWithoutLineNumber.with({fragment: `L${expectedLineNumber + 10}`});
+    const differentLineUri = expectedUriWithoutLineNumber.with({ fragment: `L${expectedLineNumber + 10}` });
     assert.ok(!bookmark.matchesUri(differentLineUri));
     assert.ok(bookmark.matchesUri(differentLineUri, true));
   });

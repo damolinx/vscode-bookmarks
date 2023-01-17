@@ -1,4 +1,7 @@
 import * as vscode from "vscode";
+import { V1_BOOKMARK_METADATA } from "./bookmarkDatastore";
+
+const BOOKMARK_NAME_METADATA_KEY = "displayName";
 
 /**
  * Supported Bookmark kinds.
@@ -14,20 +17,14 @@ export const DEFAULT_LINE_NUMBER = 1;
  * Bookmark.
  */
 export class Bookmark {
+  private _defaultName?: string;
+  private _lineNumber?: number;
+  private _metadata: V1_BOOKMARK_METADATA;
+
   /**
    * Bookmark kind.
    */
   public readonly kind: BookmarkKind;
-  /**
-   * Bookmark line number, if any. Lines numbers are 1-based. 
-   * If URL defines no line number, this defaults to `DEFAULT_LINE_NUMBER`.
-   */
-  public readonly lineNumber: number;
-  /**
-   * Bookmark name based on `uri`. This value changes dynamically based on
-   * the current workspace so don't use it as Id.
-   */
-  public readonly defaultName: string;
   /**
    * Bookmark URI. Prefer this value to identify a bookmark.
    */
@@ -37,29 +34,58 @@ export class Bookmark {
    * Constructor.
    * @param pathOrUri URI to bookmark.
    * @param kind Bookmark kind.
+   * @param metadata Additional data.
    */
-  constructor(pathOrUri: string | vscode.Uri, kind: BookmarkKind) {
+  constructor(pathOrUri: string | vscode.Uri, kind: BookmarkKind, metadata: V1_BOOKMARK_METADATA = {}) {
     this.kind = kind;
     this.uri = (pathOrUri instanceof vscode.Uri)
       ? pathOrUri : vscode.Uri.parse(pathOrUri);
 
-    const workspaceRelativePath = vscode.workspace.asRelativePath(this.uri);
     const lineFragment = this.uri.fragment.substring(1);
-
     if (lineFragment) {
-      this.lineNumber = parseInt(lineFragment);
-      this.defaultName = `${workspaceRelativePath}:${lineFragment}`;
-    } else {
-      this.lineNumber = DEFAULT_LINE_NUMBER;
-      this.defaultName = workspaceRelativePath;
+      this._lineNumber = parseInt(lineFragment);
     }
+    this._metadata = metadata;
+  }
+
+  /**
+   * Bookmark name based on `uri`. This value changes based on
+   * the current workspace so don't use as Id.
+   */
+  public get defaultName(): string {
+    if (!this._defaultName) {
+      const workspaceRelativePath = vscode.workspace.asRelativePath(this.uri);
+      this._defaultName = (this._lineNumber)
+        ? `${workspaceRelativePath}:${this.lineNumber}`
+        : workspaceRelativePath;
+    }
+    return this._defaultName;
   }
 
   /**
    * Get the bookmark name to use in UI elements.
    */
   public get displayName(): string {
-    return this.defaultName;
+    return this._metadata[BOOKMARK_NAME_METADATA_KEY] || this.defaultName;
+  }
+
+  /**
+   * Set the bookmark name to use in UI elements.
+   */
+  public set displayName(value: string | undefined) {
+    if (value) {
+      this._metadata[BOOKMARK_NAME_METADATA_KEY] = value;
+    } else {
+      delete this._metadata[BOOKMARK_NAME_METADATA_KEY];
+    }
+  }
+
+  /**
+   * Bookmark line number, if any. Lines numbers are 1-based. 
+   * If URL defines no line number, this defaults to `DEFAULT_LINE_NUMBER`.
+   */
+  public get lineNumber(): number {
+    return this._lineNumber ?? DEFAULT_LINE_NUMBER;
   }
 
   /**

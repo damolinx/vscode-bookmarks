@@ -15,6 +15,7 @@ export type BookmarkFilter = {
 export class BookmarkManager implements vscode.Disposable {
   private readonly bookmarkGroups: ReadonlyArray<BookmarkGroup>;
   private readonly onDidAddBookmarkEmitter: vscode.EventEmitter<Bookmark[] | undefined>;
+  private readonly onDidChangeBookmarkEmitter: vscode.EventEmitter<Bookmark[] | undefined>;
   private readonly onDidRemoveBookmarkEmitter: vscode.EventEmitter<Bookmark[] | undefined>;
 
   /**
@@ -26,6 +27,7 @@ export class BookmarkManager implements vscode.Disposable {
       createBookmarkGroup(context, 'global'),
       createBookmarkGroup(context, 'workspace')];
     this.onDidAddBookmarkEmitter = new vscode.EventEmitter<Bookmark[] | undefined>();
+    this.onDidChangeBookmarkEmitter = new vscode.EventEmitter<Bookmark[] | undefined>();
     this.onDidRemoveBookmarkEmitter = new vscode.EventEmitter<Bookmark[] | undefined>();
   }
 
@@ -34,6 +36,7 @@ export class BookmarkManager implements vscode.Disposable {
    */
   public dispose() {
     this.onDidAddBookmarkEmitter.dispose();
+    this.onDidChangeBookmarkEmitter.dispose();
     this.onDidRemoveBookmarkEmitter.dispose();
   }
 
@@ -125,11 +128,19 @@ export class BookmarkManager implements vscode.Disposable {
   }
 
   /**
+* Event raised when bookmarks are changed.
+*/
+  public get onDidChangeBookmark(): vscode.Event<Bookmark[] | undefined> {
+    return this.onDidChangeBookmarkEmitter.event;
+  }
+
+  /**
    * Event raised when bookmarks are removed.
    */
   public get onDidRemoveBookmark(): vscode.Event<Bookmark[] | undefined> {
     return this.onDidRemoveBookmarkEmitter.event;
   }
+
 
   /**
    * Remove bookmarks.
@@ -188,5 +199,22 @@ export class BookmarkManager implements vscode.Disposable {
       this.onDidRemoveBookmarkEmitter.fire(removedBookmarks);
     }
     return removedBookmarks;
+  }
+
+  /**
+   * Rename a bookmark.
+   * @param bookmark Bookmark to rename.
+   * @param name Bookmark display name. Use `undefined` to remove a previously defined name.
+   */
+  public async renameBookmarkAsync(bookmark: Bookmark, name?: string): Promise<void> {
+    if (bookmark.displayName === name) {
+      return; // Nothing to do
+    }
+    const bookmarkGroup: BookmarkGroup | undefined =
+      this.bookmarkGroups.find((group) => group.kind === bookmark.kind);
+    if (bookmarkGroup) {
+      await bookmarkGroup.updateAsync(bookmark);
+      this.onDidChangeBookmarkEmitter.fire([bookmark]);
+    }
   }
 }

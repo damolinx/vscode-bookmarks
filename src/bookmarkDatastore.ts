@@ -21,7 +21,7 @@ export class BookmarkDatastore {
   }
 
   /**
-   * Remove bookmarks.
+   * Add bookmarks.
    */
   public async addAsync(...entries: { uri: Uri, metadata: V1_BOOKMARK_METADATA }[]): Promise<Uri[]> {
     const bookmarks = this.getAll();

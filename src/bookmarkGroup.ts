@@ -29,7 +29,7 @@ export class BookmarkGroup {
    * @return Added bookmarks,
    */
   public async addAsync(uris: Uri[]): Promise<Bookmark[]> {
-    const addedUris = this.datastore.addAsync(
+    const addedUris = await this.datastore.addAsync(
       ...uris.map((uri) => ({ uri, metadata: {} }))
     );
     const addedBookmarks = (await addedUris).map(
@@ -79,5 +79,14 @@ export class BookmarkGroup {
     const removedBookmarks: Bookmark[] = this.getAll();
     await this.datastore.updateAsync();
     return removedBookmarks;
+  }
+
+  /**
+   * Update bookmark.
+   */
+  public async updateAsync(bookmark: Bookmark): Promise<void> {
+     await this.datastore.addAsync(
+      {uri: bookmark.uri, metadata: {}} // TODO: Add metadata
+    );
   }
 }
