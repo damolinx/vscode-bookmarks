@@ -36,7 +36,7 @@ export class BookmarkDatastore {
     }
 
     if (addedUris.length) {
-      await this.updateAsync(bookmarks);
+      await this.memento.update(V1_MEMENTO_KEY_NAME, bookmarks);
     }
     return addedUris;
   }
@@ -92,18 +92,32 @@ export class BookmarkDatastore {
     }
 
     if (removedUris.length) {
-      await this.updateAsync(bookmarks);
+      await this.memento.update(V1_MEMENTO_KEY_NAME, bookmarks);
     }
     return removedUris;
   }
 
   /**
-   * Store bookmark data. The value must be JSON-stringifyable. Using
-   * `undefined` as value removes the key from storage.
-   * @param value A value. MUST not contain cyclic references.
+   * Remove all bookmarks.
    */
-  public async updateAsync(value?: V1_STORE_TYPE): Promise<void> {
-    await this.memento.update(V1_MEMENTO_KEY_NAME, value);
+  public async removeAllAsync(): Promise<void> {
+    await this.memento.update(V1_MEMENTO_KEY_NAME, undefined);
+  }
+
+  /**
+   * Updates bookmarks.
+   */
+  public async updateAsync(...entries: { uri: Uri, metadata: V1_BOOKMARK_METADATA }[]): Promise<Uri[]> {
+    const bookmarks = this.getAll();
+    const updatedUris: Uri[] = [];
+
+    for (const { uri, metadata } of entries) {
+      bookmarks[uri.toString()] = metadata;
+      updatedUris.push(uri);
+    }
+
+    await this.memento.update(V1_MEMENTO_KEY_NAME, bookmarks);
+    return updatedUris;
   }
 
   /**

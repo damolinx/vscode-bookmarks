@@ -45,11 +45,11 @@ export class BookmarkGroup {
   }
 
   /**
-   * Get all {@link Bookmark} bookmarks associated with `uri`.
+   * Get {@link Bookmark} associated with `uri`.
    */
   public get(uri: Uri): Bookmark | undefined {
     const bookmarkData = this.datastore.get(uri); //TODO: use metadata
-    return bookmarkData ? new Bookmark(uri, this.kind) : undefined;
+    return bookmarkData ? new Bookmark(uri, this.kind, bookmarkData) : undefined;
   }
 
   /**
@@ -57,9 +57,8 @@ export class BookmarkGroup {
    */
   public getAll(): Bookmark[] {
     const bookmarks = this.datastore.getAll();
-    //TODO: use metadata
     return Object.entries(bookmarks)
-      .map(([uri, _bookmarkData]) => new Bookmark(Uri.parse(uri), this.kind));
+      .map(([uri, metadata]) => new Bookmark(Uri.parse(uri), this.kind, metadata));
   }
 
   /**
@@ -77,7 +76,7 @@ export class BookmarkGroup {
    */
   public async removeAllAsync(): Promise<Bookmark[]> {
     const removedBookmarks: Bookmark[] = this.getAll();
-    await this.datastore.updateAsync();
+    await this.datastore.removeAllAsync();
     return removedBookmarks;
   }
 
@@ -85,8 +84,8 @@ export class BookmarkGroup {
    * Update bookmark.
    */
   public async updateAsync(bookmark: Bookmark): Promise<void> {
-     await this.datastore.addAsync(
-      {uri: bookmark.uri, metadata: {}} // TODO: Add metadata
+    await this.datastore.updateAsync(
+      { uri: bookmark.uri, metadata: bookmark.metadata }
     );
   }
 }

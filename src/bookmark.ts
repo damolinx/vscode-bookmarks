@@ -19,12 +19,15 @@ export const DEFAULT_LINE_NUMBER = 1;
 export class Bookmark {
   private _defaultName?: string;
   private _lineNumber?: number;
-  private _metadata: V1_BOOKMARK_METADATA;
 
   /**
    * Bookmark kind.
    */
   public readonly kind: BookmarkKind;
+  /**
+   * Metadata.
+   */
+  public readonly metadata: V1_BOOKMARK_METADATA;
   /**
    * Bookmark URI. Prefer this value to identify a bookmark.
    */
@@ -38,6 +41,7 @@ export class Bookmark {
    */
   constructor(pathOrUri: string | vscode.Uri, kind: BookmarkKind, metadata: V1_BOOKMARK_METADATA = {}) {
     this.kind = kind;
+    this.metadata = metadata;
     this.uri = (pathOrUri instanceof vscode.Uri)
       ? pathOrUri : vscode.Uri.parse(pathOrUri);
 
@@ -45,7 +49,6 @@ export class Bookmark {
     if (lineFragment) {
       this._lineNumber = parseInt(lineFragment);
     }
-    this._metadata = metadata;
   }
 
   /**
@@ -66,7 +69,7 @@ export class Bookmark {
    * Get the bookmark name to use in UI elements.
    */
   public get displayName(): string {
-    return this._metadata[BOOKMARK_NAME_METADATA_KEY] || this.defaultName;
+    return this.metadata[BOOKMARK_NAME_METADATA_KEY] || this.defaultName;
   }
 
   /**
@@ -74,9 +77,9 @@ export class Bookmark {
    */
   public set displayName(value: string | undefined) {
     if (value) {
-      this._metadata[BOOKMARK_NAME_METADATA_KEY] = value;
+      this.metadata[BOOKMARK_NAME_METADATA_KEY] = value;
     } else {
-      delete this._metadata[BOOKMARK_NAME_METADATA_KEY];
+      delete this.metadata[BOOKMARK_NAME_METADATA_KEY];
     }
   }
 

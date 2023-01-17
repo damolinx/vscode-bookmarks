@@ -213,6 +213,7 @@ export class BookmarkManager implements vscode.Disposable {
     const bookmarkGroup: BookmarkGroup | undefined =
       this.bookmarkGroups.find((group) => group.kind === bookmark.kind);
     if (bookmarkGroup) {
+      bookmark.displayName = name;
       await bookmarkGroup.updateAsync(bookmark);
       this.onDidChangeBookmarkEmitter.fire([bookmark]);
     }
