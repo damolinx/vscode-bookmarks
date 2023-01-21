@@ -9,7 +9,7 @@ const BOOKMARK_NAME_METADATA_KEY = "displayName";
 export type BookmarkKind = 'global' | 'workspace';
 
 /**
- * Default line-number when a
+ * Default line-number.
  */
 export const DEFAULT_LINE_NUMBER = 1;
 
@@ -84,7 +84,7 @@ export class Bookmark {
   }
 
   /**
-   * Bookmark line number, if any. Lines numbers are 1-based. 
+   * Bookmark line number, if any. Lines numbers are 1-based.
    * If URL defines no line number, this defaults to `DEFAULT_LINE_NUMBER`.
    */
   public get lineNumber(): number {

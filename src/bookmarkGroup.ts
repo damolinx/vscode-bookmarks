@@ -26,7 +26,8 @@ export class BookmarkGroup {
 
   /**
    * Add bookmarks.
-   * @return Added bookmarks,
+   * @param uris URIs to bookmark.
+   * @return Added bookmarks.
    */
   public async addAsync(uris: vscode.Uri[]): Promise<Bookmark[]> {
     const addedUris = await this.datastore.addAsync(
@@ -45,7 +46,7 @@ export class BookmarkGroup {
   }
 
   /**
-   * Get {@link Bookmark} associated with `uri`.
+   * Get bookmark associated with `uri`.
    */
   public get(uri: vscode.Uri): Bookmark | undefined {
     const bookmarkData = this.datastore.get(uri);
@@ -53,7 +54,7 @@ export class BookmarkGroup {
   }
 
   /**
-   * Get all {@link Bookmark} bookmarks.
+   * Get all bookmarks.
    */
   public getAll(): Bookmark[] {
     const bookmarks = this.datastore.getAll();

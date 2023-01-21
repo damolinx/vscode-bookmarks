@@ -128,8 +128,8 @@ export class BookmarkManager implements vscode.Disposable {
   }
 
   /**
-* Event raised when bookmarks are changed.
-*/
+   * Event raised when bookmarks are changed.
+   */
   public get onDidChangeBookmark(): vscode.Event<Bookmark[] | undefined> {
     return this.onDidChangeBookmarkEmitter.event;
   }
@@ -141,10 +141,9 @@ export class BookmarkManager implements vscode.Disposable {
     return this.onDidRemoveBookmarkEmitter.event;
   }
 
-
   /**
    * Remove bookmarks.
-   * @param pathOrUriOrBookmark Bookmark to remove. 
+   * @param pathOrUriOrBookmark Bookmark to remove.
    * @param kind Kind of bookmark to remove.  Only applies for `string` or {@link Uri}.
    */
   public async removeBookmarkAsync(pathOrUriOrBookmark: Bookmark | string | vscode.Uri, kind?: BookmarkKind): Promise<boolean> {
@@ -165,7 +164,7 @@ export class BookmarkManager implements vscode.Disposable {
 
   /**
    * Remove bookmarks.
-   * @param bookmarks Bookmarks to remove. 
+   * @param bookmarks Bookmarks to remove.
    */
   public async removeBookmarksAsync(bookmarks: Bookmark[]): Promise<Bookmark[]> {
     const removedBookmarks: Bookmark[] = [];

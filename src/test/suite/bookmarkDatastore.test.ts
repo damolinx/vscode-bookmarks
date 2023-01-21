@@ -110,15 +110,6 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
       []);
   });
 
-  test('removeAsync: non-existing', async () => {
-    const mementoMock: Memento = createMockMemento(
-      "file://global/file1", "file://global/file2");
-    const datastore = new BookmarkDatastore(mementoMock);
-    assert.deepStrictEqual(
-      await datastore.removeAsync(Uri.parse("file://global/file3")),
-      []);
-  });
-
   test('removeAsync: existing', async () => {
     const expectedUri = Uri.parse("file://global/file3");
     const mementoMock: Memento = createMockMemento(

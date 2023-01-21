@@ -93,9 +93,9 @@ export class BookmarkDecoratorController implements vscode.Disposable {
   }
 
   /**
- * Toggle visibility of Bookmark markers.
- * @return Resulting visibility.
- */
+   * Toggle visibility of Bookmark markers.
+   * @return Resulting visibility.
+   */
   public async toogleVisibilityAsync(): Promise<boolean> {
     if (this.visible) {
       this.hideDecorators();
@@ -107,8 +107,8 @@ export class BookmarkDecoratorController implements vscode.Disposable {
   }
 
   /**
- * Decorations are being displayed.
- */
+   * Decorations are being displayed.
+   */
   public get visible(): boolean {
     return !!this.visibilityDisposable;
   }
