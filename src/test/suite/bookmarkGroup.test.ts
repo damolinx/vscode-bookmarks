@@ -79,7 +79,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento(expectedGlobal));
     assert.deepStrictEqual(
       bookmarkGroup.getAll(),
-      expectedGlobal.map((uri) => new Bookmark(Uri.parse(uri), bookmarkGroup.kind)));
+      expectedGlobal.map((uri) => new Bookmark(uri, bookmarkGroup.kind)));
   });
 
   test('removeAsync: empty', async () => {

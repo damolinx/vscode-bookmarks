@@ -58,7 +58,7 @@ export class BookmarkGroup {
   public getAll(): Bookmark[] {
     const bookmarks = this.datastore.getAll();
     return Object.entries(bookmarks)
-      .map(([uri, metadata]) => new Bookmark(vscode.Uri.parse(uri), this.kind, metadata));
+      .map(([uri, metadata]) => new Bookmark(uri, this.kind, metadata));
   }
 
   /**
