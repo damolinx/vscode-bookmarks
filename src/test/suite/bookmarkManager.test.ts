@@ -109,12 +109,12 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
 });
 
 function createBookmarkManager(expectedGlobal: string[], expectedWorkspace: string[]) {
-  let global = expectedGlobal.reduce((m, v) => {
+  const global = expectedGlobal.reduce((m, v) => {
     m[v] = {};
     return m;
   }, <V1_STORE_TYPE>{});
 
-  let workspace = expectedWorkspace.reduce((m, v) => {
+  const workspace = expectedWorkspace.reduce((m, v) => {
     m[v] = {};
     return m;
   }, <V1_STORE_TYPE>{});

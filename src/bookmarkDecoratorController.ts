@@ -76,7 +76,7 @@ export class BookmarkDecoratorController implements vscode.Disposable {
       }
 
       if (affectedEditors.length) {
-        showDecorations(manager, affectedEditors)
+        showDecorations(manager, affectedEditors);
       }
     }
 
