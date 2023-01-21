@@ -1,8 +1,8 @@
-import { ExtensionContext, Memento, Uri } from 'vscode';
+import * as vscode from 'vscode';
 import { Bookmark, BookmarkKind } from './bookmark';
 import { BookmarkDatastore } from './bookmarkDatastore';
 
-export function createBookmarkGroup(context: ExtensionContext, kind: BookmarkKind): BookmarkGroup {
+export function createBookmarkGroup(context: vscode.ExtensionContext, kind: BookmarkKind): BookmarkGroup {
   switch (kind) {
     case 'global':
       return new BookmarkGroup('Global', kind, context.globalState);
@@ -18,7 +18,7 @@ export class BookmarkGroup {
   public readonly displayName: string;
   public readonly kind: BookmarkKind;
 
-  constructor(name: string, kind: BookmarkKind, memento: Memento) {
+  constructor(name: string, kind: BookmarkKind, memento: vscode.Memento) {
     this.datastore = new BookmarkDatastore(memento);
     this.displayName = name;
     this.kind = kind;
@@ -28,7 +28,7 @@ export class BookmarkGroup {
    * Add bookmarks.
    * @return Added bookmarks,
    */
-  public async addAsync(uris: Uri[]): Promise<Bookmark[]> {
+  public async addAsync(uris: vscode.Uri[]): Promise<Bookmark[]> {
     const addedUris = await this.datastore.addAsync(
       ...uris.map((uri) => ({ uri, metadata: {} }))
     );
@@ -47,7 +47,7 @@ export class BookmarkGroup {
   /**
    * Get {@link Bookmark} associated with `uri`.
    */
-  public get(uri: Uri): Bookmark | undefined {
+  public get(uri: vscode.Uri): Bookmark | undefined {
     const bookmarkData = this.datastore.get(uri); //TODO: use metadata
     return bookmarkData ? new Bookmark(uri, this.kind, bookmarkData) : undefined;
   }
@@ -58,7 +58,7 @@ export class BookmarkGroup {
   public getAll(): Bookmark[] {
     const bookmarks = this.datastore.getAll();
     return Object.entries(bookmarks)
-      .map(([uri, metadata]) => new Bookmark(Uri.parse(uri), this.kind, metadata));
+      .map(([uri, metadata]) => new Bookmark(vscode.Uri.parse(uri), this.kind, metadata));
   }
 
   /**

@@ -1,4 +1,4 @@
-import { Memento, Uri } from 'vscode';
+import * as vscode from 'vscode';
 
 /**
  * Data format used up to v0.2.1.
@@ -14,18 +14,18 @@ export type V1_BOOKMARK_METADATA = { [key: string]: string };
 export type V1_STORE_TYPE = { [uri: string]: V1_BOOKMARK_METADATA };
 
 export class BookmarkDatastore {
-  private readonly memento: Memento;
+  private readonly memento: vscode.Memento;
 
-  constructor(memento: Memento) {
+  constructor(memento: vscode.Memento) {
     this.memento = memento;
   }
 
   /**
    * Add bookmarks.
    */
-  public async addAsync(...entries: { uri: Uri, metadata: V1_BOOKMARK_METADATA }[]): Promise<Uri[]> {
+  public async addAsync(...entries: { uri: vscode.Uri, metadata: V1_BOOKMARK_METADATA }[]): Promise<vscode.Uri[]> {
     const bookmarks = this.getAll();
-    const addedUris: Uri[] = [];
+    const addedUris: vscode.Uri[] = [];
 
     for (const { uri, metadata } of entries) {
       const uriStr = uri.toString();
@@ -44,7 +44,7 @@ export class BookmarkDatastore {
   /**
    * Checks if `uri` is bookmarked.
    */
-  public contains(uri: Uri): boolean {
+  public contains(uri: vscode.Uri): boolean {
     const bookmarks = this.getAll();
     return (uri.toString() in bookmarks);
   }
@@ -62,7 +62,7 @@ export class BookmarkDatastore {
    * @param uri URI to search for (line data is significant).
    * @return Bookmark metadata if URL is present.
    */
-  public get(uri: Uri): V1_BOOKMARK_METADATA | undefined {
+  public get(uri: vscode.Uri): V1_BOOKMARK_METADATA | undefined {
     const bookmarks = this.getAll();
     return bookmarks[uri.toString()];
   }
@@ -79,9 +79,9 @@ export class BookmarkDatastore {
   /**
    * Remove bookmarks.
    */
-  public async removeAsync(...uris: Uri[]): Promise<Uri[]> {
+  public async removeAsync(...uris: vscode.Uri[]): Promise<vscode.Uri[]> {
     const bookmarks = this.getAll();
-    const removedUris: Uri[] = [];
+    const removedUris: vscode.Uri[] = [];
 
     for (const uri of uris) {
       const uriStr = uri.toString();
@@ -107,9 +107,9 @@ export class BookmarkDatastore {
   /**
    * Updates bookmarks.
    */
-  public async updateAsync(...entries: { uri: Uri, metadata: V1_BOOKMARK_METADATA }[]): Promise<Uri[]> {
+  public async updateAsync(...entries: { uri: vscode.Uri, metadata: V1_BOOKMARK_METADATA }[]): Promise<vscode.Uri[]> {
     const bookmarks = this.getAll();
-    const updatedUris: Uri[] = [];
+    const updatedUris: vscode.Uri[] = [];
 
     for (const { uri, metadata } of entries) {
       bookmarks[uri.toString()] = metadata;
