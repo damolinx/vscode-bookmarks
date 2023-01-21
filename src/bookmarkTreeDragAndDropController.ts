@@ -32,12 +32,7 @@ export class BookmarkTreeDragAndDropController implements vscode.TreeDragAndDrop
       const draggedUriList = await dataTransfer.get('text/uri-list')?.asString();
       if (draggedUriList) {
         droppedUris = draggedUriList.split('\n').map((uriStr) => {
-          let uri = vscode.Uri.parse(uriStr);
-          if (uri.scheme === 'vscode-remote') {
-            // TODO: This fixes the URIs received from WSL, but it might not
-            // be correct for all scenarios (e.g. multiple distros).
-            uri = vscode.Uri.file(uri.fsPath);
-          }
+          const uri = vscode.Uri.parse(uriStr);
           return uri;
         });
       }
