@@ -53,7 +53,7 @@ export async function activate(context: vscode.ExtensionContext) {
       "bookmarks.copy.path",
       (bookmark: Bookmark): Thenable<void> =>
         vscode.env.clipboard.writeText(
-          bookmark.uri.scheme === "file" ? bookmark.uri.fsPath : bookmark.uri.toString())),
+          bookmark.uri.scheme === "file" ? bookmark.uri.fsPath : bookmark.uri.path)),
     vscode.commands.registerCommand(
       "bookmarks.editBookmark.rename.tree",
       (bookmark: Bookmark): Thenable<void> =>
