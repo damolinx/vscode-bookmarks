@@ -48,7 +48,7 @@ export class BookmarkGroup {
    * Get {@link Bookmark} associated with `uri`.
    */
   public get(uri: vscode.Uri): Bookmark | undefined {
-    const bookmarkData = this.datastore.get(uri); //TODO: use metadata
+    const bookmarkData = this.datastore.get(uri);
     return bookmarkData ? new Bookmark(uri, this.kind, bookmarkData) : undefined;
   }
 

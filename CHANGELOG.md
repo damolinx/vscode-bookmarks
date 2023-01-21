@@ -1,6 +1,8 @@
 # Change Log
-## 0.3.1
+## 0.3.2
 - TBD
+## 0.3.1
+- Fixes around `vscode-remote` URLs handling.
 ## 0.3.0
 - Add `Rename…` tree action to modify the _displayed_ name of a bookmark.
 - Rename `Remove Bookmark` tree action to `Remove` as there is no ambiguity.
