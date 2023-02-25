@@ -70,8 +70,13 @@
         "icon": "$(eye)"
       },
       {
-        "command": "bookmarks.editBookmark.rename.tree",
-        "title": "Rename…",
+        "command": "bookmarks.editBookmark.displayName.change.tree",
+        "title": "Change…",
+        "category": "Bookmarks"
+      },
+      {
+        "command": "bookmarks.editBookmark.displayName.reset.tree",
+        "title": "Reset",
         "category": "Bookmarks"
       },
       {
@@ -124,6 +129,14 @@
       }
     ],
     "menus": {
+      "bookmark.editBookmark.displayName": [
+        {
+          "command": "bookmarks.editBookmark.displayName.change.tree"
+        },
+        {
+          "command": "bookmarks.editBookmark.displayName.reset.tree"
+        }
+      ],
       "commandPalette": [
         {
           "command": "bookmarks.addBookmark.global",
@@ -154,7 +167,11 @@
           "when": "editorIsOpen"
         },
         {
-          "command": "bookmarks.editBookmark.rename.tree",
+          "command": "bookmarks.editBookmark.displayName.change.tree",
+          "when": "false"
+        },
+        {
+          "command": "bookmarks.editBookmark.displayName.reset.tree",
           "when": "false"
         },
         {
@@ -197,10 +214,6 @@
           "when": "view == bookmarks && viewItem == bookmark"
         },
         {
-          "command": "bookmarks.editBookmark.rename.tree",
-          "when": "view == bookmarks && viewItem == bookmark"
-        },
-        {
           "command": "bookmarks.removeBookmark.tree",
           "when": "view == bookmarks && viewItem == bookmark"
         },
@@ -212,6 +225,10 @@
         {
           "command": "bookmarks.removeBookmarks.tree",
           "when": "view == bookmarks && viewItem == bookmarkGroup"
+        },
+        {
+          "submenu": "bookmark.editBookmark.displayName",
+          "when": "view == bookmarks && viewItem == bookmark "
         }
       ],
       "view/title": [
@@ -225,6 +242,13 @@
         }
       ]
     },
+    "submenus": [
+      {
+        "id": "bookmark.editBookmark.displayName",
+        "label": "Display Name",
+        "icon": "${bookmark}"
+      }
+    ],
     "views": {
       "explorer": [
         {

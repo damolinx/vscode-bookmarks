@@ -41,11 +41,13 @@ The following commads are exposed for other extensions to use:
 ### Tree
 There is a `X` button next to each Bookmark, same as one per category and one on the tree view header that allow you to remove all bookmarks under the selected parent. Additionally, there is a `Remove All` action on the drop down for each of the category nodes.
 
-## Change Bookmark Display Name
-It is possible to change the display name of a bookmark to a custom one. This does not rename the file and it is intended to help manage bookmarks. One limitation to be aware of is that custom names including file paths would not adapt dynamically based on current workspace.
+## Changing a Bookmark Display Name
+It is possible to change the display name of a bookmark to a custom one. This does not rename the file and it is intended to help manage bookmarks. One limitation is that custom names including file paths will not adapt dynamically based on current workspace.
 
 ### Tree
-Use the `Rename…` action on the drop down for a given bookmark to change the name 
+Under the `Display Name` context menu for a given bookmark, use: 
+- `Change…` to update the display name.
+- `Reset` to remove any custom display name.
 
 ## Navigation
 

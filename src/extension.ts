@@ -55,9 +55,13 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.env.clipboard.writeText(
           bookmark.uri.scheme === "file" ? bookmark.uri.fsPath : bookmark.uri.path)),
     vscode.commands.registerCommand(
-      "bookmarks.editBookmark.rename.tree",
+      "bookmarks.editBookmark.displayName.change.tree",
       (bookmark: Bookmark): Thenable<void> =>
         renameBookmarkAsync(manager, bookmark)),
+    vscode.commands.registerCommand(
+      "bookmarks.editBookmark.displayName.reset.tree",
+      (bookmark: Bookmark): Thenable<void> =>
+        manager.renameBookmarkAsync(bookmark, undefined)),
     vscode.commands.registerCommand(
       "bookmarks.navigate.next.editor",
       (pathOrUri?: string | vscode.Uri): Thenable<void> =>
@@ -202,12 +206,13 @@ async function renameBookmarkAsync(
   bookmarkManager: BookmarkManager,
   bookmark: Bookmark): Promise<void> {
   const name = await vscode.window.showInputBox({
-    prompt: "Change display name, leave empty to reset to default",
-    placeHolder: "Provide a custom name",
-    title: "Rename Bookmark",
+    prompt: "Change display name",
+    placeHolder: "Provide a custom dislay name",
+    title: "Change Bookmark Display Name",
     value: bookmark.displayName,
+    validateInput: (value) => !value.trim().length ? "Dsiplay name cannot be empty" : undefined
   });
   if (name != undefined) {
-    await bookmarkManager.renameBookmarkAsync(bookmark, name);
+    await bookmarkManager.renameBookmarkAsync(bookmark, name.trim());
   }
 }
