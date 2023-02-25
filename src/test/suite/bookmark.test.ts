@@ -20,6 +20,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     const bookmark = new Bookmark(expectedUri, expectedKind);
 
     assert.strictEqual(bookmark.kind, expectedKind);
+    assert.strictEqual(bookmark.hasLineNumer, false);
     assert.strictEqual(bookmark.lineNumber, DEFAULT_LINE_NUMBER);
     assert.strictEqual(bookmark.uri.toString(), expectedUri);
 
@@ -38,6 +39,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     const bookmark = new Bookmark(expectedUri, expectedKind);
 
     assert.strictEqual(bookmark.kind, expectedKind);
+    assert.strictEqual(bookmark.hasLineNumer, true);
     assert.strictEqual(bookmark.lineNumber, expectedLineNumber);
     assert.strictEqual(bookmark.uri.toString(), expectedUri);
 
@@ -55,12 +57,14 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
 
     const bookmark = new Bookmark(expectedUri, 'global');
     bookmark.displayName = expectedDisplayName;
+    assert.strictEqual(bookmark.hasDisplayName, true);
 
     const normalizedExpectedName = normalize(expectedName);
     assert.strictEqual(bookmark.displayName, expectedDisplayName);
     assert.strictEqual(bookmark.defaultName, normalizedExpectedName);
 
     bookmark.displayName = undefined;
+    assert.strictEqual(bookmark.hasDisplayName, false);
     assert.strictEqual(bookmark.displayName, bookmark.defaultName);
   });
 

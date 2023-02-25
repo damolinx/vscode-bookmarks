@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import { V1_BOOKMARK_METADATA } from "./bookmarkDatastore";
 
-const BOOKMARK_NAME_METADATA_KEY = "displayName";
+const BOOKMARK_CUSTOM_NAME_METADATA_KEY = "displayName";
 
 /**
  * Supported Bookmark kinds.
@@ -69,7 +69,7 @@ export class Bookmark {
    * Get the bookmark name to use in UI elements.
    */
   public get displayName(): string {
-    return this.metadata[BOOKMARK_NAME_METADATA_KEY] || this.defaultName;
+    return this.metadata[BOOKMARK_CUSTOM_NAME_METADATA_KEY] || this.defaultName;
   }
 
   /**
@@ -77,10 +77,24 @@ export class Bookmark {
    */
   public set displayName(value: string | undefined) {
     if (value) {
-      this.metadata[BOOKMARK_NAME_METADATA_KEY] = value;
+      this.metadata[BOOKMARK_CUSTOM_NAME_METADATA_KEY] = value;
     } else {
-      delete this.metadata[BOOKMARK_NAME_METADATA_KEY];
+      delete this.metadata[BOOKMARK_CUSTOM_NAME_METADATA_KEY];
     }
+  }
+
+  /**
+   * Checks if bookmark defines a custom display name.
+   */
+  public get hasDisplayName(): boolean {
+    return !!this.metadata[BOOKMARK_CUSTOM_NAME_METADATA_KEY]; 
+  }
+
+  /**
+   * Checks if bookmark defines a line number.
+   */
+  public get hasLineNumer(): boolean {
+    return !!this._lineNumber; 
   }
 
   /**
