@@ -82,6 +82,25 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
       expectedGlobal.map((uri) => new Bookmark(uri, bookmarkGroup.kind)));
   });
 
+  test('removeAllAsync: empty', async () => {
+    const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento([]));
+    assert.strictEqual(bookmarkGroup.count(), 0);
+
+    const result = await bookmarkGroup.removeAllAsync();
+    assert.deepStrictEqual(result, []);
+    assert.deepStrictEqual([], bookmarkGroup.getAll());
+  });
+
+  test('removeAllAsync: existing', async () => {
+    const expectedGlobal = ["file://global/file1", "file://global/file2"];
+    const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento(expectedGlobal));
+    assert.strictEqual(bookmarkGroup.count(), expectedGlobal.length);
+
+    const result = await bookmarkGroup.removeAllAsync();
+    assert.strictEqual(result.length, expectedGlobal.length);
+    assert.strictEqual(bookmarkGroup.count(), 0);
+  });
+
   test('removeAsync: empty', async () => {
     const expectedBookmarkUri = Uri.parse("file://global/file1");
     const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento([]));
@@ -118,25 +137,6 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     const expectedBookmark = new Bookmark(expectedBookmarkUri, bookmarkGroup.kind);
     const result = await bookmarkGroup.removeAsync([expectedBookmark, bookmark]);
     assert.deepStrictEqual(result, [expectedBookmark]);
-  });
-
-  test('removeAllAsync: empty', async () => {
-    const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento([]));
-    assert.strictEqual(bookmarkGroup.count(), 0);
-
-    const result = await bookmarkGroup.removeAllAsync();
-    assert.deepStrictEqual(result, []);
-    assert.deepStrictEqual([], bookmarkGroup.getAll());
-  });
-
-  test('removeAllAsync: existing', async () => {
-    const expectedGlobal = ["file://global/file1", "file://global/file2"];
-    const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento(expectedGlobal));
-    assert.strictEqual(bookmarkGroup.count(), expectedGlobal.length);
-
-    const result = await bookmarkGroup.removeAllAsync();
-    assert.strictEqual(result.length, expectedGlobal.length);
-    assert.strictEqual(bookmarkGroup.count(), 0);
   });
 });
 

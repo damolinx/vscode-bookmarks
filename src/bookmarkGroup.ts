@@ -30,11 +30,8 @@ export class BookmarkGroup {
    * @return Added bookmarks.
    */
   public async addAsync(uris: vscode.Uri[]): Promise<Bookmark[]> {
-    const addedUris = await this.datastore.addAsync(
-      ...uris.map((uri) => ({ uri, metadata: {} }))
-    );
-    const addedBookmarks = (await addedUris).map(
-      (uri) => new Bookmark(uri, this.kind));
+    const addedUris = await this.datastore.addAsync(uris);
+    const addedBookmarks = addedUris.map((uri) => new Bookmark(uri, this.kind));
     return addedBookmarks;
   }
 
@@ -63,16 +60,6 @@ export class BookmarkGroup {
   }
 
   /**
-   * Remove bookmarks.
-   */
-  public async removeAsync(bookmarks: Bookmark[]): Promise<Bookmark[]> {
-    const removedUris = await this.datastore.removeAsync(
-      ...bookmarks.map((b) => b.uri));
-    return bookmarks.filter(
-      (b) => removedUris.includes(b.uri));
-  }
-
-  /**
    * Remove all bookmarks.
    */
   public async removeAllAsync(): Promise<Bookmark[]> {
@@ -82,11 +69,22 @@ export class BookmarkGroup {
   }
 
   /**
+   * Remove bookmarks.
+   */
+  public async removeAsync(bookmarks: Bookmark[]): Promise<Bookmark[]> {
+    const removedUris = await this.datastore.removeAsync(
+      bookmarks.map((b) => b.uri));
+    return bookmarks.filter(
+      (b) => removedUris.includes(b.uri));
+  }
+
+  /**
    * Update bookmark.
    */
   public async updateAsync(bookmark: Bookmark): Promise<void> {
-    await this.datastore.updateAsync(
-      { uri: bookmark.uri, metadata: bookmark.metadata }
+    await this.datastore.addAsync(
+      [[bookmark.uri, bookmark.metadata]],
+      true, /* override */
     );
   }
 }
