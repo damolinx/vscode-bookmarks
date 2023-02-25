@@ -25,19 +25,7 @@
     "ui",
     "workspace"
   ],
-  "activationEvents": [
-    "onCommand:bookmarks.addBookmark.global",
-    "onCommand:bookmarks.addBookmark.tree",
-    "onCommand:bookmarks.addBookmark.workspace",
-    "onCommand:bookmarks.decorators.toggle",
-    "onCommand:bookmarks.navigate.next.editor",
-    "onCommand:bookmarks.navigate.previous.editor",
-    "onCommand:bookmarks.removeBookmark.global",
-    "onCommand:bookmarks.removeBookmark.workspace",
-    "onCommand:bookmarks.removeBookmarks.global",
-    "onCommand:bookmarks.removeBookmarks.workspace",
-    "onView:bookmarks"
-  ],
+  "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
