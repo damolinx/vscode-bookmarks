@@ -46,7 +46,7 @@ It is possible to change the display name of a bookmark to a custom one. This do
 
 ### Tree
 Under the `Display Name` context menu for a given bookmark, use: 
-- `Change…` to update the display name.
+- `Update…` to update the display name.
 - `Reset` to remove any custom display name.
 
 ## Navigation

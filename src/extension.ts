@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import * as path from 'path';
 import { Bookmark, BookmarkKind } from './bookmark';
 import { BookmarkDatastore } from './bookmarkDatastore';
 import { BookmarkDecoratorController } from './bookmarkDecoratorController';
@@ -55,13 +56,13 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.env.clipboard.writeText(
           bookmark.uri.scheme === "file" ? bookmark.uri.fsPath : bookmark.uri.path)),
     vscode.commands.registerCommand(
-      "bookmarks.editBookmark.displayName.change.tree",
-      (bookmark: Bookmark): Thenable<void> =>
-        renameBookmarkAsync(manager, bookmark)),
-    vscode.commands.registerCommand(
       "bookmarks.editBookmark.displayName.reset.tree",
       (bookmark: Bookmark): Thenable<void> =>
         manager.renameBookmarkAsync(bookmark, undefined)),
+    vscode.commands.registerCommand(
+      "bookmarks.editBookmark.displayName.update.tree",
+      (bookmark: Bookmark): Thenable<void> =>
+        renameBookmarkAsync(manager, bookmark)),
     vscode.commands.registerCommand(
       "bookmarks.navigate.next.editor",
       (pathOrUri?: string | vscode.Uri): Thenable<void> =>
@@ -206,11 +207,10 @@ async function renameBookmarkAsync(
   bookmarkManager: BookmarkManager,
   bookmark: Bookmark): Promise<void> {
   const name = await vscode.window.showInputBox({
-    prompt: "Change display name",
+    prompt: "Update bookmark display name",
     placeHolder: "Provide a custom dislay name",
-    title: "Change Bookmark Display Name",
-    value: bookmark.displayName,
-    validateInput: (value) => !value.trim().length ? "Dsiplay name cannot be empty" : undefined
+    value: bookmark.hasDisplayName ? bookmark.displayName : `Bookmark: ${path.basename(bookmark.uri.fsPath)}`,
+    validateInput: (value) => !value.trim().length ? "Display name cannot be empty" : undefined
   });
   if (name != undefined) {
     await bookmarkManager.renameBookmarkAsync(bookmark, name.trim());

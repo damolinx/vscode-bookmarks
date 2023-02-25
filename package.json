@@ -70,13 +70,13 @@
         "icon": "$(eye)"
       },
       {
-        "command": "bookmarks.editBookmark.displayName.change.tree",
-        "title": "Change…",
+        "command": "bookmarks.editBookmark.displayName.reset.tree",
+        "title": "Reset",
         "category": "Bookmarks"
       },
       {
-        "command": "bookmarks.editBookmark.displayName.reset.tree",
-        "title": "Reset",
+        "command": "bookmarks.editBookmark.displayName.update.tree",
+        "title": "Update…",
         "category": "Bookmarks"
       },
       {
@@ -131,10 +131,12 @@
     "menus": {
       "bookmark.editBookmark.displayName": [
         {
-          "command": "bookmarks.editBookmark.displayName.change.tree"
+          "command": "bookmarks.editBookmark.displayName.update.tree",
+          "group": "main@1"
         },
         {
-          "command": "bookmarks.editBookmark.displayName.reset.tree"
+          "command": "bookmarks.editBookmark.displayName.reset.tree",
+          "group": "main@2"
         }
       ],
       "commandPalette": [
@@ -167,11 +169,11 @@
           "when": "editorIsOpen"
         },
         {
-          "command": "bookmarks.editBookmark.displayName.change.tree",
+          "command": "bookmarks.editBookmark.displayName.reset.tree",
           "when": "false"
         },
         {
-          "command": "bookmarks.editBookmark.displayName.reset.tree",
+          "command": "bookmarks.editBookmark.displayName.update.tree",
           "when": "false"
         },
         {
