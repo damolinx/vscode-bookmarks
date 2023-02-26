@@ -23,8 +23,8 @@ export type V1_BOOKMARK_METADATA = { [key: string]: string };
 export type V1_STORE_TYPE = { [uri: string]: V1_BOOKMARK_METADATA };
 
 /**
- * Bookmark datastore uses a {@link vscode.Memento} as backing store for
- * bookmark data. 
+ * This class uses a {@link vscode.Memento} as backing store for
+ * bookmark data.
  */
 export class BookmarkDatastore {
   private readonly memento: vscode.Memento;
@@ -40,7 +40,7 @@ export class BookmarkDatastore {
   /**
    * Add bookmarks.
    * @param entries Bookmarks to add.
-   * @param override Allow overriding existing bookmarks, otherwise ignore.
+   * @param override Allow overriding a matching bookmark definition, otherwise ignore.
    * @returns List of added bookmarks, no duplicates.
    */
   public async addAsync(entries: Iterable<vscode.Uri | [vscode.Uri, V1_BOOKMARK_METADATA]>, override: boolean = false): Promise<vscode.Uri[]> {
@@ -81,7 +81,7 @@ export class BookmarkDatastore {
   }
 
   /**
-   * Number of items.
+   * Number of bookmark entries.
    */
   public count(): number {
     const bookmarks = this.getAll();
@@ -89,9 +89,9 @@ export class BookmarkDatastore {
   }
 
   /**
-   * Return bookmark metadata.
+   * Get bookmark metadata associated with `uri`.
    * @param uri URI to search for (line data is significant).
-   * @return Metadata, if bookmark is present.
+   * @return Metadata, if found.
    */
   public get(uri: vscode.Uri): V1_BOOKMARK_METADATA | undefined {
     const bookmarks = this.getAll();
@@ -100,19 +100,18 @@ export class BookmarkDatastore {
 
   /**
    * Return all bookmark data.
-   * @param defaultValue A value to return when there is no bookmark data.
-   * @return Stored data, or `defaultValue` value.
+   * @return Stored data.
    */
-  public getAll(defaultValue: V1_STORE_TYPE = {}): V1_STORE_TYPE {
-    return this.memento.get<V1_STORE_TYPE>(V1_MEMENTO_KEY_NAME, defaultValue);
+  public getAll(): V1_STORE_TYPE {
+    return this.memento.get<V1_STORE_TYPE>(V1_MEMENTO_KEY_NAME, {});
   }
 
   /**
    * Remove bookmarks.
-   * @param uris URLs to remove.
+   * @param uris URIs to search for (line data is significant).
    * @returns List of removed bookmarks, no duplicates.
    */
-public async removeAsync(uris: vscode.Uri | Iterable<vscode.Uri>): Promise<vscode.Uri[]> {
+  public async removeAsync(uris: vscode.Uri | Iterable<vscode.Uri>): Promise<vscode.Uri[]> {
     const removedUris: vscode.Uri[] = [];
     const bookmarks = this.getAll();
 
@@ -139,7 +138,27 @@ public async removeAsync(uris: vscode.Uri | Iterable<vscode.Uri>): Promise<vscod
   }
 
   /**
-   * Upgrade data store.
+   * Replace `uri` with `replaceUri` in a single operation.
+   * @param uri URI to search for.
+   * @param replaceUri URI to replace with.
+   * @param replaceMetadata Metadata to use in replacement. If not provided, 
+   * existing metadata associated with `uri` is used, and in that case, if 
+   * `uri` is not found, empty metadata is stored instead.
+   * @returns Metadata that was associated with `replaceUri`.
+   */
+  public async replaceAsync(uri: vscode.Uri, replaceUri: vscode.Uri, replaceMetadata?: V1_BOOKMARK_METADATA): Promise<V1_BOOKMARK_METADATA> {
+    const bookmarks = this.getAll();
+    const metadata = replaceMetadata ?? bookmarks[uri.toString()] ?? {};
+
+    delete bookmarks[uri.toString()];
+    bookmarks[replaceUri.toString()] = metadata;
+
+    await this.memento.update(V1_MEMENTO_KEY_NAME, bookmarks);
+    return metadata;
+  }
+
+  /**
+   * Upgrade datastore.
    */
   public async upgradeAsync(): Promise<boolean> {
     const v0 = this.memento.get<V0_STORE_TYPE>(V0_MEMENTO_KEY_NAME);

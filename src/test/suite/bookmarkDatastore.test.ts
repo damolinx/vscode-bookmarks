@@ -156,6 +156,55 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     assert.deepStrictEqual(Object.keys(datastore.getAll()).length, 2);
   });
 
+  test('replaceAsync: existing (default metadata)', async () => {
+    const expectedUri = Uri.parse("file://global/file1");
+    const replaceExpectedUri = Uri.parse("file://global/file1+replaced");
+
+    const mementoMock: Memento = createMockMemento(
+      expectedUri.toString(), "file://global/file2");
+    const datastore = new BookmarkDatastore(mementoMock);
+    assert.deepStrictEqual(
+      await datastore.replaceAsync(expectedUri, replaceExpectedUri),
+      {});
+    assert.deepStrictEqual(datastore.get(expectedUri), undefined);
+    assert.deepStrictEqual(datastore.get(replaceExpectedUri), {});
+  });
+
+  test('replaceAsync: existing (existing metadata)', async () => {
+    const expectedUri = Uri.parse("file://global/file1");
+    const replaceExpectedUri = Uri.parse("file://global/file1+replaced");
+    const expectedMetadata = {
+      prop1: 'test prop1 value',
+      prop2: 'test prop2 value',
+    };
+    const mementoMock: Memento = createMockMemento();
+    const datastore = new BookmarkDatastore(mementoMock);
+    datastore.addAsync([[expectedUri, expectedMetadata]]);
+
+    assert.deepStrictEqual(
+      await datastore.replaceAsync(expectedUri, replaceExpectedUri),
+      expectedMetadata);
+    assert.deepStrictEqual(datastore.get(expectedUri), undefined);
+    assert.deepStrictEqual(datastore.get(replaceExpectedUri), expectedMetadata);
+  });
+
+  test('replaceAsync: existing (replace metadata)', async () => {
+    const expectedUri = Uri.parse("file://global/file1");
+    const replaceExpectedUri = Uri.parse("file://global/file1+replaced");
+    const expectedMetadata = {
+      prop1: 'test prop1 value',
+      prop2: 'test prop2 value',
+    };
+    const mementoMock: Memento = createMockMemento(
+      expectedUri.toString(), "file://global/file2");
+    const datastore = new BookmarkDatastore(mementoMock);
+    assert.deepStrictEqual(
+      await datastore.replaceAsync(expectedUri, replaceExpectedUri, expectedMetadata),
+      expectedMetadata);
+    assert.deepStrictEqual(datastore.get(expectedUri), undefined);
+    assert.deepStrictEqual(datastore.get(replaceExpectedUri), expectedMetadata);
+  });
+
   test('upgradeAsync (no upgrade)', async () => {
     const mementoMock: Memento = <any>{
       get<T>(key: string, defaultValue: T) {
