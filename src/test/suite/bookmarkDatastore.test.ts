@@ -9,7 +9,7 @@ import {
 } from '../../bookmarkDatastore';
 
 suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
-  let restorables: Array<{ restore: () => void }>;
+  let restorables: { restore: () => void }[];
 
   setup(() => {
     restorables = [];
@@ -22,9 +22,9 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     const mementoMock: Memento = createMockMemento(
       "file://global/file1");
     const datastore = new BookmarkDatastore(mementoMock);
-    assert.deepStrictEqual(
-      await datastore.addAsync([expectedUri]),
-      [expectedUri]);
+
+    const addedData = await datastore.addAsync([expectedUri]);
+    assert.deepStrictEqual(addedData, [[expectedUri, {}]]);
   });
 
   test('addAsync: non-existing (with metadata)', async () => {
@@ -35,10 +35,9 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     };
     const mementoMock: Memento = createMockMemento();
     const datastore = new BookmarkDatastore(mementoMock);
-    assert.deepStrictEqual(
-      await datastore.addAsync([[expectedUri, expectedMetadata]]),
-      [expectedUri]);
-    assert.deepStrictEqual(datastore.get(expectedUri), expectedMetadata);
+
+    const addedData = await datastore.addAsync([[expectedUri, expectedMetadata]]);
+    assert.deepStrictEqual(addedData, [[expectedUri, expectedMetadata]]);
   });
 
   test('addAsync: existing (override: false)', async () => {
@@ -46,9 +45,9 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     const mementoMock: Memento = createMockMemento(
       "file://global/file1", "file://global/file2", expectedUri.toString());
     const datastore = new BookmarkDatastore(mementoMock);
-    assert.deepStrictEqual(
-      await datastore.addAsync([expectedUri]),
-      []);
+
+    const addedData = await datastore.addAsync([expectedUri]);
+    assert.deepStrictEqual(addedData, []);
   });
 
   test('addAsync: existing (override: true)', async () => {
@@ -56,9 +55,9 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     const mementoMock: Memento = createMockMemento(
       "file://global/file1", "file://global/file2", expectedUri.toString());
     const datastore = new BookmarkDatastore(mementoMock);
-    assert.deepStrictEqual(
-      await datastore.addAsync([expectedUri], true),
-      [expectedUri]);
+
+    const addedData = await datastore.addAsync([expectedUri], true);
+    assert.deepStrictEqual(addedData, [[expectedUri, {}]]);
   });
 
   test('contains: empty', () => {
@@ -85,14 +84,14 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   test('count: empty', () => {
     const mementoMock: Memento = createMockMemento();
     const datastore = new BookmarkDatastore(mementoMock);
-    assert.strictEqual(datastore.count(), 0);
+    assert.strictEqual(datastore.count, 0);
   });
 
   test('count: existing', () => {
     const expectedUris = ["file://global/file1", "file://global/file2"];
     const mementoMock: Memento = createMockMemento(...expectedUris);
     const datastore = new BookmarkDatastore(mementoMock);
-    assert.strictEqual(datastore.count(), expectedUris.length);
+    assert.strictEqual(datastore.count, expectedUris.length);
   });
 
   test('get: non-existing', () => {
@@ -148,7 +147,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     const expectedUri = Uri.parse("file://global/file1");
     const expectedNonExistingUri = Uri.parse("file://global/file4");
     const mementoMock: Memento = createMockMemento(
-      expectedUri.toString(), "file://global/file2",  "file://global/file3");
+      expectedUri.toString(), "file://global/file2", "file://global/file3");
     const datastore = new BookmarkDatastore(mementoMock);
     assert.deepStrictEqual(
       await datastore.removeAsync([expectedUri, expectedNonExistingUri]),

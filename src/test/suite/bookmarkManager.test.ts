@@ -6,7 +6,7 @@ import { V1_MEMENTO_KEY_NAME, V1_STORE_TYPE } from '../../bookmarkDatastore';
 import { BookmarkManager } from '../../bookmarkManager';
 
 suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
-  let restorables: Array<{ restore: () => void }>;
+  let restorables: { restore: () => void }[];
 
   setup(() => {
     restorables = [];

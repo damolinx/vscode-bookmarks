@@ -130,9 +130,9 @@ async function addBookmarkAsync(
   }
 
   if (pathOrUri) {
-    const bookmark = await bookmarkManager.addBookmarkAsync(pathOrUri, kind);
+    const bookmark = await bookmarkManager.addBookmarkAsync(kind, pathOrUri);
     if (!bookmark) {
-      bookmarkTreeView.reveal(bookmarkManager.getBookmark(pathOrUri, kind));
+      bookmarkTreeView.reveal(bookmarkManager.getBookmark(kind, pathOrUri));
     }
   }
 }

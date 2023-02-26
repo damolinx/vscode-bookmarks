@@ -43,8 +43,8 @@ export class BookmarkDatastore {
    * @param override Allow overriding a matching bookmark definition, otherwise ignore.
    * @returns List of added bookmarks, no duplicates.
    */
-  public async addAsync(entries: Iterable<vscode.Uri | [vscode.Uri, V1_BOOKMARK_METADATA]>, override: boolean = false): Promise<vscode.Uri[]> {
-    const addedUris = new Set<vscode.Uri>();
+  public async addAsync(entries: (vscode.Uri | [vscode.Uri, V1_BOOKMARK_METADATA])[], override: boolean = false): Promise<[vscode.Uri, V1_BOOKMARK_METADATA][]> {
+    const addedData: [vscode.Uri, V1_BOOKMARK_METADATA][] = [];
     const bookmarks = this.getAll();
 
     for (const entry of entries) {
@@ -61,14 +61,14 @@ export class BookmarkDatastore {
       const uriStr = uri.toString();
       if (override || !(uriStr in bookmarks)) {
         bookmarks[uriStr] = metadata;
-        addedUris.add(uri);
+        addedData.push([uri, metadata]);
       }
     }
 
-    if (addedUris.size) {
+    if (addedData.length) {
       await this.memento.update(V1_MEMENTO_KEY_NAME, bookmarks);
     }
-    return Array.from(addedUris);
+    return addedData;
   }
 
   /**
@@ -83,7 +83,7 @@ export class BookmarkDatastore {
   /**
    * Number of bookmark entries.
    */
-  public count(): number {
+  public get count(): number {
     const bookmarks = this.getAll();
     return Object.keys(bookmarks).length;
   }

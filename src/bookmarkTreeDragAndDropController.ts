@@ -40,7 +40,7 @@ export class BookmarkTreeDragAndDropController implements vscode.TreeDragAndDrop
 
     // Add URIs to Target Kind.
     if (droppedUris?.length) {
-      await this.bookmarkManager.addBookmarksAsync(droppedUris, kind);
+      await this.bookmarkManager.addBookmarksAsync(kind, ...droppedUris);
     }
 
     // Remove Bookmarks that were dragged

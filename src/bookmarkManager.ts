@@ -1,11 +1,20 @@
 import * as vscode from "vscode";
 import { Bookmark, BookmarkKind } from "./bookmark";
-import { BookmarkGroup, createBookmarkGroup } from "./bookmarkGroup";
+import { V1_BOOKMARK_METADATA } from "./bookmarkDatastore";
+import { BookmarkGroup } from "./bookmarkGroup";
 
 export type BookmarkFilter = {
-  /** Match URI */
+  /**
+   * Ignore line number when matching URIs.
+   */
   ignoreLineNumber?: boolean;
+  /**
+   * Use kind as filter.
+   */
   kind?: BookmarkKind;
+  /**
+   * Use URI as filter.
+   */
   uri?: vscode.Uri;
 };
 
@@ -24,8 +33,9 @@ export class BookmarkManager implements vscode.Disposable {
    */
   constructor(context: vscode.ExtensionContext) {
     this.bookmarkGroups = [
-      createBookmarkGroup(context, 'global'),
-      createBookmarkGroup(context, 'workspace')];
+      new BookmarkGroup('Global', 'global', context.globalState),
+      new BookmarkGroup('Workspace', 'workspace', context.workspaceState),
+    ];
     this.onDidAddBookmarkEmitter = new vscode.EventEmitter<Bookmark[] | undefined>();
     this.onDidChangeBookmarkEmitter = new vscode.EventEmitter<Bookmark[] | undefined>();
     this.onDidRemoveBookmarkEmitter = new vscode.EventEmitter<Bookmark[] | undefined>();
@@ -42,30 +52,29 @@ export class BookmarkManager implements vscode.Disposable {
 
   /**
    * Add bookmark.
-   * @param pathOrUri URI to bookmark.
    * @param kind Bookmark kind.
-   * @return {@link Bookmark} instance, if one was created.
+   * @param pathOrUri URI to bookmark.
+   * @param metadata Bookmark metadata.
+   * @return {@link Bookmark} instance, if any was added.
    */
-  public async addBookmarkAsync(pathOrUri: string | vscode.Uri, kind: BookmarkKind):
+  public async addBookmarkAsync(kind: BookmarkKind, pathOrUri: string | vscode.Uri, metadata?: V1_BOOKMARK_METADATA):
     Promise<Bookmark | undefined> {
     const uri = (pathOrUri instanceof vscode.Uri) ? pathOrUri : vscode.Uri.parse(pathOrUri);
-    const addedBookmarks = await this.addBookmarksAsync([uri], kind);
+    const addedBookmarks = await (metadata 
+          ? this.addBookmarksAsync(kind, [uri, metadata])
+          : this.addBookmarksAsync(kind, uri));
     return addedBookmarks[0];
   }
 
   /**
    * Add bookmarks.
-   * @param uris URIs to bookmark. 
    * @param kind Bookmark kind.
-   * @return {@link Bookmark} instances that were created.
+   * @param entries URIs to bookmark with accompanying metadata. 
+   * @return {@link Bookmark} instances.
    */
-  public async addBookmarksAsync(uris: vscode.Uri[], kind: BookmarkKind): Promise<Bookmark[]> {
-    const bookmarkGroup: BookmarkGroup | undefined =
-      this.bookmarkGroups.find((group) => group.kind === kind);
-
-    const addedBookmarks: Bookmark[] = bookmarkGroup
-      ? await bookmarkGroup.addAsync(uris) : [];
-
+  public async addBookmarksAsync(kind: BookmarkKind, ...entries: vscode.Uri[] | [vscode.Uri, V1_BOOKMARK_METADATA][]): Promise<Bookmark[]> {
+    const group = this.getBookmarkGroup(kind);
+    const addedBookmarks = await group.addAsync(...entries);
     if (addedBookmarks.length) {
       this.onDidAddBookmarkEmitter.fire(addedBookmarks);
     }
@@ -73,27 +82,26 @@ export class BookmarkManager implements vscode.Disposable {
   }
 
   /**
-   * Get Bookmark, if any.
-   * @param pathOrUri URI to bookmark.
+   * Get bookmark associated with `pathOrUri`.
    * @param kind Bookmark kind.
+   * @param pathOrUri URI to bookmark.
    */
-  public getBookmark(pathOrUri: string | vscode.Uri, kind: BookmarkKind): Bookmark | undefined {
-    const group = this.getBookmarkGroup(kind);
-    let bookmark: Bookmark | undefined;
-    if (group) {
-      const uri = (pathOrUri instanceof vscode.Uri) ? pathOrUri : vscode.Uri.parse(pathOrUri);
-      bookmark = group.getAll().find(bookmark => bookmark.matchesUri(uri));
-    }
-    return bookmark;
+  public getBookmark(kind: BookmarkKind, pathOrUri: string | vscode.Uri): Bookmark | undefined {
+    const uri = (pathOrUri instanceof vscode.Uri) ? pathOrUri : vscode.Uri.parse(pathOrUri);
+    return this.getBookmarks({ kind, uri })[0];
   }
 
   /**
    * Get Bookmark group.
    * @param kind Bookmark kind.
+   * @returns Bookmark group.
    */
-  public getBookmarkGroup(kind: BookmarkKind): BookmarkGroup | undefined {
-    return this.bookmarkGroups
-      .find((group) => group.kind === kind);
+  public getBookmarkGroup(kind: BookmarkKind): BookmarkGroup {
+    const group = this.bookmarkGroups.find((group) => group.kind === kind);
+    if (!group) {
+      throw new Error(`Unexpected Bookmark kind: ${kind}`);
+    }
+    return group;
   }
 
   /**
@@ -112,12 +120,12 @@ export class BookmarkManager implements vscode.Disposable {
   }
 
   /**
-   * Has Bookmarks, of `kind` if present.
-   * @param kind Bookmark kind.
+   * Checks if manager has bookmarks.
+   * @param kind Bookmark kind filter.
    */
   public hasBookmarks(kind?: BookmarkKind): boolean {
-    return this.bookmarkGroups
-      .some((group) => (!kind || group.kind === kind) && group.count());
+    const groups = kind ? [this.getBookmarkGroup(kind)] : this.bookmarkGroups;
+    return groups.some((group) => group.count);
   }
 
   /**
@@ -150,16 +158,14 @@ export class BookmarkManager implements vscode.Disposable {
     let bookmark: Bookmark | undefined;
     if (pathOrUriOrBookmark instanceof Bookmark) {
       bookmark = pathOrUriOrBookmark;
+    } else if (kind) {
+      const uri = (pathOrUriOrBookmark instanceof vscode.Uri) ? pathOrUriOrBookmark : vscode.Uri.parse(pathOrUriOrBookmark);
+      bookmark = this.getBookmarkGroup(kind).get(uri);
     } else {
-      const group: BookmarkGroup | undefined = kind && this.getBookmarkGroup(kind);
-      if (!group) {
-        throw new Error(`Unknown 'kind': ${kind}`);
-      }
-      bookmark = new Bookmark(pathOrUriOrBookmark, group.kind);
+      throw new Error(`Missing kind for ${pathOrUriOrBookmark}`);
     }
 
-    const removedBookmarks = await this.removeBookmarksAsync([bookmark]);
-    return !!removedBookmarks.length;
+    return !!(bookmark && (await this.removeBookmarksAsync([bookmark])).length);
   }
 
   /**
@@ -168,12 +174,13 @@ export class BookmarkManager implements vscode.Disposable {
    */
   public async removeBookmarksAsync(bookmarks: Bookmark[]): Promise<Bookmark[]> {
     const removedBookmarks: Bookmark[] = [];
+
     for (const group of this.bookmarkGroups) {
-      const groupBookmarks = bookmarks.filter((bookmark) => bookmark.kind === group.kind);
-      if (groupBookmarks.length) {
-        removedBookmarks.push(...await group.removeAsync(groupBookmarks));
-      }
+      const groupBookmarks = bookmarks.filter((b) => b.kind === group.kind);
+      const removedGroupBookmarks = await group.removeAsync(groupBookmarks);;
+      removedBookmarks.push(...removedGroupBookmarks);
     }
+
     if (removedBookmarks.length) {
       this.onDidRemoveBookmarkEmitter.fire(removedBookmarks);
     }
@@ -186,12 +193,11 @@ export class BookmarkManager implements vscode.Disposable {
    */
   public async removeAllBookmarksAsync(kind?: BookmarkKind): Promise<Bookmark[]> {
     const removedBookmarks: Bookmark[] = [];
-    const groups = kind
-      ? this.bookmarkGroups.filter((group) => group.kind === kind)
-      : this.bookmarkGroups;
+    const groups = kind ? [this.getBookmarkGroup(kind)] : this.bookmarkGroups;
 
     for (const group of groups) {
-      removedBookmarks.push(...await group.removeAllAsync());
+      const removedGroupBookmarks = await group.removeAllAsync();
+      removedBookmarks.push(...removedGroupBookmarks);
     }
 
     if (removedBookmarks.length) {

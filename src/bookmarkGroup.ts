@@ -1,17 +1,6 @@
 import * as vscode from 'vscode';
 import { Bookmark, BookmarkKind } from './bookmark';
-import { BookmarkDatastore } from './bookmarkDatastore';
-
-export function createBookmarkGroup(context: vscode.ExtensionContext, kind: BookmarkKind): BookmarkGroup {
-  switch (kind) {
-    case 'global':
-      return new BookmarkGroup('Global', kind, context.globalState);
-    case 'workspace':
-      return new BookmarkGroup('Workspace', kind, context.workspaceState);
-    default:
-      throw new Error(`Unsupported Bookmark kind: ${kind}`);
-  }
-}
+import { BookmarkDatastore, V1_BOOKMARK_METADATA } from './bookmarkDatastore';
 
 export class BookmarkGroup {
   private readonly datastore: BookmarkDatastore;
@@ -26,28 +15,30 @@ export class BookmarkGroup {
 
   /**
    * Add bookmarks.
-   * @param uris URIs to bookmark.
+   * @param entries URIs to bookmark.
    * @return Added bookmarks.
    */
-  public async addAsync(uris: vscode.Uri[]): Promise<Bookmark[]> {
-    const addedUris = await this.datastore.addAsync(uris);
-    const addedBookmarks = addedUris.map((uri) => new Bookmark(uri, this.kind));
+  public async addAsync(...entries: vscode.Uri[] | [vscode.Uri, V1_BOOKMARK_METADATA][]): Promise<Bookmark[]> {
+    const addedBookmarks: Bookmark[] = [];
+    const addedData = await this.datastore.addAsync(entries);
+    addedData.forEach(([uri, metadata]) => addedBookmarks.push(new Bookmark(uri, this.kind, metadata)));
     return addedBookmarks;
   }
 
   /**
    * Number of bookmarks in group.
    */
-  public count(): number {
-    return this.datastore.count();
+  public get count(): number {
+    return this.datastore.count;
   }
 
   /**
    * Get bookmark associated with `uri`.
+   * @param uri URI to search for (line data is significant).
    */
   public get(uri: vscode.Uri): Bookmark | undefined {
-    const bookmarkData = this.datastore.get(uri);
-    return bookmarkData ? new Bookmark(uri, this.kind, bookmarkData) : undefined;
+    const metadata = this.datastore.get(uri);
+    return metadata && new Bookmark(uri, this.kind, metadata);
   }
 
   /**
@@ -63,7 +54,7 @@ export class BookmarkGroup {
    * Remove all bookmarks.
    */
   public async removeAllAsync(): Promise<Bookmark[]> {
-    const removedBookmarks: Bookmark[] = this.getAll();
+    const removedBookmarks = this.getAll();
     await this.datastore.removeAllAsync();
     return removedBookmarks;
   }
@@ -72,11 +63,19 @@ export class BookmarkGroup {
    * Remove bookmarks.
    */
   public async removeAsync(bookmarks: Bookmark[]): Promise<Bookmark[]> {
-    const removedUris = await this.datastore.removeAsync(
-      bookmarks.map((b) => b.uri));
-    return bookmarks.filter(
-      (b) => removedUris.includes(b.uri));
+    const removedUris = await this.datastore.removeAsync(bookmarks.map((b) => b.uri));
+    const removedBookmarks = bookmarks.filter((b) => removedUris.includes(b.uri));
+    return removedBookmarks;
   }
+
+   /**
+   * Update bookmark URI.
+   * @param bookmark Bookmark to update.
+   * @param newUri URI to replace with.
+   */
+   public async updateBookmarkUri(bookmark: Bookmark, newUri: vscode.Uri): Promise<void> {
+    await this.datastore.replaceAsync(bookmark.uri, newUri, bookmark.metadata);
+   } 
 
   /**
    * Update bookmark.

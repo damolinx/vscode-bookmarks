@@ -4,7 +4,7 @@ import { Uri } from 'vscode';
 import { Bookmark, DEFAULT_LINE_NUMBER } from '../../bookmark';
 
 suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
-  let restorables: Array<{ restore: () => void }>;
+  let restorables: { restore: () => void }[];
 
   setup(() => {
     restorables = [];
