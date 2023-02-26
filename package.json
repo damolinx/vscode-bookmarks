@@ -70,12 +70,17 @@
         "icon": "$(eye)"
       },
       {
-        "command": "bookmarks.editBookmark.displayName.reset.tree",
-        "title": "Reset",
+        "command": "bookmarks.editBookmark.displayName.remove.tree",
+        "title": "Remove",
         "category": "Bookmarks"
       },
       {
         "command": "bookmarks.editBookmark.displayName.update.tree",
+        "title": "Update…",
+        "category": "Bookmarks"
+      },
+      {
+        "command": "bookmarks.editBookmark.lineNumber.update.tree",
         "title": "Update…",
         "category": "Bookmarks"
       },
@@ -135,8 +140,14 @@
           "group": "main@1"
         },
         {
-          "command": "bookmarks.editBookmark.displayName.reset.tree",
+          "command": "bookmarks.editBookmark.displayName.remove.tree",
           "group": "main@2"
+        }
+      ],
+      "bookmark.editBookmark.lineNumber": [
+        {
+          "command": "bookmarks.editBookmark.lineNumber.update.tree",
+          "group": "main@1"
         }
       ],
       "commandPalette": [
@@ -169,11 +180,15 @@
           "when": "editorIsOpen"
         },
         {
-          "command": "bookmarks.editBookmark.displayName.reset.tree",
+          "command": "bookmarks.editBookmark.displayName.remove.tree",
           "when": "false"
         },
         {
           "command": "bookmarks.editBookmark.displayName.update.tree",
+          "when": "false"
+        },
+        {
+          "command": "bookmarks.editBookmark.lineNumber.update.tree",
           "when": "false"
         },
         {
@@ -213,11 +228,13 @@
         },
         {
           "command": "bookmarks.copy.path",
-          "when": "view == bookmarks && viewItem == bookmark"
+          "when": "view == bookmarks && viewItem == bookmark",
+          "group": "main"
         },
         {
           "command": "bookmarks.removeBookmark.tree",
-          "when": "view == bookmarks && viewItem == bookmark"
+          "when": "view == bookmarks && viewItem == bookmark",
+          "group": "main"
         },
         {
           "command": "bookmarks.removeBookmark.tree",
@@ -230,7 +247,13 @@
         },
         {
           "submenu": "bookmark.editBookmark.displayName",
-          "when": "view == bookmarks && viewItem == bookmark "
+          "when": "view == bookmarks && viewItem == bookmark",
+          "group": "properties"
+        },
+        {
+          "submenu": "bookmark.editBookmark.lineNumber",
+          "when": "view == bookmarks && viewItem == bookmark",
+          "group": "properties"
         }
       ],
       "view/title": [
@@ -247,8 +270,11 @@
     "submenus": [
       {
         "id": "bookmark.editBookmark.displayName",
-        "label": "Display Name",
-        "icon": "${bookmark}"
+        "label": "Display Name"
+      },
+      {
+        "id": "bookmark.editBookmark.lineNumber",
+        "label": "Line Number"
       }
     ],
     "views": {

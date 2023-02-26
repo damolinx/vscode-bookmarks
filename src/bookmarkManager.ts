@@ -201,7 +201,7 @@ export class BookmarkManager implements vscode.Disposable {
   }
 
   /**
-   * Rename a bookmark.
+   * Update a bookmark display name.
    * @param bookmark Bookmark to rename.
    * @param name Bookmark display name. Use `undefined` to remove a previously defined name.
    */
@@ -213,6 +213,27 @@ export class BookmarkManager implements vscode.Disposable {
       this.bookmarkGroups.find((group) => group.kind === bookmark.kind);
     if (bookmarkGroup) {
       bookmark.displayName = name;
+      await bookmarkGroup.updateAsync(bookmark);
+      this.onDidChangeBookmarkEmitter.fire([bookmark]);
+    }
+  }
+
+  /**
+   * Update a bookmark line number.
+   * @param bookmark Bookmark to update.
+   * @param lineNumber Bookmark line number.
+   */
+  public async updateLineNumberAsync(bookmark: Bookmark, lineNumber: number): Promise<void> {
+    if (bookmark.lineNumber === lineNumber) {
+      return; // Nothing to do
+    }
+    const bookmarkGroup: BookmarkGroup | undefined =
+      this.bookmarkGroups.find((group) => group.kind === bookmark.kind);
+    if (bookmarkGroup) {
+      // TODO: Add a `replaceAsync` so it can be performed in 1 operation.
+      // TODO: bookmakr might need to behave more as an immutable.
+      await bookmarkGroup.removeAsync([bookmark]);
+      bookmark.lineNumber = lineNumber;
       await bookmarkGroup.updateAsync(bookmark);
       this.onDidChangeBookmarkEmitter.fire([bookmark]);
     }

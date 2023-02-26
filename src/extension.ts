@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
-import * as path from 'path';
-import { Bookmark, BookmarkKind } from './bookmark';
+import { Bookmark, BookmarkKind, DEFAULT_LINE_NUMBER } from './bookmark';
 import { BookmarkDatastore } from './bookmarkDatastore';
 import { BookmarkDecoratorController } from './bookmarkDecoratorController';
 import { BookmarkGroup } from './bookmarkGroup';
@@ -56,13 +55,17 @@ export async function activate(context: vscode.ExtensionContext) {
         vscode.env.clipboard.writeText(
           bookmark.uri.scheme === "file" ? bookmark.uri.fsPath : bookmark.uri.path)),
     vscode.commands.registerCommand(
-      "bookmarks.editBookmark.displayName.reset.tree",
+      "bookmarks.editBookmark.displayName.remove.tree",
       (bookmark: Bookmark): Thenable<void> =>
         manager.renameBookmarkAsync(bookmark, undefined)),
     vscode.commands.registerCommand(
       "bookmarks.editBookmark.displayName.update.tree",
       (bookmark: Bookmark): Thenable<void> =>
-        renameBookmarkAsync(manager, bookmark)),
+        updateDisplayNameAsync(manager, bookmark)),
+    vscode.commands.registerCommand(
+      "bookmarks.editBookmark.lineNumber.update.tree",
+      (bookmark: Bookmark): Thenable<void> =>
+        updateLineNumberAsync(manager, bookmark)),
     vscode.commands.registerCommand(
       "bookmarks.navigate.next.editor",
       (pathOrUri?: string | vscode.Uri): Thenable<void> =>
@@ -203,16 +206,45 @@ async function navigateAsync(
   }
 }
 
-async function renameBookmarkAsync(
+// TODO: Move
+async function updateDisplayNameAsync(
   bookmarkManager: BookmarkManager,
   bookmark: Bookmark): Promise<void> {
   const name = await vscode.window.showInputBox({
     prompt: "Update bookmark display name",
-    placeHolder: "Provide a custom dislay name",
-    value: bookmark.hasDisplayName ? bookmark.displayName : `Bookmark: ${path.basename(bookmark.uri.fsPath)}`,
+    placeHolder: "Provide a custom display name",
+    value: bookmark.hasDisplayName ? bookmark.displayName : '',
     validateInput: (value) => !value.trim().length ? "Display name cannot be empty" : undefined
   });
-  if (name != undefined) {
+  if (name !== undefined) {
     await bookmarkManager.renameBookmarkAsync(bookmark, name.trim());
+  }
+}
+
+// TODO: Move
+async function updateLineNumberAsync(
+  bookmarkManager: BookmarkManager,
+  bookmark: Bookmark): Promise<void> {
+  const existingLineNumbers = bookmarkManager
+    .getBookmarks({ ignoreLineNumber: true, kind: bookmark.kind, uri: bookmark.uri })
+    .map((b) => b.lineNumber)
+    .filter((l) => l !== bookmark.lineNumber);
+  const lineNumber = await vscode.window.showInputBox({
+    prompt: "Update bookmark line number",
+    placeHolder: "Provide a line number",
+    value: (bookmark.hasLineNumer ? bookmark.lineNumber : DEFAULT_LINE_NUMBER).toString(),
+    validateInput: (value) => {
+      const n = Number(value);
+      if (!Number.isInteger(n) || n < 1) {
+        return "Value must be a number greater than 1";
+      }
+      if (existingLineNumbers.includes(n)) {
+        return "Line number conflicts with an existing bookmark";
+      }
+      return undefined;
+    }
+  });
+  if (lineNumber !== undefined) {
+    await bookmarkManager.updateLineNumberAsync(bookmark, Number(lineNumber));
   }
 }

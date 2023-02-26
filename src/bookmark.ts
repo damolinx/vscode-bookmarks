@@ -19,6 +19,7 @@ export const DEFAULT_LINE_NUMBER = 1;
 export class Bookmark {
   private _defaultName?: string;
   private _lineNumber?: number;
+  private _uri: vscode.Uri;
 
   /**
    * Bookmark kind.
@@ -28,10 +29,6 @@ export class Bookmark {
    * Metadata.
    */
   public readonly metadata: V1_BOOKMARK_METADATA;
-  /**
-   * Bookmark URI. Prefer this value to identify a bookmark.
-   */
-  public readonly uri: vscode.Uri;
 
   /** 
    * Constructor.
@@ -42,10 +39,10 @@ export class Bookmark {
   constructor(pathOrUri: string | vscode.Uri, kind: BookmarkKind, metadata: V1_BOOKMARK_METADATA = {}) {
     this.kind = kind;
     this.metadata = metadata;
-    this.uri = (pathOrUri instanceof vscode.Uri)
+    this._uri = (pathOrUri instanceof vscode.Uri)
       ? pathOrUri : vscode.Uri.parse(pathOrUri);
 
-    const lineFragment = this.uri.fragment.substring(1);
+    const lineFragment = this._uri.fragment.substring(1);
     if (lineFragment) {
       this._lineNumber = parseInt(lineFragment);
     }
@@ -106,6 +103,17 @@ export class Bookmark {
   }
 
   /**
+   * Bookmark line number, if any. Lines numbers are 1-based.
+   * If URL defines no line number, this defaults to `DEFAULT_LINE_NUMBER`.
+   */
+  public set lineNumber(value: number) {
+    if (this._lineNumber !== value) {
+      this._uri = this.uri.with({fragment: `L${value}`});
+      this._lineNumber = value;
+    }
+  }
+
+  /**
    * Tests whether `uri` matches current bookmark.
    * @param uri URI to test against. 
    * @param ignoreLineNumber Ignore line-number information.
@@ -114,5 +122,12 @@ export class Bookmark {
     return uri.authority === this.uri.authority
       && uri.path === this.uri.path
       && (ignoreLineNumber || uri.fragment === this.uri.fragment);
+  }
+
+  /**
+   * Bookmark URI. Prefer this value to identify a bookmark.
+   */
+  public get uri(): vscode.Uri {
+    return this._uri;
   }
 }
