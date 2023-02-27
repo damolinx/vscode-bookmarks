@@ -17,45 +17,74 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   test('basic props', () => {
     const expectedName = 'Test Group';
     const expectedKind = 'global';
-    const bookmarkGroup = new BookmarkGroup(expectedName, expectedKind, createMockMemento([]));
+    const bookmarkGroup = new BookmarkGroup(
+      expectedName,
+      expectedKind,
+      createMockMemento([])
+    );
     assert.strictEqual(bookmarkGroup.kind, expectedKind);
     assert.strictEqual(bookmarkGroup.displayName, expectedName);
   });
 
   test('addAsync: existing', async () => {
-    const bookmarkUri = Uri.parse("file://global/file3");
-    const expectedGlobal = ["file://global/file1", "file://global/file2", bookmarkUri.toString()];
-    const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento(expectedGlobal));
+    const bookmarkUri = Uri.parse('file://global/file3');
+    const expectedGlobal = [
+      'file://global/file1',
+      'file://global/file2',
+      bookmarkUri.toString(),
+    ];
+    const bookmarkGroup = new BookmarkGroup(
+      'Test',
+      'global',
+      createMockMemento(expectedGlobal)
+    );
     const result = await bookmarkGroup.addAsync(bookmarkUri);
     assert.deepStrictEqual(result, []);
   });
 
   test('addAsync: non-existing', async () => {
-    const expectedBookmarkUri = Uri.parse("file://global/file3");
-    const expectedGlobal = ["file://global/file1", "file://global/file2"];
-    const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento(expectedGlobal));
+    const expectedBookmarkUri = Uri.parse('file://global/file3');
+    const expectedGlobal = ['file://global/file1', 'file://global/file2'];
+    const bookmarkGroup = new BookmarkGroup(
+      'Test',
+      'global',
+      createMockMemento(expectedGlobal)
+    );
     const result = await bookmarkGroup.addAsync(expectedBookmarkUri);
     assert.deepStrictEqual(result, [new Bookmark(expectedBookmarkUri, bookmarkGroup.kind)]);
   });
 
   test('get: empty', () => {
     const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento([]));
-    assert.strictEqual(bookmarkGroup.get(Uri.parse("file://global/file1")), undefined);
+    assert.strictEqual(bookmarkGroup.get(Uri.parse('file://global/file1')), undefined);
   });
 
   test('get: existing', () => {
-    const expectedBookmarkUri = Uri.parse("file://global/file3");
-    const expectedGlobal = ["file://global/file1", "file://global/file2", expectedBookmarkUri.toString()];
-    const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento(expectedGlobal));
+    const expectedBookmarkUri = Uri.parse('file://global/file3');
+    const expectedGlobal = [
+      'file://global/file1',
+      'file://global/file2',
+      expectedBookmarkUri.toString(),
+    ];
+    const bookmarkGroup = new BookmarkGroup(
+      'Test',
+      'global',
+      createMockMemento(expectedGlobal)
+    );
     assert.deepStrictEqual(
       bookmarkGroup.get(expectedBookmarkUri),
-      new Bookmark(expectedBookmarkUri, bookmarkGroup.kind));
+      new Bookmark(expectedBookmarkUri, bookmarkGroup.kind)
+    );
   });
 
   test('get: non-existing', () => {
-    const expectedGlobal = ["file://global/file1", "file://global/file2"];
-    const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento(expectedGlobal));
-    assert.strictEqual(bookmarkGroup.get(Uri.parse("file://global/file3")), undefined);
+    const expectedGlobal = ['file://global/file1', 'file://global/file2'];
+    const bookmarkGroup = new BookmarkGroup(
+      'Test',
+      'global',
+      createMockMemento(expectedGlobal)
+    );
+    assert.strictEqual(bookmarkGroup.get(Uri.parse('file://global/file3')), undefined);
   });
 
   test('count: empty', () => {
@@ -64,8 +93,12 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   });
 
   test('count: existing', () => {
-    const expectedGlobal = ["file://global/file1", "file://global/file2"];
-    const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento(expectedGlobal));
+    const expectedGlobal = ['file://global/file1', 'file://global/file2'];
+    const bookmarkGroup = new BookmarkGroup(
+      'Test',
+      'global',
+      createMockMemento(expectedGlobal)
+    );
     assert.strictEqual(bookmarkGroup.count, expectedGlobal.length);
   });
 
@@ -75,11 +108,16 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   });
 
   test('getAll: existing', () => {
-    const expectedGlobal = ["file://global/file1", "file://global/file2"];
-    const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento(expectedGlobal));
+    const expectedGlobal = ['file://global/file1', 'file://global/file2'];
+    const bookmarkGroup = new BookmarkGroup(
+      'Test',
+      'global',
+      createMockMemento(expectedGlobal)
+    );
     assert.deepStrictEqual(
       bookmarkGroup.getAll(),
-      expectedGlobal.map((uri) => new Bookmark(uri, bookmarkGroup.kind)));
+      expectedGlobal.map((uri) => new Bookmark(uri, bookmarkGroup.kind))
+    );
   });
 
   test('removeAllAsync: empty', async () => {
@@ -92,8 +130,12 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   });
 
   test('removeAllAsync: existing', async () => {
-    const expectedGlobal = ["file://global/file1", "file://global/file2"];
-    const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento(expectedGlobal));
+    const expectedGlobal = ['file://global/file1', 'file://global/file2'];
+    const bookmarkGroup = new BookmarkGroup(
+      'Test',
+      'global',
+      createMockMemento(expectedGlobal)
+    );
     assert.strictEqual(bookmarkGroup.count, expectedGlobal.length);
 
     const result = await bookmarkGroup.removeAllAsync();
@@ -102,7 +144,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   });
 
   test('removeAsync: empty', async () => {
-    const expectedBookmarkUri = Uri.parse("file://global/file1#L1");
+    const expectedBookmarkUri = Uri.parse('file://global/file1#L1');
     const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento([]));
     const bookmark = new Bookmark(expectedBookmarkUri, bookmarkGroup.kind);
     const result = await bookmarkGroup.removeAsync([bookmark]);
@@ -110,28 +152,48 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   });
 
   test('removeAsync: existing', async () => {
-    const expectedBookmarkUri = Uri.parse("file://global/file3#L1");
-    const expectedGlobal = ["file://global/file1#L1", "file://global/file2#L1", expectedBookmarkUri.toString()];
-    const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento(expectedGlobal));
+    const expectedBookmarkUri = Uri.parse('file://global/file3#L1');
+    const expectedGlobal = [
+      'file://global/file1#L1',
+      'file://global/file2#L1',
+      expectedBookmarkUri.toString(),
+    ];
+    const bookmarkGroup = new BookmarkGroup(
+      'Test',
+      'global',
+      createMockMemento(expectedGlobal)
+    );
     const expectedBookmark = new Bookmark(expectedBookmarkUri, bookmarkGroup.kind);
     const result = await bookmarkGroup.removeAsync([expectedBookmark]);
     assert.deepStrictEqual(result, [expectedBookmark]);
   });
 
   test('removeAsync: non-existing', async () => {
-    const expectedBookmarkUri = Uri.parse("file://global/file3");
-    const expectedGlobal = ["file://global/file1", "file://global/file2"];
-    const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento(expectedGlobal));
+    const expectedBookmarkUri = Uri.parse('file://global/file3');
+    const expectedGlobal = ['file://global/file1', 'file://global/file2'];
+    const bookmarkGroup = new BookmarkGroup(
+      'Test',
+      'global',
+      createMockMemento(expectedGlobal)
+    );
     const bookmark = new Bookmark(expectedBookmarkUri, bookmarkGroup.kind);
     const result = await bookmarkGroup.removeAsync([bookmark]);
     assert.deepStrictEqual(result, []);
   });
 
   test('removeAsync: some existing', async () => {
-    const bookmarkUri = Uri.parse("file://global/file2#L1");
-    const expectedBookmarkUri = Uri.parse("file://global/file4#L1");
-    const expectedGlobal = ["file://global/file1#L1", expectedBookmarkUri.toString(), "file://global/file3#L1"];
-    const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento(expectedGlobal));
+    const bookmarkUri = Uri.parse('file://global/file2#L1');
+    const expectedBookmarkUri = Uri.parse('file://global/file4#L1');
+    const expectedGlobal = [
+      'file://global/file1#L1',
+      expectedBookmarkUri.toString(),
+      'file://global/file3#L1',
+    ];
+    const bookmarkGroup = new BookmarkGroup(
+      'Test',
+      'global',
+      createMockMemento(expectedGlobal)
+    );
 
     const bookmark = new Bookmark(bookmarkUri, bookmarkGroup.kind);
     const expectedBookmark = new Bookmark(expectedBookmarkUri, bookmarkGroup.kind);
@@ -154,6 +216,6 @@ function createMockMemento(uris: string[]): Memento {
       assert.strictEqual(key, V1_MEMENTO_KEY_NAME);
       savedUris = value;
       return Promise.resolve();
-    }
+    },
   };
 }

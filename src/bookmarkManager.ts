@@ -1,7 +1,7 @@
-import * as vscode from "vscode";
-import { Bookmark, BookmarkKind } from "./bookmark";
-import { V1_BOOKMARK_METADATA } from "./bookmarkDatastore";
-import { BookmarkGroup } from "./bookmarkGroup";
+import * as vscode from 'vscode';
+import { Bookmark, BookmarkKind } from './bookmark';
+import { V1_BOOKMARK_METADATA } from './bookmarkDatastore';
+import { BookmarkGroup } from './bookmarkGroup';
 
 export type BookmarkFilter = {
   /**
@@ -57,22 +57,28 @@ export class BookmarkManager implements vscode.Disposable {
    * @param metadata Bookmark metadata.
    * @return {@link Bookmark} instance, if any was added.
    */
-  public async addBookmarkAsync(kind: BookmarkKind, pathOrUri: string | vscode.Uri, metadata?: V1_BOOKMARK_METADATA):
-    Promise<Bookmark | undefined> {
-    const uri = (pathOrUri instanceof vscode.Uri) ? pathOrUri : vscode.Uri.parse(pathOrUri);
-    const addedBookmarks = await (metadata 
-          ? this.addBookmarksAsync(kind, [uri, metadata])
-          : this.addBookmarksAsync(kind, uri));
+  public async addBookmarkAsync(
+    kind: BookmarkKind,
+    pathOrUri: string | vscode.Uri,
+    metadata?: V1_BOOKMARK_METADATA
+  ): Promise<Bookmark | undefined> {
+    const uri = pathOrUri instanceof vscode.Uri ? pathOrUri : vscode.Uri.parse(pathOrUri);
+    const addedBookmarks = await (metadata
+      ? this.addBookmarksAsync(kind, [uri, metadata])
+      : this.addBookmarksAsync(kind, uri));
     return addedBookmarks[0];
   }
 
   /**
    * Add bookmarks.
    * @param kind Bookmark kind.
-   * @param entries URIs to bookmark with accompanying metadata. 
+   * @param entries URIs to bookmark with accompanying metadata.
    * @return {@link Bookmark} instances.
    */
-  public async addBookmarksAsync(kind: BookmarkKind, ...entries: vscode.Uri[] | [vscode.Uri, V1_BOOKMARK_METADATA][]): Promise<Bookmark[]> {
+  public async addBookmarksAsync(
+    kind: BookmarkKind,
+    ...entries: vscode.Uri[] | [vscode.Uri, V1_BOOKMARK_METADATA][]
+  ): Promise<Bookmark[]> {
     const group = this.getBookmarkGroup(kind);
     const addedBookmarks = await group.addAsync(...entries);
     if (addedBookmarks.length) {
@@ -86,8 +92,11 @@ export class BookmarkManager implements vscode.Disposable {
    * @param kind Bookmark kind.
    * @param pathOrUri URI to bookmark.
    */
-  public getBookmark(kind: BookmarkKind, pathOrUri: string | vscode.Uri): Bookmark | undefined {
-    const uri = (pathOrUri instanceof vscode.Uri) ? pathOrUri : vscode.Uri.parse(pathOrUri);
+  public getBookmark(
+    kind: BookmarkKind,
+    pathOrUri: string | vscode.Uri
+  ): Bookmark | undefined {
+    const uri = pathOrUri instanceof vscode.Uri ? pathOrUri : vscode.Uri.parse(pathOrUri);
     return this.getBookmarks({ kind, uri })[0];
   }
 
@@ -113,8 +122,9 @@ export class BookmarkManager implements vscode.Disposable {
       .filter((group) => !filter.kind || filter.kind === group.kind)
       .flatMap((group) => group.getAll());
     if (filter.uri) {
-      bookmarks = bookmarks.filter(
-        (bookmark) => bookmark.matchesUri(filter.uri!, filter.ignoreLineNumber));
+      bookmarks = bookmarks.filter((bookmark) =>
+        bookmark.matchesUri(filter.uri!, filter.ignoreLineNumber)
+      );
     }
     return bookmarks;
   }
@@ -154,12 +164,18 @@ export class BookmarkManager implements vscode.Disposable {
    * @param pathOrUriOrBookmark Bookmark to remove.
    * @param kind Kind of bookmark to remove.  Only applies for `string` or {@link Uri}.
    */
-  public async removeBookmarkAsync(pathOrUriOrBookmark: Bookmark | string | vscode.Uri, kind?: BookmarkKind): Promise<boolean> {
+  public async removeBookmarkAsync(
+    pathOrUriOrBookmark: Bookmark | string | vscode.Uri,
+    kind?: BookmarkKind
+  ): Promise<boolean> {
     let bookmark: Bookmark | undefined;
     if (pathOrUriOrBookmark instanceof Bookmark) {
       bookmark = pathOrUriOrBookmark;
     } else if (kind) {
-      const uri = (pathOrUriOrBookmark instanceof vscode.Uri) ? pathOrUriOrBookmark : vscode.Uri.parse(pathOrUriOrBookmark);
+      const uri =
+        pathOrUriOrBookmark instanceof vscode.Uri
+          ? pathOrUriOrBookmark
+          : vscode.Uri.parse(pathOrUriOrBookmark);
       bookmark = this.getBookmarkGroup(kind).get(uri);
     } else {
       throw new Error(`Missing kind for ${pathOrUriOrBookmark}`);
@@ -177,7 +193,7 @@ export class BookmarkManager implements vscode.Disposable {
 
     for (const group of this.bookmarkGroups) {
       const groupBookmarks = bookmarks.filter((b) => b.kind === group.kind);
-      const removedGroupBookmarks = await group.removeAsync(groupBookmarks);;
+      const removedGroupBookmarks = await group.removeAsync(groupBookmarks);
       removedBookmarks.push(...removedGroupBookmarks);
     }
 
@@ -215,8 +231,9 @@ export class BookmarkManager implements vscode.Disposable {
     if (bookmark.displayName === name) {
       return; // Nothing to do
     }
-    const bookmarkGroup: BookmarkGroup | undefined =
-      this.bookmarkGroups.find((group) => group.kind === bookmark.kind);
+    const bookmarkGroup: BookmarkGroup | undefined = this.bookmarkGroups.find(
+      (group) => group.kind === bookmark.kind
+    );
     if (bookmarkGroup) {
       bookmark.displayName = name;
       await bookmarkGroup.updateAsync(bookmark);
@@ -229,12 +246,16 @@ export class BookmarkManager implements vscode.Disposable {
    * @param bookmark Bookmark to update.
    * @param lineNumber Bookmark line number.
    */
-  public async updateLineNumberAsync(bookmark: Bookmark, lineNumber: number): Promise<Bookmark | undefined> {
+  public async updateLineNumberAsync(
+    bookmark: Bookmark,
+    lineNumber: number
+  ): Promise<Bookmark | undefined> {
     if (bookmark.lineNumber === lineNumber) {
       return; // Nothing to do
     }
-    const bookmarkGroup: BookmarkGroup | undefined =
-      this.bookmarkGroups.find((group) => group.kind === bookmark.kind);
+    const bookmarkGroup: BookmarkGroup | undefined = this.bookmarkGroups.find(
+      (group) => group.kind === bookmark.kind
+    );
     if (bookmarkGroup) {
       // TODO: Add a `replaceAsync` so it can be performed in 1 operation.
       // TODO: bookmakr might need to behave more as an immutable.

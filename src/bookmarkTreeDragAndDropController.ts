@@ -1,9 +1,11 @@
-import * as vscode from "vscode";
-import { Bookmark } from "./bookmark";
+import * as vscode from 'vscode';
+import { Bookmark } from './bookmark';
 import { BookmarkGroup } from './bookmarkGroup';
-import { BookmarkManager } from "./bookmarkManager";
+import { BookmarkManager } from './bookmarkManager';
 
-export class BookmarkTreeDragAndDropController implements vscode.TreeDragAndDropController<BookmarkGroup | Bookmark> {
+export class BookmarkTreeDragAndDropController
+  implements vscode.TreeDragAndDropController<BookmarkGroup | Bookmark>
+{
   private readonly bookmarkManager: BookmarkManager;
   public readonly dropMimeTypes: ReadonlyArray<string>;
   public readonly dragMimeTypes: ReadonlyArray<string>;
@@ -14,18 +16,31 @@ export class BookmarkTreeDragAndDropController implements vscode.TreeDragAndDrop
     this.dropMimeTypes = ['application/vnd.code.tree.bookmarks', 'text/uri-list'];
   }
 
-  async handleDrag(source: (BookmarkGroup | Bookmark)[], treeDataTransfer: vscode.DataTransfer, _token: vscode.CancellationToken): Promise<void> {
+  async handleDrag(
+    source: (BookmarkGroup | Bookmark)[],
+    treeDataTransfer: vscode.DataTransfer,
+    _token: vscode.CancellationToken
+  ): Promise<void> {
     const bookmarksOnly = source.filter((s) => s instanceof Bookmark);
     if (bookmarksOnly.length) {
-      treeDataTransfer.set('application/vnd.code.tree.bookmarks', new vscode.DataTransferItem(source));
+      treeDataTransfer.set(
+        'application/vnd.code.tree.bookmarks',
+        new vscode.DataTransferItem(source)
+      );
     }
   }
 
-  async handleDrop(target: BookmarkGroup | Bookmark | undefined, dataTransfer: vscode.DataTransfer, _token: vscode.CancellationToken): Promise<void> {
+  async handleDrop(
+    target: BookmarkGroup | Bookmark | undefined,
+    dataTransfer: vscode.DataTransfer,
+    _token: vscode.CancellationToken
+  ): Promise<void> {
     let droppedUris: vscode.Uri[] | undefined;
-    const kind = target?.kind || (vscode.workspace.workspaceFolders?.length ? 'workspace' : 'global');
-    const draggedBookmarks = (<Bookmark[] | undefined>dataTransfer.get('application/vnd.code.tree.bookmarks')?.value)
-      ?.filter((b) => b.kind != kind);
+    const kind =
+      target?.kind || (vscode.workspace.workspaceFolders?.length ? 'workspace' : 'global');
+    const draggedBookmarks = (<Bookmark[] | undefined>(
+      dataTransfer.get('application/vnd.code.tree.bookmarks')?.value
+    ))?.filter((b) => b.kind != kind);
     if (draggedBookmarks) {
       droppedUris = draggedBookmarks.map((b) => b.uri);
     } else {

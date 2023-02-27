@@ -1,10 +1,11 @@
-import * as vscode from "vscode";
-import { Bookmark } from "./bookmark";
-import { BookmarkGroup } from "./bookmarkGroup";
-import { BookmarkManager } from "./bookmarkManager";
+import * as vscode from 'vscode';
+import { Bookmark } from './bookmark';
+import { BookmarkGroup } from './bookmarkGroup';
+import { BookmarkManager } from './bookmarkManager';
 
-export class BookmarkTreeProvider implements vscode.Disposable, vscode.TreeDataProvider<Bookmark | BookmarkGroup> {
-
+export class BookmarkTreeProvider
+  implements vscode.Disposable, vscode.TreeDataProvider<Bookmark | BookmarkGroup>
+{
   private readonly manager: BookmarkManager;
   private readonly onDidChangeTreeDataEmitter: vscode.EventEmitter<void | Bookmark>;
 
@@ -39,10 +40,11 @@ export class BookmarkTreeProvider implements vscode.Disposable, vscode.TreeDataP
    * @param element The element for which the parent has to be returned.
    * @return Parent of `element`, or undefined if it is a root.
    */
-  public getParent(element: Bookmark | BookmarkGroup): vscode.ProviderResult<BookmarkGroup | undefined> {
-    const group = (element instanceof Bookmark)
-      ? this.manager.getBookmarkGroup(element.kind)
-      : undefined;
+  public getParent(
+    element: Bookmark | BookmarkGroup
+  ): vscode.ProviderResult<BookmarkGroup | undefined> {
+    const group =
+      element instanceof Bookmark ? this.manager.getBookmarkGroup(element.kind) : undefined;
     return group;
   }
 
@@ -51,12 +53,14 @@ export class BookmarkTreeProvider implements vscode.Disposable, vscode.TreeDataP
    * @param bookmark The bookmark for which {@link TreeItem} representation is asked for.
    * @return TreeItem representation of the bookmark.
    */
-  public getTreeItem(element: Bookmark | BookmarkGroup): vscode.TreeItem | Thenable<vscode.TreeItem> {
+  public getTreeItem(
+    element: Bookmark | BookmarkGroup
+  ): vscode.TreeItem | Thenable<vscode.TreeItem> {
     const treeItem: vscode.TreeItem = new vscode.TreeItem(element.displayName);
     if (element instanceof Bookmark) {
       treeItem.command = {
-        title: "Open",
-        command: "vscode.open",
+        title: 'Open',
+        command: 'vscode.open',
         tooltip: `Open ${element.displayName}`,
         arguments: [element.uri],
       };
@@ -67,7 +71,8 @@ export class BookmarkTreeProvider implements vscode.Disposable, vscode.TreeDataP
     } else {
       treeItem.contextValue = `bookmarkGroup`;
       treeItem.collapsibleState = this.manager.hasBookmarks(element.kind)
-        ? vscode.TreeItemCollapsibleState.Expanded : vscode.TreeItemCollapsibleState.Collapsed;
+        ? vscode.TreeItemCollapsibleState.Expanded
+        : vscode.TreeItemCollapsibleState.Collapsed;
     }
     return treeItem;
   }
@@ -77,7 +82,9 @@ export class BookmarkTreeProvider implements vscode.Disposable, vscode.TreeDataP
    * @param element The element from which the provider gets children. Can be `undefined`.
    * @return Children of `element` or root if no element is passed.
    */
-  public getChildren(element?: BookmarkGroup): vscode.ProviderResult<Bookmark[] | BookmarkGroup[]> {
+  public getChildren(
+    element?: BookmarkGroup
+  ): vscode.ProviderResult<Bookmark[] | BookmarkGroup[]> {
     let children: Bookmark[] | BookmarkGroup[];
     if (!element) {
       children = [this.manager.getBookmarkGroup('global')!];
@@ -85,7 +92,8 @@ export class BookmarkTreeProvider implements vscode.Disposable, vscode.TreeDataP
         children.push(this.manager.getBookmarkGroup('workspace')!);
       }
     } else {
-      children = this.manager.getBookmarks({ kind: element.kind })
+      children = this.manager
+        .getBookmarks({ kind: element.kind })
         .sort((a, b) => a.compare(b));
     }
     return children;

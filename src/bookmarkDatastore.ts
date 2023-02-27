@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 /**
  * Memento key name used up to v0.2.1.
  */
-export const V0_MEMENTO_KEY_NAME = "bookmarks";
+export const V0_MEMENTO_KEY_NAME = 'bookmarks';
 /**
  * Data format used up to v0.2.1.
  */
@@ -12,7 +12,7 @@ export type V0_STORE_TYPE = string[];
 /**
  * Memento key name used from v0.3.0.
  */
-export const V1_MEMENTO_KEY_NAME = "bookmarks.v1";
+export const V1_MEMENTO_KEY_NAME = 'bookmarks.v1';
 /**
  * Metadata format used from v0.3.0.
  */
@@ -43,7 +43,10 @@ export class BookmarkDatastore {
    * @param override Allow overriding a matching bookmark definition, otherwise ignore.
    * @returns List of added bookmarks, no duplicates.
    */
-  public async addAsync(entries: (vscode.Uri | [vscode.Uri, V1_BOOKMARK_METADATA])[], override: boolean = false): Promise<[vscode.Uri, V1_BOOKMARK_METADATA][]> {
+  public async addAsync(
+    entries: (vscode.Uri | [vscode.Uri, V1_BOOKMARK_METADATA])[],
+    override: boolean = false
+  ): Promise<[vscode.Uri, V1_BOOKMARK_METADATA][]> {
     const addedData: [vscode.Uri, V1_BOOKMARK_METADATA][] = [];
     const bookmarks = this.getAll();
 
@@ -77,7 +80,7 @@ export class BookmarkDatastore {
    */
   public contains(uri: vscode.Uri): boolean {
     const bookmarks = this.getAll();
-    return (uri.toString() in bookmarks);
+    return uri.toString() in bookmarks;
   }
 
   /**
@@ -115,7 +118,7 @@ export class BookmarkDatastore {
     const removedUris: vscode.Uri[] = [];
     const bookmarks = this.getAll();
 
-    const iterableUris = (uris instanceof vscode.Uri) ? [uris] : uris;
+    const iterableUris = uris instanceof vscode.Uri ? [uris] : uris;
     for (const uri of iterableUris) {
       const uriStr = uri.toString();
       if (uriStr in bookmarks) {
@@ -141,12 +144,16 @@ export class BookmarkDatastore {
    * Replace `uri` with `replaceUri` in a single operation.
    * @param uri URI to search for.
    * @param replaceUri URI to replace with.
-   * @param replaceMetadata Metadata to use in replacement. If not provided, 
-   * existing metadata associated with `uri` is used, and in that case, if 
+   * @param replaceMetadata Metadata to use in replacement. If not provided,
+   * existing metadata associated with `uri` is used, and in that case, if
    * `uri` is not found, empty metadata is stored instead.
    * @returns Metadata that was associated with `replaceUri`.
    */
-  public async replaceAsync(uri: vscode.Uri, replaceUri: vscode.Uri, replaceMetadata?: V1_BOOKMARK_METADATA): Promise<V1_BOOKMARK_METADATA> {
+  public async replaceAsync(
+    uri: vscode.Uri,
+    replaceUri: vscode.Uri,
+    replaceMetadata?: V1_BOOKMARK_METADATA
+  ): Promise<V1_BOOKMARK_METADATA> {
     const bookmarks = this.getAll();
     const metadata = replaceMetadata ?? bookmarks[uri.toString()] ?? {};
 
@@ -184,7 +191,7 @@ export class BookmarkDatastore {
 
     // Fix URLs without line number info (pre-0.3.2)
     Object.keys(v1).forEach((uriStr) => {
-      if (!uriStr.includes("#")) {
+      if (!uriStr.includes('#')) {
         v1[`${uriStr}#L1`] = v1[uriStr];
         delete v1[uriStr];
         saveV1 = true;
@@ -192,10 +199,7 @@ export class BookmarkDatastore {
     });
 
     if (saveV1 || tasks.length) {
-      await Promise.all([
-        this.memento.update(V1_MEMENTO_KEY_NAME, v1),
-        ...tasks
-      ]);
+      await Promise.all([this.memento.update(V1_MEMENTO_KEY_NAME, v1), ...tasks]);
       return true;
     }
 

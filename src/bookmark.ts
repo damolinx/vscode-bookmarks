@@ -1,8 +1,8 @@
-import * as vscode from "vscode";
-import * as path from "path";
-import { V1_BOOKMARK_METADATA } from "./bookmarkDatastore";
+import * as vscode from 'vscode';
+import * as path from 'path';
+import { V1_BOOKMARK_METADATA } from './bookmarkDatastore';
 
-const BOOKMARK_CUSTOM_NAME_METADATA_KEY = "displayName";
+const BOOKMARK_CUSTOM_NAME_METADATA_KEY = 'displayName';
 
 /**
  * Supported Bookmark kinds.
@@ -32,17 +32,20 @@ export class Bookmark {
    */
   public readonly metadata: V1_BOOKMARK_METADATA;
 
-  /** 
+  /**
    * Constructor.
    * @param pathOrUri URI to bookmark.
    * @param kind Bookmark kind.
    * @param metadata Additional data.
    */
-  constructor(pathOrUri: string | vscode.Uri, kind: BookmarkKind, metadata: V1_BOOKMARK_METADATA = {}) {
+  constructor(
+    pathOrUri: string | vscode.Uri,
+    kind: BookmarkKind,
+    metadata: V1_BOOKMARK_METADATA = {}
+  ) {
     this.kind = kind;
     this.metadata = metadata;
-    this._uri = (pathOrUri instanceof vscode.Uri)
-      ? pathOrUri : vscode.Uri.parse(pathOrUri);
+    this._uri = pathOrUri instanceof vscode.Uri ? pathOrUri : vscode.Uri.parse(pathOrUri);
 
     const lineFragment = this._uri.fragment.substring(1);
     if (lineFragment) {
@@ -55,9 +58,9 @@ export class Bookmark {
 
   /**
    * Determine sort order of bookmarks.
-   * @param that 
+   * @param that
    * @returns A negative value if this bookmark should be sorted before `that`,
-   * zero if they're equal, and a positive value otherwise. 
+   * zero if they're equal, and a positive value otherwise.
    */
   public compare(that: Bookmark) {
     if (this.kind !== that.kind) {
@@ -70,7 +73,11 @@ export class Bookmark {
     const thatA = that.displayName;
     const thatB = that.hasDisplayName ? that.description : '';
 
-    return thisA.localeCompare(thatA, undefined) || thisB.localeCompare(thatB, undefined, {sensitivity: 'base'}) || this.lineNumber - that.lineNumber;
+    return (
+      thisA.localeCompare(thatA, undefined) ||
+      thisB.localeCompare(thatB, undefined, { sensitivity: 'base' }) ||
+      this.lineNumber - that.lineNumber
+    );
   }
 
   /**
@@ -132,7 +139,7 @@ export class Bookmark {
    * Set Bookmark line number.
    */
   public set lineNumber(value: number) {
-    // TODO: validate positive integer (or really make this immutable).    
+    // TODO: validate positive integer (or really make this immutable).
     if (this._lineNumber !== value) {
       this._defaultName = undefined;
       this._description = undefined;
@@ -143,13 +150,15 @@ export class Bookmark {
 
   /**
    * Tests whether `uri` matches current bookmark.
-   * @param uri URI to test against. 
+   * @param uri URI to test against.
    * @param ignoreLineNumber Ignore line-number information.
    */
   public matchesUri(uri: vscode.Uri, ignoreLineNumber?: boolean): boolean {
-    return uri.authority === this.uri.authority
-      && uri.path === this.uri.path
-      && (ignoreLineNumber || uri.fragment === this.uri.fragment);
+    return (
+      uri.authority === this.uri.authority &&
+      uri.path === this.uri.path &&
+      (ignoreLineNumber || uri.fragment === this.uri.fragment)
+    );
   }
 
   /**

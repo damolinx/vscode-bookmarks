@@ -18,10 +18,14 @@ export class BookmarkGroup {
    * @param entries URIs to bookmark.
    * @return Added bookmarks.
    */
-  public async addAsync(...entries: vscode.Uri[] | [vscode.Uri, V1_BOOKMARK_METADATA][]): Promise<Bookmark[]> {
+  public async addAsync(
+    ...entries: vscode.Uri[] | [vscode.Uri, V1_BOOKMARK_METADATA][]
+  ): Promise<Bookmark[]> {
     const addedBookmarks: Bookmark[] = [];
     const addedData = await this.datastore.addAsync(entries);
-    addedData.forEach(([uri, metadata]) => addedBookmarks.push(new Bookmark(uri, this.kind, metadata)));
+    addedData.forEach(([uri, metadata]) =>
+      addedBookmarks.push(new Bookmark(uri, this.kind, metadata))
+    );
     return addedBookmarks;
   }
 
@@ -46,8 +50,9 @@ export class BookmarkGroup {
    */
   public getAll(): Bookmark[] {
     const bookmarks = this.datastore.getAll();
-    return Object.entries(bookmarks)
-      .map(([uri, metadata]) => new Bookmark(uri, this.kind, metadata));
+    return Object.entries(bookmarks).map(
+      ([uri, metadata]) => new Bookmark(uri, this.kind, metadata)
+    );
   }
 
   /**
@@ -63,12 +68,12 @@ export class BookmarkGroup {
    * Remove bookmarks.
    */
   public async removeAsync(bookmarks: Bookmark[]): Promise<Bookmark[]> {
-    // Fix-up for DEFAULT_LINE_NUMBER is needed since from v0.3.2 on, 
+    // Fix-up for DEFAULT_LINE_NUMBER is needed since from v0.3.2 on,
     // all URIs will have a line number, so remote should work for legacy
     const urisToRemove = bookmarks.flatMap((b) => {
       const uris = [b.uri];
       if (b.lineNumber === DEFAULT_LINE_NUMBER) {
-        uris.push(b.uri.with({fragment: ''}));
+        uris.push(b.uri.with({ fragment: '' }));
       }
       return uris;
     });
@@ -77,22 +82,19 @@ export class BookmarkGroup {
     return removedBookmarks;
   }
 
-   /**
+  /**
    * Update bookmark URI.
    * @param bookmark Bookmark to update.
    * @param newUri URI to replace with.
    */
-   public async updateBookmarkUri(bookmark: Bookmark, newUri: vscode.Uri): Promise<void> {
+  public async updateBookmarkUri(bookmark: Bookmark, newUri: vscode.Uri): Promise<void> {
     await this.datastore.replaceAsync(bookmark.uri, newUri, bookmark.metadata);
-   } 
+  }
 
   /**
    * Update bookmark.
    */
   public async updateAsync(bookmark: Bookmark): Promise<void> {
-    await this.datastore.addAsync(
-      [[bookmark.uri, bookmark.metadata]],
-      true, /* override */
-    );
+    await this.datastore.addAsync([[bookmark.uri, bookmark.metadata]], true /* override */);
   }
 }

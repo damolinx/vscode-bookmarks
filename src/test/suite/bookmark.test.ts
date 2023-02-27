@@ -28,7 +28,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     assert.strictEqual(bookmark.defaultName, normalizedExpectedPath);
     assert.strictEqual(bookmark.description, `line ${DEFAULT_LINE_NUMBER}`);
     assert.strictEqual(bookmark.displayName, normalizedExpectedPath);
-    assert.strictEqual(bookmark.hasDisplayName, false);    
+    assert.strictEqual(bookmark.hasDisplayName, false);
   });
 
   test('basic props (with line-number)', () => {
@@ -96,8 +96,11 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     const bookmark5 = new Bookmark('file://file2#9', 'global');
 
     assert.deepStrictEqual(
-      [bookmark4, bookmark1, bookmark5, bookmark3, bookmark2].sort((a, b) => a.compare(b)).map((b) => b.defaultName),
-      [bookmark1, bookmark2, bookmark3, bookmark4, bookmark5].map((b) => b.defaultName))
+      [bookmark4, bookmark1, bookmark5, bookmark3, bookmark2]
+        .sort((a, b) => a.compare(b))
+        .map((b) => b.defaultName),
+      [bookmark1, bookmark2, bookmark3, bookmark4, bookmark5].map((b) => b.defaultName)
+    );
   });
 
   test('compare (with same display name)', () => {
@@ -105,12 +108,15 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     const bookmark2 = new Bookmark('file://file1#10', 'global');
     const bookmark3 = new Bookmark('file://file2#2', 'global');
     const bookmark4 = new Bookmark('file://file2#20', 'global');
-    
-    [bookmark1, bookmark2, bookmark3, bookmark4].forEach((b) => b.displayName = 'FOO');
+
+    [bookmark1, bookmark2, bookmark3, bookmark4].forEach((b) => (b.displayName = 'FOO'));
 
     assert.deepStrictEqual(
-      [bookmark4, bookmark1, bookmark3, bookmark2].sort((a, b) => a.compare(b)).map((b) => b.defaultName),
-      [bookmark1, bookmark2, bookmark3, bookmark4].map((b) => b.defaultName))
+      [bookmark4, bookmark1, bookmark3, bookmark2]
+        .sort((a, b) => a.compare(b))
+        .map((b) => b.defaultName),
+      [bookmark1, bookmark2, bookmark3, bookmark4].map((b) => b.defaultName)
+    );
   });
 
   test('compare (with different kind)', () => {
@@ -118,24 +124,30 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     const bookmark2 = new Bookmark('file://file1#10', 'global');
     const bookmark3 = new Bookmark('file://file1#1', 'workspace');
     const bookmark4 = new Bookmark('file://file1#10', 'workspace');
-    
-    assert.deepStrictEqual(
-      [bookmark4, bookmark1, bookmark3, bookmark2].sort((a, b) => a.compare(b)).map((b) => b.defaultName),
-      [bookmark1, bookmark2, bookmark3, bookmark4].map((b) => b.defaultName))
-  });
 
+    assert.deepStrictEqual(
+      [bookmark4, bookmark1, bookmark3, bookmark2]
+        .sort((a, b) => a.compare(b))
+        .map((b) => b.defaultName),
+      [bookmark1, bookmark2, bookmark3, bookmark4].map((b) => b.defaultName)
+    );
+  });
 
   test('matchesUri', () => {
     const expectedLineNumber = 6;
     const expectedPath = '/workspace/test.txt';
     const expectedUriWithoutLineNumber = Uri.file(`file://${expectedPath}`);
-    const expectedUri = expectedUriWithoutLineNumber.with({ fragment: `L${expectedLineNumber}` });
+    const expectedUri = expectedUriWithoutLineNumber.with({
+      fragment: `L${expectedLineNumber}`,
+    });
 
     const bookmark = new Bookmark(expectedUri, 'global');
     assert.ok(bookmark.matchesUri(expectedUri));
     assert.ok(bookmark.matchesUri(expectedUri, true));
 
-    const differentLineUri = expectedUriWithoutLineNumber.with({ fragment: `L${expectedLineNumber + 10}` });
+    const differentLineUri = expectedUriWithoutLineNumber.with({
+      fragment: `L${expectedLineNumber + 10}`,
+    });
     assert.ok(!bookmark.matchesUri(differentLineUri));
     assert.ok(bookmark.matchesUri(differentLineUri, true));
   });
