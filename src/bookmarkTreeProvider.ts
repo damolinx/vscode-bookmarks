@@ -1,5 +1,4 @@
 import * as vscode from "vscode";
-import * as path from "path";
 import { Bookmark } from "./bookmark";
 import { BookmarkGroup } from "./bookmarkGroup";
 import { BookmarkManager } from "./bookmarkManager";
@@ -62,17 +61,9 @@ export class BookmarkTreeProvider implements vscode.Disposable, vscode.TreeDataP
         arguments: [element.uri],
       };
       treeItem.contextValue = 'bookmark';
+      treeItem.description = element.description;
       treeItem.resourceUri = element.uri;
       treeItem.tooltip = element.defaultName;
-
-      if (element.hasDisplayName) {
-        let description = `…${path.join(...element.uri.fsPath.split(path.sep).splice(-2))}`;
-        if (element.hasLineNumer) {
-          description += `:${element.lineNumber}`;
-        }
-        treeItem.description = description;
-      }
-
     } else {
       treeItem.contextValue = `bookmarkGroup`;
       treeItem.collapsibleState = this.manager.hasBookmarks(element.kind)

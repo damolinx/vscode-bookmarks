@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { Bookmark, BookmarkKind } from './bookmark';
+import { Bookmark, BookmarkKind, DEFAULT_LINE_NUMBER } from './bookmark';
 import { BookmarkDatastore, V1_BOOKMARK_METADATA } from './bookmarkDatastore';
 
 export class BookmarkGroup {
@@ -63,7 +63,16 @@ export class BookmarkGroup {
    * Remove bookmarks.
    */
   public async removeAsync(bookmarks: Bookmark[]): Promise<Bookmark[]> {
-    const removedUris = await this.datastore.removeAsync(bookmarks.map((b) => b.uri));
+    // Fix-up for DEFAULT_LINE_NUMBER is needed since from v0.3.2 on, 
+    // all URIs will have a line number, so remote should work for legacy
+    const urisToRemove = bookmarks.flatMap((b) => {
+      const uris = [b.uri];
+      if (b.lineNumber === DEFAULT_LINE_NUMBER) {
+        uris.push(b.uri.with({fragment: ''}));
+      }
+      return uris;
+    });
+    const removedUris = await this.datastore.removeAsync(urisToRemove);
     const removedBookmarks = bookmarks.filter((b) => removedUris.includes(b.uri));
     return removedBookmarks;
   }

@@ -207,9 +207,17 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   test('upgradeAsync (no upgrade)', async () => {
     const mementoMock: Memento = <any>{
       get<T>(key: string, defaultValue: T) {
-        assert.strictEqual(key, V0_MEMENTO_KEY_NAME);
-        assert.strictEqual(defaultValue, undefined);
-        return;
+        switch(key) {
+          case V0_MEMENTO_KEY_NAME:
+            assert.strictEqual(defaultValue, undefined);
+            break;
+          case V1_MEMENTO_KEY_NAME:
+            assert.deepStrictEqual(defaultValue, {});
+            break;
+          default:
+            assert.fail(`Unexpected key: ${key}`);
+        }
+        return defaultValue;
       },
     };
     const datastore = new BookmarkDatastore(mementoMock);
@@ -220,7 +228,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     const expectedUri1 = 'file:///workspace/test1.txt';
     const expectedUri2 = 'file:///workspace/folder/test2.txt#L10';
     const expectedV1: V1_STORE_TYPE = {};
-    expectedV1[expectedUri1] = {};
+    expectedV1[`${expectedUri1}#L1`] = {};
     expectedV1[expectedUri2] = {};
 
     const mementoMock: Memento = <any>{
@@ -234,7 +242,6 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
             return defaultValue;
           default:
             assert.fail(`Unexpected key: ${key}`);
-            break;
         }
       },
       async update(key: string, value: any): Promise<void> {
@@ -264,7 +271,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
       'foo': 'bar'
     };
     const expectedV1: V1_STORE_TYPE = {};
-    expectedV1[expectedUri1] = {};
+    expectedV1[`${expectedUri1}#L1`] = {};
     expectedV1[expectedUri2] = existingV1[expectedUri2];
 
     const mementoMock: Memento = <any>{

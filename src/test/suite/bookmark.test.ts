@@ -15,18 +15,20 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   test('basic props', () => {
     const expectedKind = 'workspace';
     const expectedPath = '/workspace/test.txt';
-    const expectedUri = `file://${expectedPath}`;
+    const sourceUri = `file://${expectedPath}`;
+    const expectedUri = `${sourceUri}#L${DEFAULT_LINE_NUMBER}`;
 
-    const bookmark = new Bookmark(expectedUri, expectedKind);
+    const bookmark = new Bookmark(sourceUri, expectedKind);
 
     assert.strictEqual(bookmark.kind, expectedKind);
-    assert.strictEqual(bookmark.hasLineNumer, false);
     assert.strictEqual(bookmark.lineNumber, DEFAULT_LINE_NUMBER);
     assert.strictEqual(bookmark.uri.toString(), expectedUri);
 
     const normalizedExpectedPath = normalize(expectedPath);
     assert.strictEqual(bookmark.defaultName, normalizedExpectedPath);
+    assert.strictEqual(bookmark.description, `line ${DEFAULT_LINE_NUMBER}`);
     assert.strictEqual(bookmark.displayName, normalizedExpectedPath);
+    assert.strictEqual(bookmark.hasDisplayName, false);    
   });
 
   test('basic props (with line-number)', () => {
@@ -34,54 +36,52 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     const expectedLineNumber = 6;
     const expectedPath = '/workspace/test.txt';
     const expectedUri = `file://${expectedPath}#L${expectedLineNumber}`;
-    const expectedName = `${expectedPath}:${expectedLineNumber}`;
 
     const bookmark = new Bookmark(expectedUri, expectedKind);
 
     assert.strictEqual(bookmark.kind, expectedKind);
-    assert.strictEqual(bookmark.hasLineNumer, true);
     assert.strictEqual(bookmark.lineNumber, expectedLineNumber);
     assert.strictEqual(bookmark.uri.toString(), expectedUri);
 
-    const normalizedExpectedName = normalize(expectedName);
-    assert.strictEqual(bookmark.defaultName, normalizedExpectedName);
-    assert.strictEqual(bookmark.displayName, normalizedExpectedName);
+    const normalizedExpectedPath = normalize(expectedPath);
+    assert.strictEqual(bookmark.defaultName, normalizedExpectedPath);
+    assert.strictEqual(bookmark.description, `line ${expectedLineNumber}`);
+    assert.strictEqual(bookmark.displayName, normalizedExpectedPath);
+    assert.strictEqual(bookmark.hasDisplayName, false);
   });
 
   test('basic props (update line-number)', () => {
-    const expectedLineNumber = 6;
+    const sourceLineNumber = 6;
     const expectedPath = '/workspace/test.txt';
-    const expectedUri = `file://${expectedPath}#L${expectedLineNumber}`;
+    const sourceUri = `file://${expectedPath}#L${sourceLineNumber}`;
 
-    const bookmark = new Bookmark(expectedUri, 'global');
-    assert.strictEqual(bookmark.lineNumber, expectedLineNumber);
-    assert.strictEqual(bookmark.uri.toString(), expectedUri);
+    const bookmark = new Bookmark(sourceUri, 'global');
+    assert.strictEqual(bookmark.lineNumber, sourceLineNumber);
+    assert.strictEqual(bookmark.uri.toString(), sourceUri);
 
-    const newExpectedLineNumber = expectedLineNumber * 7;
-    const newExpectedName = `${expectedPath}:${newExpectedLineNumber}`;
-    const newNormalizedExpectedName = normalize(newExpectedName);
-    
-    bookmark.lineNumber = newExpectedLineNumber;
+    const expectedLineNumber = sourceLineNumber * 7;
+    bookmark.lineNumber = expectedLineNumber;
 
-    assert.strictEqual(bookmark.lineNumber, newExpectedLineNumber);
-    assert.strictEqual(bookmark.defaultName, newNormalizedExpectedName);
-    assert.strictEqual(bookmark.displayName, newNormalizedExpectedName);
+    const normalizedExpectedPath = normalize(expectedPath);
+    assert.strictEqual(bookmark.defaultName, normalizedExpectedPath);
+    assert.strictEqual(bookmark.description, `line ${expectedLineNumber}`);
+    assert.strictEqual(bookmark.displayName, normalizedExpectedPath);
+    assert.strictEqual(bookmark.hasDisplayName, false);
   });
 
   test('basic props (displayName)', () => {
     const expectedLineNumber = 6;
     const expectedPath = '/workspace/test.txt';
     const expectedUri = `file://${expectedPath}#L${expectedLineNumber}`;
-    const expectedName = `${expectedPath}:${expectedLineNumber}`;
     const expectedDisplayName = 'Custom Name';
 
     const bookmark = new Bookmark(expectedUri, 'global');
     bookmark.displayName = expectedDisplayName;
-    assert.strictEqual(bookmark.hasDisplayName, true);
 
-    const normalizedExpectedName = normalize(expectedName);
+    const normalizedExpectedPath = normalize(expectedPath);
+    assert.strictEqual(bookmark.defaultName, normalizedExpectedPath);
     assert.strictEqual(bookmark.displayName, expectedDisplayName);
-    assert.strictEqual(bookmark.defaultName, normalizedExpectedName);
+    assert.strictEqual(bookmark.hasDisplayName, true);
 
     bookmark.displayName = undefined;
     assert.strictEqual(bookmark.hasDisplayName, false);

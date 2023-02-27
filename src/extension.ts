@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { Bookmark, BookmarkKind, DEFAULT_LINE_NUMBER } from './bookmark';
+import { Bookmark, BookmarkKind } from './bookmark';
 import { BookmarkDatastore } from './bookmarkDatastore';
 import { BookmarkDecoratorController } from './bookmarkDecoratorController';
 import { BookmarkGroup } from './bookmarkGroup';
@@ -58,7 +58,7 @@ export async function activate(context: vscode.ExtensionContext) {
       "bookmarks.editBookmark.displayName.remove.tree",
       async (bookmark: Bookmark): Promise<void> => {
         await manager.renameBookmarkAsync(bookmark, undefined);
-        await treeView.reveal(bookmark, {focus: true});
+        await treeView.reveal(bookmark, { focus: true });
       }),
     vscode.commands.registerCommand(
       "bookmarks.editBookmark.displayName.update.tree",
@@ -221,7 +221,7 @@ async function updateDisplayNameAsync(
   });
   if (name !== undefined) {
     await bookmarkManager.renameBookmarkAsync(bookmark, name.trim());
-    await treeView.reveal(bookmark, {focus: true});
+    await treeView.reveal(bookmark, { focus: true });
   }
 }
 
@@ -237,7 +237,7 @@ async function updateLineNumberAsync(
   const lineNumber = await vscode.window.showInputBox({
     prompt: "Update bookmark line number",
     placeHolder: "Provide a line number",
-    value: (bookmark.hasLineNumer ? bookmark.lineNumber : DEFAULT_LINE_NUMBER).toString(),
+    value: bookmark.lineNumber.toString(),
     validateInput: (value) => {
       const n = Number(value);
       if (!Number.isInteger(n) || n < 1) {
@@ -252,7 +252,7 @@ async function updateLineNumberAsync(
   if (lineNumber !== undefined) {
     const updatedBookmark = await bookmarkManager.updateLineNumberAsync(bookmark, Number(lineNumber));
     if (updatedBookmark) {
-      await treeView.reveal(updatedBookmark, {focus: true});
+      await treeView.reveal(updatedBookmark, { focus: true });
     }
   }
 }

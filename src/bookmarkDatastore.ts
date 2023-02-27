@@ -161,26 +161,44 @@ export class BookmarkDatastore {
    * Upgrade datastore.
    */
   public async upgradeAsync(): Promise<boolean> {
-    const v0 = this.memento.get<V0_STORE_TYPE>(V0_MEMENTO_KEY_NAME);
-    if (!v0) {
-      return false;
-    }
-
-    // Try to load v1 first to address edge case of multiple VSCode instances
-    // running and an upgrade has already happened. Likewise, do not override
-    // existing data as it will be either empty or contain new data that this
-    // upgrade run would not know about.
+    const tasks: Thenable<void>[] = [];
     const v1 = this.memento.get<V1_STORE_TYPE>(V1_MEMENTO_KEY_NAME, {});
-    for (const uri of v0) {
-      if (!(uri in v1)) {
-        v1[uri] = {};
+    let saveV1 = false;
+
+    // V0 upgrade
+    const v0 = this.memento.get<V0_STORE_TYPE>(V0_MEMENTO_KEY_NAME);
+    if (v0) {
+      // Only copy URLs from v0 to v1 if they are not present already. If they
+      // are present, upgrade has already happened perhaps on the edge case of
+      // multiple VSCode instances running.
+      for (const uri of v0) {
+        if (!(uri in v1)) {
+          v1[uri] = {};
+          saveV1 = true;
+        }
       }
+
+      // Delete old store
+      tasks.push(this.memento.update(V0_MEMENTO_KEY_NAME, undefined));
     }
 
-    await Promise.all([
-      this.memento.update(V0_MEMENTO_KEY_NAME, undefined),
-      this.memento.update(V1_MEMENTO_KEY_NAME, v1)
-    ]);
-    return true;
+    // Fix URLs without line number info (pre-0.3.2)
+    Object.keys(v1).forEach((uriStr) => {
+      if (!uriStr.includes("#")) {
+        v1[`${uriStr}#L1`] = v1[uriStr];
+        delete v1[uriStr];
+        saveV1 = true;
+      }
+    });
+
+    if (saveV1 || tasks.length) {
+      await Promise.all([
+        this.memento.update(V1_MEMENTO_KEY_NAME, v1),
+        ...tasks
+      ]);
+      return true;
+    }
+
+    return false;
   }
 }

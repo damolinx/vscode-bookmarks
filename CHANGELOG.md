@@ -5,6 +5,7 @@
   - Better validation and clean-up for provided display names.
 - Add `Line Number` tree submenu allows to edit the line number associated with a Bookmark.
 - Fix: Bookmark sorting was not semantic, meaning you would get: `file:1`, `file:10`, `file:2` instead of expected `file:1`, `file:2`, `file:10`.
+- Fix: All bookmarks are required to have line number information on them. This is not visible from UI (1 would be used by default) but internally it would be treated differently. There is logic that will upgrade current URLS silently but if you run into any issues (e.g. an error reporting a bookmark URL is not found), `Remove All` might be the only way to fix them. Please report the issue if persistent. 
 
 ## 0.3.1
 - Fixes around `vscode-remote` URLs handling.

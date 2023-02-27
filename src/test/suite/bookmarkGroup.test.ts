@@ -102,7 +102,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   });
 
   test('removeAsync: empty', async () => {
-    const expectedBookmarkUri = Uri.parse("file://global/file1");
+    const expectedBookmarkUri = Uri.parse("file://global/file1#L1");
     const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento([]));
     const bookmark = new Bookmark(expectedBookmarkUri, bookmarkGroup.kind);
     const result = await bookmarkGroup.removeAsync([bookmark]);
@@ -110,8 +110,8 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   });
 
   test('removeAsync: existing', async () => {
-    const expectedBookmarkUri = Uri.parse("file://global/file3");
-    const expectedGlobal = ["file://global/file1", "file://global/file2", expectedBookmarkUri.toString()];
+    const expectedBookmarkUri = Uri.parse("file://global/file3#L1");
+    const expectedGlobal = ["file://global/file1#L1", "file://global/file2#L1", expectedBookmarkUri.toString()];
     const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento(expectedGlobal));
     const expectedBookmark = new Bookmark(expectedBookmarkUri, bookmarkGroup.kind);
     const result = await bookmarkGroup.removeAsync([expectedBookmark]);
@@ -128,9 +128,9 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   });
 
   test('removeAsync: some existing', async () => {
-    const bookmarkUri = Uri.parse("file://global/file2");
-    const expectedBookmarkUri = Uri.parse("file://global/file4");
-    const expectedGlobal = ["file://global/file1", expectedBookmarkUri.toString(), "file://global/file3"];
+    const bookmarkUri = Uri.parse("file://global/file2#L1");
+    const expectedBookmarkUri = Uri.parse("file://global/file4#L1");
+    const expectedGlobal = ["file://global/file1#L1", expectedBookmarkUri.toString(), "file://global/file3#L1"];
     const bookmarkGroup = new BookmarkGroup('Test', 'global', createMockMemento(expectedGlobal));
 
     const bookmark = new Bookmark(bookmarkUri, bookmarkGroup.kind);
