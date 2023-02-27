@@ -229,7 +229,7 @@ export class BookmarkManager implements vscode.Disposable {
    * @param bookmark Bookmark to update.
    * @param lineNumber Bookmark line number.
    */
-  public async updateLineNumberAsync(bookmark: Bookmark, lineNumber: number): Promise<void> {
+  public async updateLineNumberAsync(bookmark: Bookmark, lineNumber: number): Promise<Bookmark | undefined> {
     if (bookmark.lineNumber === lineNumber) {
       return; // Nothing to do
     }
@@ -242,6 +242,8 @@ export class BookmarkManager implements vscode.Disposable {
       bookmark.lineNumber = lineNumber;
       await bookmarkGroup.updateAsync(bookmark);
       this.onDidChangeBookmarkEmitter.fire([bookmark]);
+      return bookmark;
     }
+    return undefined;
   }
 }

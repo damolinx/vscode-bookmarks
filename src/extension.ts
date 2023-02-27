@@ -56,16 +56,18 @@ export async function activate(context: vscode.ExtensionContext) {
           bookmark.uri.scheme === "file" ? bookmark.uri.fsPath : bookmark.uri.path)),
     vscode.commands.registerCommand(
       "bookmarks.editBookmark.displayName.remove.tree",
-      (bookmark: Bookmark): Thenable<void> =>
-        manager.renameBookmarkAsync(bookmark, undefined)),
+      async (bookmark: Bookmark): Promise<void> => {
+        await manager.renameBookmarkAsync(bookmark, undefined);
+        await treeView.reveal(bookmark, {focus: true});
+      }),
     vscode.commands.registerCommand(
       "bookmarks.editBookmark.displayName.update.tree",
       (bookmark: Bookmark): Thenable<void> =>
-        updateDisplayNameAsync(manager, bookmark)),
+        updateDisplayNameAsync(bookmark, manager, treeView)),
     vscode.commands.registerCommand(
       "bookmarks.editBookmark.lineNumber.update.tree",
       (bookmark: Bookmark): Thenable<void> =>
-        updateLineNumberAsync(manager, bookmark)),
+        updateLineNumberAsync(bookmark, manager, treeView)),
     vscode.commands.registerCommand(
       "bookmarks.navigate.next.editor",
       (pathOrUri?: string | vscode.Uri): Thenable<void> =>
@@ -208,8 +210,9 @@ async function navigateAsync(
 
 // TODO: Move
 async function updateDisplayNameAsync(
+  bookmark: Bookmark,
   bookmarkManager: BookmarkManager,
-  bookmark: Bookmark): Promise<void> {
+  treeView: vscode.TreeView<Bookmark | BookmarkGroup | undefined>): Promise<void> {
   const name = await vscode.window.showInputBox({
     prompt: "Update bookmark display name",
     placeHolder: "Provide a custom display name",
@@ -218,13 +221,15 @@ async function updateDisplayNameAsync(
   });
   if (name !== undefined) {
     await bookmarkManager.renameBookmarkAsync(bookmark, name.trim());
+    await treeView.reveal(bookmark, {focus: true});
   }
 }
 
 // TODO: Move
 async function updateLineNumberAsync(
+  bookmark: Bookmark,
   bookmarkManager: BookmarkManager,
-  bookmark: Bookmark): Promise<void> {
+  treeView: vscode.TreeView<Bookmark | BookmarkGroup | undefined>): Promise<void> {
   const existingLineNumbers = bookmarkManager
     .getBookmarks({ ignoreLineNumber: true, kind: bookmark.kind, uri: bookmark.uri })
     .map((b) => b.lineNumber)
@@ -245,6 +250,9 @@ async function updateLineNumberAsync(
     }
   });
   if (lineNumber !== undefined) {
-    await bookmarkManager.updateLineNumberAsync(bookmark, Number(lineNumber));
+    const updatedBookmark = await bookmarkManager.updateLineNumberAsync(bookmark, Number(lineNumber));
+    if (updatedBookmark) {
+      await treeView.reveal(updatedBookmark, {focus: true});
+    }
   }
 }

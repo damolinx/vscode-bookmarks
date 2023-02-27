@@ -48,6 +48,26 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     assert.strictEqual(bookmark.displayName, normalizedExpectedName);
   });
 
+  test('basic props (update line-number)', () => {
+    const expectedLineNumber = 6;
+    const expectedPath = '/workspace/test.txt';
+    const expectedUri = `file://${expectedPath}#L${expectedLineNumber}`;
+
+    const bookmark = new Bookmark(expectedUri, 'global');
+    assert.strictEqual(bookmark.lineNumber, expectedLineNumber);
+    assert.strictEqual(bookmark.uri.toString(), expectedUri);
+
+    const newExpectedLineNumber = expectedLineNumber * 7;
+    const newExpectedName = `${expectedPath}:${newExpectedLineNumber}`;
+    const newNormalizedExpectedName = normalize(newExpectedName);
+    
+    bookmark.lineNumber = newExpectedLineNumber;
+
+    assert.strictEqual(bookmark.lineNumber, newExpectedLineNumber);
+    assert.strictEqual(bookmark.defaultName, newNormalizedExpectedName);
+    assert.strictEqual(bookmark.displayName, newNormalizedExpectedName);
+  });
+
   test('basic props (displayName)', () => {
     const expectedLineNumber = 6;
     const expectedPath = '/workspace/test.txt';

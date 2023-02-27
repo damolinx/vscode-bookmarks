@@ -108,6 +108,7 @@ export class Bookmark {
    */
   public set lineNumber(value: number) {
     if (this._lineNumber !== value) {
+      this._defaultName = undefined;
       this._uri = this.uri.with({fragment: `L${value}`});
       this._lineNumber = value;
     }
