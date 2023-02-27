@@ -236,7 +236,7 @@ async function updateLineNumberAsync(
     validateInput: (value) => {
       const n = Number(value);
       if (!Number.isInteger(n) || n < 1) {
-        return "Value must be a number greater than 1";
+        return "Line number must be an integer value greater than or equal to 1";
       }
       if (existingLineNumbers.includes(n)) {
         return "Line number conflicts with an existing bookmark";
