@@ -1,10 +1,14 @@
 # Change Log
 ## 0.3.2
-- TBD
+- Bookmark custom display name feature updates:
+  - `Display Name` tree submenu replaces the `Rename…` tree action. The `Update…` action allows to edit the display name as before but now you must use the `Remove` action to remove the custom display name (instead or providing an empty name).
+  - Better validation and clean-up for provided display names.
+- Add `Line Number` tree submenu allows to edit the line number associated with a Bookmark.
+- Misc. bug fixes and improvements.
 ## 0.3.1
 - Fixes around `vscode-remote` URLs handling.
 ## 0.3.0
-- Add `Rename…` tree action to modify the _displayed_ name of a bookmark.
+- Add `Rename…` tree action to modify the display name of a bookmark.
 - Rename `Remove Bookmark` tree action to `Remove` as there is no ambiguity.
 ## 0.2.1
 - Fix: Display `Show|Hide In-Editor Markers`actions only on `Bookmarks` view title. 
