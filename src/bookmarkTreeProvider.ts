@@ -95,7 +95,7 @@ export class BookmarkTreeProvider implements vscode.Disposable, vscode.TreeDataP
       }
     } else {
       children = this.manager.getBookmarks({ kind: element.kind })
-        .sort((a, b) => a.displayName.localeCompare(b.displayName));
+        .sort((a, b) => a.compare(b));
     }
     return children;
   }

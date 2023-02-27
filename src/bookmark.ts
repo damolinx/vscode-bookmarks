@@ -20,6 +20,7 @@ export class Bookmark {
   private _defaultName?: string;
   private _lineNumber?: number;
   private _uri: vscode.Uri;
+  private _uriWithoutLineNumber: vscode.Uri;
 
   /**
    * Bookmark kind.
@@ -45,7 +46,30 @@ export class Bookmark {
     const lineFragment = this._uri.fragment.substring(1);
     if (lineFragment) {
       this._lineNumber = parseInt(lineFragment);
+      this._uriWithoutLineNumber = this._uri.with({ fragment: '' });
+    } else {
+      this._uriWithoutLineNumber = this._uri;
     }
+  }
+
+  /**
+   * Determine sort order of bookmarks.
+   * @param that 
+   * @returns A negative value if this bookmark should be sorted before `that`,
+   * zero if they're equal, and a positive value otherwise. 
+   */
+  public compare(that: Bookmark) {
+    if (this.kind !== that.kind) {
+      return this.kind.localeCompare(that.kind);
+    }
+
+    if (this.hasDisplayName) {
+      const comparison = this.displayName.localeCompare(that.displayName);
+      if (comparison) {
+        return comparison;
+      }
+    }
+    return (this._uriWithoutLineNumber.toString().localeCompare(that._uriWithoutLineNumber.toString()) || this.lineNumber - that.lineNumber);
   }
 
   /**
@@ -84,14 +108,14 @@ export class Bookmark {
    * Checks if bookmark defines a custom display name.
    */
   public get hasDisplayName(): boolean {
-    return !!this.metadata[BOOKMARK_CUSTOM_NAME_METADATA_KEY]; 
+    return !!this.metadata[BOOKMARK_CUSTOM_NAME_METADATA_KEY];
   }
 
   /**
    * Checks if bookmark defines a line number.
    */
   public get hasLineNumer(): boolean {
-    return !!this._lineNumber; 
+    return !!this._lineNumber;
   }
 
   /**
@@ -109,7 +133,7 @@ export class Bookmark {
   public set lineNumber(value: number) {
     if (this._lineNumber !== value) {
       this._defaultName = undefined;
-      this._uri = this.uri.with({fragment: `L${value}`});
+      this._uri = this.uri.with({ fragment: `L${value}` });
       this._lineNumber = value;
     }
   }

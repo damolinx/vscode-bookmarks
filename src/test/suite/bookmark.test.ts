@@ -88,6 +88,43 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     assert.strictEqual(bookmark.displayName, bookmark.defaultName);
   });
 
+  test('compare', () => {
+    const bookmark1 = new Bookmark('file://file1#1', 'global');
+    const bookmark2 = new Bookmark('file://file1#2', 'global');
+    const bookmark3 = new Bookmark('file://file1#10', 'global');
+    const bookmark4 = new Bookmark('file://file2#3', 'global');
+    const bookmark5 = new Bookmark('file://file2#9', 'global');
+
+    assert.deepStrictEqual(
+      [bookmark4, bookmark1, bookmark5, bookmark3, bookmark2].sort((a, b) => a.compare(b)).map((b) => b.defaultName),
+      [bookmark1, bookmark2, bookmark3, bookmark4, bookmark5].map((b) => b.defaultName))
+  });
+
+  test('compare (with same display name)', () => {
+    const bookmark1 = new Bookmark('file://file1#1', 'global');
+    const bookmark2 = new Bookmark('file://file1#10', 'global');
+    const bookmark3 = new Bookmark('file://file2#2', 'global');
+    const bookmark4 = new Bookmark('file://file2#20', 'global');
+    
+    [bookmark1, bookmark2, bookmark3, bookmark4].forEach((b) => b.displayName = 'FOO');
+
+    assert.deepStrictEqual(
+      [bookmark4, bookmark1, bookmark3, bookmark2].sort((a, b) => a.compare(b)).map((b) => b.defaultName),
+      [bookmark1, bookmark2, bookmark3, bookmark4].map((b) => b.defaultName))
+  });
+
+  test('compare (with different kind)', () => {
+    const bookmark1 = new Bookmark('file://file1#1', 'global');
+    const bookmark2 = new Bookmark('file://file1#10', 'global');
+    const bookmark3 = new Bookmark('file://file1#1', 'workspace');
+    const bookmark4 = new Bookmark('file://file1#10', 'workspace');
+    
+    assert.deepStrictEqual(
+      [bookmark4, bookmark1, bookmark3, bookmark2].sort((a, b) => a.compare(b)).map((b) => b.defaultName),
+      [bookmark1, bookmark2, bookmark3, bookmark4].map((b) => b.defaultName))
+  });
+
+
   test('matchesUri', () => {
     const expectedLineNumber = 6;
     const expectedPath = '/workspace/test.txt';

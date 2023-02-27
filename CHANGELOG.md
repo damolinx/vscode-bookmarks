@@ -4,7 +4,8 @@
   - `Display Name` tree submenu replaces the `Rename…` tree action. The `Update…` action allows to edit the display name as before but now you must use the `Remove` action to remove the custom display name (instead or providing an empty name).
   - Better validation and clean-up for provided display names.
 - Add `Line Number` tree submenu allows to edit the line number associated with a Bookmark.
-- Misc. bug fixes and improvements.
+- Fix: Bookmark sorting was not semantic, meaning you would get: `file:1`, `file:10`, `file:2` instead of expected `file:1`, `file:2`, `file:10`.
+
 ## 0.3.1
 - Fixes around `vscode-remote` URLs handling.
 ## 0.3.0
