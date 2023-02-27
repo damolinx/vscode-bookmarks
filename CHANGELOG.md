@@ -2,7 +2,7 @@
 
 ## 0.3.3
 
-- TBD
+- Fix: Ensure datastore upgrade happens for all data stores, not just the global one.
 
 ## 0.3.2
 

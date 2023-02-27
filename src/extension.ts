@@ -1,6 +1,5 @@
 import * as vscode from 'vscode';
 import { Bookmark, BookmarkKind } from './bookmark';
-import { BookmarkDatastore } from './bookmarkDatastore';
 import { BookmarkDecoratorController } from './bookmarkDecoratorController';
 import { BookmarkGroup } from './bookmarkGroup';
 import { BookmarkManager } from './bookmarkManager';
@@ -20,7 +19,10 @@ export async function activate(context: vscode.ExtensionContext) {
     treeDataProvider: treeProvider,
   });
 
-  await new BookmarkDatastore(context.globalState).upgradeAsync();
+  await Promise.all([
+    manager.getBookmarkGroup('global').upgradeAsync(),
+    manager.getBookmarkGroup('workspace').upgradeAsync(),
+  ]);
 
   context.subscriptions.push(
     decoratorController,

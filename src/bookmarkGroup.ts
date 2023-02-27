@@ -97,4 +97,11 @@ export class BookmarkGroup {
   public async updateAsync(bookmark: Bookmark): Promise<void> {
     await this.datastore.addAsync([[bookmark.uri, bookmark.metadata]], true /* override */);
   }
+
+  /**
+   * Upgrade datastore.
+   */
+  public upgradeAsync(): Promise<boolean> {
+    return this.datastore.upgradeAsync();
+  }
 }
