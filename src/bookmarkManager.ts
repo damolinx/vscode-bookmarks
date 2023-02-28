@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { Bookmark, BookmarkKind } from './bookmark';
 import { BookmarkGroup } from './bookmarkGroup';
 import { BookmarkDatastore } from './datastore/bookmarkDatastore';
+import { MementoDatastore } from './datastore/mementoDatastore';
 
 export type BookmarkFilter = {
   /**
@@ -33,10 +34,13 @@ export class BookmarkManager implements vscode.Disposable {
    */
   constructor(context: vscode.ExtensionContext) {
     this.bookmarkGroups = [
-      new BookmarkGroup('Global', new BookmarkDatastore('global', context.globalState)),
+      new BookmarkGroup(
+        'Global',
+        new BookmarkDatastore('global', new MementoDatastore(context.globalState))
+      ),
       new BookmarkGroup(
         'Workspace',
-        new BookmarkDatastore('workspace', context.workspaceState)
+        new BookmarkDatastore('workspace', new MementoDatastore(context.workspaceState))
       ),
     ];
     this.onDidAddBookmarkEmitter = new vscode.EventEmitter<Bookmark[] | undefined>();

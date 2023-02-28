@@ -1,12 +1,15 @@
 import * as vscode from 'vscode';
-import { Bookmark, BookmarkKind } from '../bookmark';
 import { MementoDatastore, V1_BOOKMARK_METADATA } from './mementoDatastore';
+import { Bookmark, BookmarkKind } from '../bookmark';
 
 /**
  * Bookmark metadata format.
  */
 export type BOOKMARK_METADATA = V1_BOOKMARK_METADATA;
 
+/**
+ * Bookmark datastore.
+ */
 export class BookmarkDatastore {
   private readonly datastore: MementoDatastore;
   public readonly kind: BookmarkKind;
@@ -14,10 +17,10 @@ export class BookmarkDatastore {
   /**
    * Constructor.
    * @param kind Bookmark kind associated with store.
-   * @param memento Raw data store.
+   * @param datastore Raw datastore.
    */
-  constructor(kind: BookmarkKind, memento: vscode.Memento) {
-    this.datastore = new MementoDatastore(memento);
+  constructor(kind: BookmarkKind, datastore: MementoDatastore) {
+    this.datastore = datastore;
     this.kind = kind;
   }
 
