@@ -147,10 +147,9 @@ async function addBookmarkAsync(
 
   if (pathOrUri) {
     const uri = pathOrUri instanceof vscode.Uri ? pathOrUri : vscode.Uri.parse(pathOrUri);
-    const group = bookmarkManager.getBookmarkGroup(kind);
-    const bookmark = await group.datastore.addByUriAsync([uri]);
-    if (!bookmark) {
-      bookmarkTreeView.reveal(group.get(uri));
+    const bookmarks = await bookmarkManager.addBookmarksAsync(kind, uri);
+    if (bookmarks.length === 0) {
+      bookmarkTreeView.reveal(bookmarkManager.getBookmark(kind, uri));
     }
   }
 }

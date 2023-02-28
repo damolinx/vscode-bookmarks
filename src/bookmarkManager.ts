@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import { Bookmark, BookmarkKind } from './bookmark';
 import { BookmarkGroup } from './bookmarkGroup';
 import { BookmarkDatastore } from './datastore/bookmarkDatastore';
+import { BOOKMARK_METADATA_TYPE } from './datastore/datastore';
 import { MementoDatastore } from './datastore/mementoDatastore';
 
 export type BookmarkFilter = {
@@ -55,6 +56,24 @@ export class BookmarkManager implements vscode.Disposable {
     this.onDidAddBookmarkEmitter.dispose();
     this.onDidChangeBookmarkEmitter.dispose();
     this.onDidRemoveBookmarkEmitter.dispose();
+  }
+
+  /**
+   * Add bookmarks.
+   * @param kind Bookmark kind.
+   * @param uris URIs to bookmark with accompanying metadata.
+   * @return {@link Bookmark} instances.
+   */
+  public async addBookmarksAsync(
+    kind: BookmarkKind,
+    ...uris: vscode.Uri[]
+  ): Promise<Bookmark[]> {
+    const group = this.getBookmarkGroup(kind);
+    const addedBookmarks = await group.datastore.addByUriAsync(uris);
+    if (addedBookmarks.length) {
+      this.onDidAddBookmarkEmitter.fire(addedBookmarks);
+    }
+    return addedBookmarks;
   }
 
   /**
