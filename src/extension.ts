@@ -19,10 +19,10 @@ export async function activate(context: vscode.ExtensionContext) {
     treeDataProvider: treeProvider,
   });
 
-  await Promise.all([
-    manager.getBookmarkGroup('global').upgradeAsync(),
-    manager.getBookmarkGroup('workspace').upgradeAsync(),
-  ]);
+  // Upgrade, best effort
+  await manager
+    .upgradeDatastores()
+    .catch((error) => console.error(`Bookmarks: Failed to upgrade datastores.`, error));
 
   context.subscriptions.push(
     decoratorController,
@@ -104,18 +104,16 @@ export async function activate(context: vscode.ExtensionContext) {
     ),
     vscode.commands.registerCommand(
       'bookmarks.removeBookmarks.global',
-      async (): Promise<vscode.Uri[]> =>
-        (await manager.removeAllBookmarksAsync('global')).map((b) => b.uri)
+      async (): Promise<void> => await manager.removeAllBookmarksAsync('global')
     ),
     vscode.commands.registerCommand(
       'bookmarks.removeBookmarks.tree',
-      async (bookmarkGroup: BookmarkGroup): Promise<vscode.Uri[]> =>
-        (await manager.removeAllBookmarksAsync(bookmarkGroup.kind)).map((b) => b.uri)
+      async (bookmarkGroup: BookmarkGroup): Promise<void> =>
+        await manager.removeAllBookmarksAsync(bookmarkGroup.kind)
     ),
     vscode.commands.registerCommand(
       'bookmarks.removeBookmarks.workspace',
-      async (): Promise<vscode.Uri[]> =>
-        (await manager.removeAllBookmarksAsync('workspace')).map((b) => b.uri)
+      async (): Promise<void> => await manager.removeAllBookmarksAsync('workspace')
     ),
     vscode.commands.registerCommand(
       'bookmarks.decorators.hide',
@@ -148,9 +146,11 @@ async function addBookmarkAsync(
   }
 
   if (pathOrUri) {
-    const bookmark = await bookmarkManager.addBookmarkAsync(kind, pathOrUri);
+    const uri = pathOrUri instanceof vscode.Uri ? pathOrUri : vscode.Uri.parse(pathOrUri);
+    const group = bookmarkManager.getBookmarkGroup(kind);
+    const bookmark = await group.datastore.addByUriAsync([uri]);
     if (!bookmark) {
-      bookmarkTreeView.reveal(bookmarkManager.getBookmark(kind, pathOrUri));
+      bookmarkTreeView.reveal(group.get(uri));
     }
   }
 }

@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { V1_BOOKMARK_METADATA } from './bookmarkDatastore';
+import { V1_BOOKMARK_METADATA } from './datastore/mementoDatastore';
 
 const BOOKMARK_CUSTOM_NAME_METADATA_KEY = 'displayName';
 

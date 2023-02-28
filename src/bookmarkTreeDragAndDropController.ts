@@ -55,7 +55,9 @@ export class BookmarkTreeDragAndDropController
 
     // Add URIs to Target Kind.
     if (droppedUris?.length) {
-      await this.bookmarkManager.addBookmarksAsync(kind, ...droppedUris);
+      await this.bookmarkManager
+        .getBookmarkGroup(kind)
+        .datastore.addByUriAsync(droppedUris);
     }
 
     // Remove Bookmarks that were dragged

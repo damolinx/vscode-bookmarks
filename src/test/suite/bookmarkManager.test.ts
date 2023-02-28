@@ -2,7 +2,7 @@ import * as assert from 'assert';
 import { basename } from 'path';
 
 import { Bookmark } from '../../bookmark';
-import { V1_MEMENTO_KEY_NAME, V1_STORE_TYPE } from '../../bookmarkDatastore';
+import { V1_MEMENTO_KEY_NAME, V1_STORE_TYPE } from '../../datastore/mementoDatastore';
 import { BookmarkManager } from '../../bookmarkManager';
 
 suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
