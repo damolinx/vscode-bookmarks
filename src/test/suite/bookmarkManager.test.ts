@@ -2,8 +2,8 @@ import * as assert from 'assert';
 import { basename } from 'path';
 
 import { Bookmark } from '../../bookmark';
-import { V1_MEMENTO_KEY_NAME, V1_STORE_TYPE } from '../../datastore/mementoDatastore';
 import { BookmarkManager } from '../../bookmarkManager';
+import { createMockMemento } from './datastore/common';
 
 suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   let restorables: { restore: () => void }[];
@@ -145,28 +145,8 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
 });
 
 function createBookmarkManager(expectedGlobal: string[], expectedWorkspace: string[]) {
-  const global = expectedGlobal.reduce((m, v) => {
-    m[v] = {};
-    return m;
-  }, <V1_STORE_TYPE>{});
-
-  const workspace = expectedWorkspace.reduce((m, v) => {
-    m[v] = {};
-    return m;
-  }, <V1_STORE_TYPE>{});
-
   return new BookmarkManager(<any>{
-    globalState: <any>{
-      get<T>(key: string, _defaultValue: T) {
-        assert.strictEqual(key, V1_MEMENTO_KEY_NAME);
-        return global;
-      },
-    },
-    workspaceState: <any>{
-      get<T>(key: string, _defaultValue: T) {
-        assert.strictEqual(key, V1_MEMENTO_KEY_NAME);
-        return workspace;
-      },
-    },
+    globalState: createMockMemento(...expectedGlobal),
+    workspaceState: createMockMemento(...expectedWorkspace),
   });
 }
