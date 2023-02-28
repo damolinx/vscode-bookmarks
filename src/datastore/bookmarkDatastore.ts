@@ -12,6 +12,10 @@ export type BOOKMARK_METADATA = V1_BOOKMARK_METADATA;
  */
 export class BookmarkDatastore {
   private readonly datastore: MementoDatastore;
+
+  /**
+   * Datastore associated kind.
+   */
   public readonly kind: BookmarkKind;
 
   /**
@@ -26,9 +30,9 @@ export class BookmarkDatastore {
 
   /**
    * Add bookmarks. If a bookmark with the same {@link Bookmark.uri} is already
-   * present, it is skipped which also first-one-wins in case of duplicates.
-   * @param bookmarks Bookmark to add.
-   * @return Added bookmarks.
+   * present, it is skipped which means first-one-wins in case of duplicates.
+   * @param bookmarks Bookmarks to add.
+   * @return Added bookmarks (no duplicates).
    */
   public async addAsync(...bookmarks: Bookmark[]): Promise<Bookmark[]> {
     const added = await this.datastore.addAsync(bookmarks.map((b) => [b.uri, b.metadata]));
@@ -37,20 +41,18 @@ export class BookmarkDatastore {
   }
 
   /**
-   * Add bookmarks. If a bookmark with the same {@link vscode.Uri} is already
+   * Add bookmarks. If a bookmark with the same  is already
    * present, it is skipped which also first-one-wins in case of duplicates.
-   * @param bookmarks Bookmark to add.
+   * @param uris Bookmark URIs to add (line-number is significant).
    * @param defaultMetadata Metadata for new bookmarks.
-   * @return Added bookmarks.
+   * @return Added bookmarks (no duplicates).
    */
   public async addByUriAsync(
-    bookmarks: vscode.Uri[],
+    uris: vscode.Uri[],
     defaultMetadata: BOOKMARK_METADATA = {}
   ): Promise<Bookmark[]> {
-    const added = await this.datastore.addAsync(
-      bookmarks.map((uri) => [uri, defaultMetadata])
-    );
-    const addedBookmarks = bookmarks
+    const added = await this.datastore.addAsync(uris.map((uri) => [uri, defaultMetadata]));
+    const addedBookmarks = uris
       .filter((uri) => added.includes(uri))
       .map((uri) => new Bookmark(uri, this.kind, defaultMetadata));
     return addedBookmarks;
@@ -66,7 +68,7 @@ export class BookmarkDatastore {
   /**
    * Get bookmark associated with `uri`.
    * @param uri URI to search for (line data is significant).
-   * @returns Bookmark, if found.
+   * @returns {@link Bookmark} instance, if found.
    */
   public get(uri: vscode.Uri): Bookmark | undefined {
     const metadata = this.datastore.get(uri);
@@ -92,7 +94,7 @@ export class BookmarkDatastore {
 
   /**
    * Remove bookmarks.
-   * @param bookmarks Bookmark to remove.
+   * @param bookmarks Bookmarks to remove.
    * @return Removed bookmarks (no duplicates).
    */
   public async removeAsync(...bookmarks: Bookmark[]): Promise<Bookmark[]> {
@@ -102,14 +104,14 @@ export class BookmarkDatastore {
   }
 
   /**
-   * Remove bookmarks by URI (line-number is significant).
-   * @param bookmarks Bookmark to remove.
+   * Remove bookmarks by URI.
+   * @param uris URIs to remove (line-number is significant).
    * @return Removed bookmarks (no duplicates).
    */
-  public async removeByUriAsync(...bookmarks: vscode.Uri[]): Promise<vscode.Uri[]> {
-    const removed = await this.datastore.removeAsync(bookmarks);
-    const removedBookmarks = bookmarks.filter((uri) => removed.includes(uri));
-    return removedBookmarks;
+  public async removeByUriAsync(...uris: vscode.Uri[]): Promise<vscode.Uri[]> {
+    const removed = await this.datastore.removeAsync(uris);
+    const removedUris = uris.filter((uri) => removed.includes(uri));
+    return removedUris;
   }
 
   /**
@@ -118,12 +120,12 @@ export class BookmarkDatastore {
    * @return Upserted bookmarks (no duplicates).
    */
   public async upsert(...bookmarks: Bookmark[]): Promise<Bookmark[]> {
-    const added = await this.datastore.addAsync(
+    const upserted = await this.datastore.addAsync(
       bookmarks.map((b) => [b.uri, b.metadata]),
       true /* override */
     );
-    const addedBookmarks = bookmarks.filter((b) => added.includes(b.uri));
-    return addedBookmarks;
+    const upsertedBookmarks = bookmarks.filter((b) => upserted.includes(b.uri));
+    return upsertedBookmarks;
   }
 
   /**

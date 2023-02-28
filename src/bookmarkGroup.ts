@@ -36,7 +36,7 @@ export class BookmarkGroup {
   }
 
   /**
-   * Bookmark group `kind`.
+   * Bookmark group kind.
    */
   public get kind(): BookmarkKind {
     return this.datastore.kind;
