@@ -1,17 +1,12 @@
 import * as vscode from 'vscode';
-import { MementoDatastore, V1_BOOKMARK_METADATA } from './mementoDatastore';
+import { Datastore, BOOKMARK_METADATA_TYPE } from './datastore';
 import { Bookmark, BookmarkKind } from '../bookmark';
-
-/**
- * Bookmark metadata format.
- */
-export type BOOKMARK_METADATA = V1_BOOKMARK_METADATA;
 
 /**
  * Bookmark datastore.
  */
 export class BookmarkDatastore {
-  private readonly datastore: MementoDatastore;
+  private readonly datastore: Datastore;
 
   /**
    * Datastore associated kind.
@@ -23,7 +18,7 @@ export class BookmarkDatastore {
    * @param kind Bookmark kind associated with store.
    * @param datastore Raw datastore.
    */
-  constructor(kind: BookmarkKind, datastore: MementoDatastore) {
+  constructor(kind: BookmarkKind, datastore: Datastore) {
     this.datastore = datastore;
     this.kind = kind;
   }
@@ -49,7 +44,7 @@ export class BookmarkDatastore {
    */
   public async addByUriAsync(
     uris: vscode.Uri[],
-    defaultMetadata: BOOKMARK_METADATA = {}
+    defaultMetadata: BOOKMARK_METADATA_TYPE = {}
   ): Promise<Bookmark[]> {
     const added = await this.datastore.addAsync(uris.map((uri) => [uri, defaultMetadata]));
     const addedBookmarks = uris

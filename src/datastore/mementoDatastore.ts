@@ -1,32 +1,26 @@
 import * as vscode from 'vscode';
+import {
+  Datastore,
+  V0_STORE_TYPE,
+  V1_BOOKMARK_METADATA_TYPE,
+  V1_STORE_TYPE,
+} from './datastore';
 
 /**
  * Memento key name used up to v0.2.1.
  */
 export const V0_MEMENTO_KEY_NAME = 'bookmarks';
-/**
- * Data format used up to v0.2.1.
- */
-export type V0_STORE_TYPE = string[];
 
 /**
  * Memento key name used from v0.3.0.
  */
 export const V1_MEMENTO_KEY_NAME = 'bookmarks.v1';
-/**
- * Metadata format used from v0.3.0.
- */
-export type V1_BOOKMARK_METADATA = { [key: string]: string };
-/**
- * Data format used from v0.3.0.
- */
-export type V1_STORE_TYPE = { [uri: string]: V1_BOOKMARK_METADATA };
 
 /**
  * This class uses a {@link vscode.Memento} as backing store for
  * bookmark data.
  */
-export class MementoDatastore {
+export class MementoDatastore implements Datastore {
   private readonly memento: vscode.Memento;
 
   /**
@@ -44,7 +38,7 @@ export class MementoDatastore {
    * @returns List of added URIs, no duplicates.
    */
   public async addAsync(
-    entries: (vscode.Uri | [vscode.Uri, V1_BOOKMARK_METADATA])[],
+    entries: (vscode.Uri | [vscode.Uri, V1_BOOKMARK_METADATA_TYPE])[],
     override: boolean = false
   ): Promise<vscode.Uri[]> {
     const addedUris: vscode.Uri[] = [];
@@ -52,7 +46,7 @@ export class MementoDatastore {
 
     for (const entry of entries) {
       let uri: vscode.Uri;
-      let metadata: V1_BOOKMARK_METADATA;
+      let metadata: V1_BOOKMARK_METADATA_TYPE;
 
       if (entry instanceof vscode.Uri) {
         uri = entry;
@@ -96,7 +90,7 @@ export class MementoDatastore {
    * @param uri URI to search for (line data is significant).
    * @return Metadata, if found.
    */
-  public get(uri: vscode.Uri): V1_BOOKMARK_METADATA | undefined {
+  public get(uri: vscode.Uri): V1_BOOKMARK_METADATA_TYPE | undefined {
     const bookmarks = this.getAll();
     return bookmarks[uri.toString()];
   }
@@ -150,11 +144,11 @@ export class MementoDatastore {
   public async replaceAsync(
     uri: vscode.Uri,
     newUri: vscode.Uri
-  ): Promise<V1_BOOKMARK_METADATA | undefined> {
+  ): Promise<V1_BOOKMARK_METADATA_TYPE | undefined> {
     const bookmarks = this.getAll();
     const uriStr = uri.toString();
 
-    let metadata: V1_BOOKMARK_METADATA | undefined = bookmarks[uriStr];
+    let metadata: V1_BOOKMARK_METADATA_TYPE | undefined = bookmarks[uriStr];
 
     if (metadata) {
       bookmarks[newUri.toString()] = metadata;
