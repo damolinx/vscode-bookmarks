@@ -67,10 +67,15 @@ export class BookmarkManager implements vscode.Disposable {
     kind: BookmarkKind,
     ...uris: vscode.Uri[]
   ): Promise<Bookmark[]> {
+    if (uris.length === 0) {
+      return [];
+    }
+
     const group = this.getBookmarkGroup(kind);
     const addedBookmarks = await group.datastore.addAsync(
       ...uris.map((uri) => new Bookmark(uri, kind))
     );
+
     if (addedBookmarks.length) {
       this.onDidAddBookmarkEmitter.fire(addedBookmarks);
     }
@@ -81,6 +86,7 @@ export class BookmarkManager implements vscode.Disposable {
    * Get bookmark associated with `pathOrUri`.
    * @param kind Bookmark kind.
    * @param pathOrUri URI to bookmark.
+   * @returns Bookmark instance or `undefined`.
    */
   public getBookmark(
     kind: BookmarkKind,
@@ -183,8 +189,10 @@ export class BookmarkManager implements vscode.Disposable {
 
     for (const group of this.bookmarkGroups) {
       const groupBookmarks = bookmarks.filter((b) => b.kind === group.kind);
-      const removedGroupBookmarks = await group.datastore.removeAsync(...groupBookmarks);
-      removedBookmarks.push(...removedGroupBookmarks);
+      if (groupBookmarks.length > 0) {
+        const removedGroupBookmarks = await group.datastore.removeAsync(...groupBookmarks);
+        removedBookmarks.push(...removedGroupBookmarks);
+      }
     }
 
     if (removedBookmarks.length) {
@@ -214,14 +222,10 @@ export class BookmarkManager implements vscode.Disposable {
     if (bookmark.displayName === name) {
       return; // Nothing to do
     }
-    const bookmarkGroup: BookmarkGroup | undefined = this.bookmarkGroups.find(
-      (group) => group.kind === bookmark.kind
-    );
-    if (bookmarkGroup) {
-      bookmark.displayName = name;
-      await bookmarkGroup.datastore.upsert(bookmark);
-      this.onDidChangeBookmarkEmitter.fire([bookmark]);
-    }
+    const bookmarkGroup = this.getBookmarkGroup(bookmark.kind);
+    bookmark.displayName = name;
+    await bookmarkGroup.datastore.upsert(bookmark);
+    this.onDidChangeBookmarkEmitter.fire([bookmark]);
   }
 
   /**
@@ -236,21 +240,16 @@ export class BookmarkManager implements vscode.Disposable {
     if (bookmark.lineNumber === lineNumber) {
       return; // Nothing to do
     }
-    const bookmarkGroup: BookmarkGroup | undefined = this.bookmarkGroups.find(
-      (group) => group.kind === bookmark.kind
-    );
-    if (bookmarkGroup) {
-      // TODO: bookmark might need to behave more as an immutable.
-      const oldUri = bookmark.uri;
-      bookmark.lineNumber = lineNumber;
-      await bookmarkGroup.datastore.updateBookmarkUri(oldUri, bookmark.uri);
 
-      // TODO: this can only be reported correctly with old and new instances
-      // TODO: should this be reported as add/remove?
-      this.onDidChangeBookmarkEmitter.fire(undefined);
-      return bookmark;
-    }
-    return undefined;
+    const bookmarkGroup = this.getBookmarkGroup(bookmark.kind);
+    // TODO: bookmark might need to behave more as an immutable.
+    const oldUri = bookmark.uri;
+    bookmark.lineNumber = lineNumber;
+    await bookmarkGroup.datastore.updateBookmarkUri(oldUri, bookmark.uri);
+
+    this.onDidRemoveBookmarkEmitter.fire([new Bookmark(oldUri, bookmark.kind)]);
+    this.onDidAddBookmarkEmitter.fire([bookmark]);
+    return bookmark;
   }
 
   /**
