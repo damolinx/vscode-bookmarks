@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { Datastore, BOOKMARK_METADATA_TYPE } from './datastore';
+import { Datastore } from './datastore';
 import { Bookmark, BookmarkKind } from '../bookmark';
 
 /**
@@ -32,24 +32,6 @@ export class BookmarkDatastore {
   public async addAsync(...bookmarks: Bookmark[]): Promise<Bookmark[]> {
     const added = await this.datastore.addAsync(bookmarks.map((b) => [b.uri, b.metadata]));
     const addedBookmarks = bookmarks.filter((b) => added.includes(b.uri));
-    return addedBookmarks;
-  }
-
-  /**
-   * Add bookmarks. If a bookmark with the same  is already
-   * present, it is skipped which also first-one-wins in case of duplicates.
-   * @param uris Bookmark URIs to add (line-number is significant).
-   * @param defaultMetadata Metadata for new bookmarks.
-   * @return Added bookmarks (no duplicates).
-   */
-  public async addByUriAsync(
-    uris: vscode.Uri[],
-    defaultMetadata: BOOKMARK_METADATA_TYPE = {}
-  ): Promise<Bookmark[]> {
-    const added = await this.datastore.addAsync(uris.map((uri) => [uri, defaultMetadata]));
-    const addedBookmarks = uris
-      .filter((uri) => added.includes(uri))
-      .map((uri) => new Bookmark(uri, this.kind, defaultMetadata));
     return addedBookmarks;
   }
 

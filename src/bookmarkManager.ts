@@ -69,7 +69,9 @@ export class BookmarkManager implements vscode.Disposable {
     ...uris: vscode.Uri[]
   ): Promise<Bookmark[]> {
     const group = this.getBookmarkGroup(kind);
-    const addedBookmarks = await group.datastore.addByUriAsync(uris);
+    const addedBookmarks = await group.datastore.addAsync(
+      ...uris.map((uri) => new Bookmark(uri, kind))
+    );
     if (addedBookmarks.length) {
       this.onDidAddBookmarkEmitter.fire(addedBookmarks);
     }
