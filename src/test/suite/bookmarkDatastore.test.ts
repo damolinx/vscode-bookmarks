@@ -1,10 +1,10 @@
 import * as assert from 'assert';
 import { basename } from 'path';
 
-import { createMockMemento } from './common';
-import { BookmarkDatastore } from '../../../datastore/bookmarkDataStore';
-import { Bookmark, BookmarkKind } from '../../../bookmark';
-import { MementoDatastore } from '../../../datastore/mementoDatastore';
+import { createMockMemento } from './datastore/common';
+import { BookmarkDatastore } from '../../bookmarkDatastore';
+import { Bookmark, BookmarkKind } from '../../bookmark';
+import { MementoDatastore } from '../../datastore/mementoDatastore';
 
 suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   let restorables: { restore: () => void }[];

@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { Bookmark, BookmarkKind } from './bookmark';
-import { BookmarkDatastore } from './datastore/bookmarkDatastore';
+import { BookmarkDatastore } from './bookmarkDatastore';
 
 export class BookmarkGroup {
   public readonly datastore: BookmarkDatastore;

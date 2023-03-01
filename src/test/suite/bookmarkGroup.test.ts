@@ -4,8 +4,8 @@ import { basename } from 'path';
 
 import { createMockMemento } from './datastore/common';
 import { BookmarkKind } from '../../bookmark';
+import { BookmarkDatastore } from '../../bookmarkDatastore';
 import { BookmarkGroup } from '../../bookmarkGroup';
-import { BookmarkDatastore } from '../../datastore/bookmarkDatastore';
 import { MementoDatastore } from '../../datastore/mementoDatastore';
 
 suite(`Suite: ${basename(__filename, '.test.js')}`, () => {

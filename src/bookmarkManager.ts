@@ -1,8 +1,7 @@
 import * as vscode from 'vscode';
 import { Bookmark, BookmarkKind } from './bookmark';
+import { BookmarkDatastore } from './bookmarkDatastore';
 import { BookmarkGroup } from './bookmarkGroup';
-import { BookmarkDatastore } from './datastore/bookmarkDatastore';
-import { BOOKMARK_METADATA_TYPE } from './datastore/datastore';
 import { MementoDatastore } from './datastore/mementoDatastore';
 
 export type BookmarkFilter = {

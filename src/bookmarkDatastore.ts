@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
-import { Datastore } from './datastore';
-import { Bookmark, BookmarkKind } from '../bookmark';
+import { Datastore } from './datastore/datastore';
+import { Bookmark, BookmarkKind } from './bookmark';
 
 /**
  * Bookmark datastore.
