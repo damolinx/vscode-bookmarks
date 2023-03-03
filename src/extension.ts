@@ -19,17 +19,11 @@ export async function activate(context: vscode.ExtensionContext) {
     treeDataProvider: treeProvider,
   });
 
-  // Upgrade, best effort
-  await manager
-    .upgradeDatastores()
-    .catch((error) => console.error(`Bookmarks: Failed to upgrade datastores.`, error));
+  context.subscriptions.push(decoratorController, manager, treeProvider, treeView);
 
+  // Register even handlers
   context.subscriptions.push(
-    decoratorController,
-    manager,
-    treeProvider,
-    treeView,
-    // Ensures node names reflect current workspace by refreshing tree.
+    // Refrest three so node names reflect current workspace.
     vscode.workspace.onDidChangeWorkspaceFolders(() => treeProvider.refresh()),
     // Reveal a node when added.
     manager.onDidAddBookmark(
@@ -63,20 +57,18 @@ export async function activate(context: vscode.ExtensionContext) {
     ),
     vscode.commands.registerCommand(
       'bookmarks.editBookmark.displayName.remove.tree',
-      async (bookmark: Bookmark): Promise<void> => {
-        await manager.updateBookmarkAsync(bookmark, { displayName: '' });
-        await treeView.reveal(bookmark, { focus: true });
-      }
+      (bookmark: Bookmark): Promise<void> =>
+        updateDisplayNameAsync(manager, treeView, bookmark, '')
     ),
     vscode.commands.registerCommand(
       'bookmarks.editBookmark.displayName.update.tree',
       (bookmark: Bookmark): Thenable<void> =>
-        updateDisplayNameAsync(bookmark, manager, treeView)
+        updateDisplayNameAsync(manager, treeView, bookmark)
     ),
     vscode.commands.registerCommand(
       'bookmarks.editBookmark.lineNumber.update.tree',
       (bookmark: Bookmark): Thenable<void> =>
-        updateLineNumberAsync(bookmark, manager, treeView)
+        updateLineNumberAsync(manager, treeView, bookmark)
     ),
     vscode.commands.registerCommand(
       'bookmarks.navigate.next.editor',
@@ -128,6 +120,11 @@ export async function activate(context: vscode.ExtensionContext) {
       (): Promise<boolean> => decoratorController.toogleVisibilityAsync()
     )
   );
+
+  // Upgrade, best effort
+  await manager
+    .upgradeDatastores()
+    .catch((error) => console.error(`Bookmarks: Failed to upgrade datastores.`, error));
 }
 
 async function addBookmarkAsync(
@@ -253,28 +250,34 @@ async function removeAllBookmarksAsync(
 
 // TODO: Move
 async function updateDisplayNameAsync(
-  bookmark: Bookmark,
   bookmarkManager: BookmarkManager,
-  treeView: vscode.TreeView<Bookmark | BookmarkGroup | undefined>
+  treeView: vscode.TreeView<Bookmark | BookmarkGroup | undefined>,
+  bookmark: Bookmark,
+  name?: string
 ): Promise<void> {
-  const name = await vscode.window.showInputBox({
-    prompt: 'Update bookmark display name',
-    placeHolder: 'Provide a custom display name',
-    value: bookmark.hasDisplayName ? bookmark.displayName : '',
-    validateInput: (value) =>
-      !value.trim().length ? 'Display name cannot be empty' : undefined,
-  });
-  if (name !== undefined) {
-    await bookmarkManager.updateBookmarkAsync(bookmark, { displayName: name.trim() });
-    await treeView.reveal(bookmark, { focus: true });
+  const targetName =
+    name !== undefined
+      ? name
+      : await vscode.window.showInputBox({
+          prompt: 'Update bookmark display name',
+          placeHolder: 'Provide a custom display name',
+          value: bookmark.hasDisplayName ? bookmark.displayName : '',
+          validateInput: (value) =>
+            value.trim().length === 0 ? 'Display name cannot be empty' : undefined,
+        });
+  if (targetName !== undefined) {
+    const updatedBookmark = await bookmarkManager.updateBookmarkAsync(bookmark, {
+      displayName: targetName.trim(),
+    });
+    await treeView.reveal(updatedBookmark, { focus: true });
   }
 }
 
 // TODO: Move
 async function updateLineNumberAsync(
-  bookmark: Bookmark,
   bookmarkManager: BookmarkManager,
-  treeView: vscode.TreeView<Bookmark | BookmarkGroup | undefined>
+  treeView: vscode.TreeView<Bookmark | BookmarkGroup | undefined>,
+  bookmark: Bookmark
 ): Promise<void> {
   const existingLineNumbers = bookmarkManager
     .getBookmarks({
