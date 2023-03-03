@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { basename, dirname } from 'path';
 import { Bookmark } from './bookmark';
 import { BookmarkGroup } from './bookmarkGroup';
 import { BookmarkManager } from './bookmarkManager';
@@ -65,7 +66,6 @@ export class BookmarkTreeProvider
       treeItem.command = {
         title: 'Open',
         command: 'vscode.open',
-        tooltip: `Open ${element.displayName}`,
         arguments: [element.uri],
       };
       treeItem.contextValue = 'bookmark';
