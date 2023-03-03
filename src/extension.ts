@@ -57,7 +57,7 @@ export async function activate(context: vscode.ExtensionContext) {
     ),
     vscode.commands.registerCommand(
       'bookmarks.editBookmark.displayName.remove.tree',
-      (bookmark: Bookmark): Promise<void> =>
+      (bookmark: Bookmark): Thenable<void> =>
         updateDisplayNameAsync(manager, treeView, bookmark, '')
     ),
     vscode.commands.registerCommand(
@@ -82,42 +82,43 @@ export async function activate(context: vscode.ExtensionContext) {
     ),
     vscode.commands.registerCommand(
       'bookmarks.removeBookmark.global',
-      (pathOrUri: string | vscode.Uri): Promise<boolean> =>
+      (pathOrUri: string | vscode.Uri): Thenable<boolean> =>
         manager.removeBookmarkAsync(pathOrUri, 'global')
     ),
     vscode.commands.registerCommand(
       'bookmarks.removeBookmark.tree',
-      (bookmark: Bookmark): Promise<boolean> => manager.removeBookmarkAsync(bookmark)
+      (bookmark?: Bookmark): Thenable<boolean> =>
+        removeBookmarksAsync(manager, treeView, bookmark)
     ),
     vscode.commands.registerCommand(
       'bookmarks.removeBookmark.workspace',
-      (pathOrUri: string | vscode.Uri): Promise<boolean> =>
+      (pathOrUri: string | vscode.Uri): Thenable<boolean> =>
         manager.removeBookmarkAsync(pathOrUri, 'workspace')
     ),
     vscode.commands.registerCommand(
       'bookmarks.removeBookmarks.global',
-      (): Promise<void> => removeAllBookmarksAsync(manager, 'global')
+      (): Thenable<void> => removeAllBookmarksAsync(manager, 'global')
     ),
     vscode.commands.registerCommand(
       'bookmarks.removeBookmarks.tree',
-      (bookmarkGroup: BookmarkGroup): Promise<void> =>
+      (bookmarkGroup: BookmarkGroup): Thenable<void> =>
         removeAllBookmarksAsync(manager, bookmarkGroup.kind)
     ),
     vscode.commands.registerCommand(
       'bookmarks.removeBookmarks.workspace',
-      (): Promise<void> => removeAllBookmarksAsync(manager, 'workspace')
+      (): Thenable<void> => removeAllBookmarksAsync(manager, 'workspace')
     ),
     vscode.commands.registerCommand(
       'bookmarks.decorators.hide',
-      (): Promise<boolean> => decoratorController.toogleVisibilityAsync()
+      (): Thenable<boolean> => decoratorController.toogleVisibilityAsync()
     ),
     vscode.commands.registerCommand(
       'bookmarks.decorators.show',
-      (): Promise<boolean> => decoratorController.toogleVisibilityAsync()
+      (): Thenable<boolean> => decoratorController.toogleVisibilityAsync()
     ),
     vscode.commands.registerCommand(
       'bookmarks.decorators.toggle',
-      (): Promise<boolean> => decoratorController.toogleVisibilityAsync()
+      (): Thenable<boolean> => decoratorController.toogleVisibilityAsync()
     )
   );
 
@@ -128,8 +129,8 @@ export async function activate(context: vscode.ExtensionContext) {
 }
 
 async function addBookmarkAsync(
-  bookmarkManager: BookmarkManager,
-  bookmarkTreeView: vscode.TreeView<Bookmark | BookmarkGroup | undefined>,
+  manager: BookmarkManager,
+  treeView: vscode.TreeView<Bookmark | BookmarkGroup | undefined>,
   kind: BookmarkKind,
   pathOrUri?: string | vscode.Uri
 ): Promise<void> {
@@ -144,9 +145,9 @@ async function addBookmarkAsync(
 
   if (pathOrUri) {
     const uri = pathOrUri instanceof vscode.Uri ? pathOrUri : vscode.Uri.parse(pathOrUri);
-    const bookmarks = await bookmarkManager.addBookmarksAsync(kind, uri);
+    const bookmarks = await manager.addBookmarksAsync(kind, uri);
     if (bookmarks.length === 0) {
-      bookmarkTreeView.reveal(bookmarkManager.getBookmark(kind, uri));
+      treeView.reveal(manager.getBookmark(kind, uri));
     }
   }
 }
@@ -187,15 +188,11 @@ async function getMatchingBookmarksAsync(
 }
 
 async function navigateAsync(
-  bookmarkManager: BookmarkManager,
+  manager: BookmarkManager,
   next: boolean,
   pathOrUri?: string | vscode.Uri
 ): Promise<void> {
-  const result = await getMatchingBookmarksAsync(
-    pathOrUri,
-    bookmarkManager,
-    getFilterPredicate()
-  );
+  const result = await getMatchingBookmarksAsync(pathOrUri, manager, getFilterPredicate());
   if (result) {
     const bookmark = result.bookmarks.sort(getSortPredicate()).at(0);
     if (bookmark) {
@@ -226,10 +223,10 @@ async function navigateAsync(
 }
 
 async function removeAllBookmarksAsync(
-  bookmarkManager: BookmarkManager,
+  manager: BookmarkManager,
   kind?: BookmarkKind
 ): Promise<void> {
-  if (!bookmarkManager.hasBookmarks(kind)) {
+  if (!manager.hasBookmarks(kind)) {
     return; // Nothing to do
   }
 
@@ -244,13 +241,33 @@ async function removeAllBookmarksAsync(
       'No'
     )) === 'Yes'
   ) {
-    await bookmarkManager.removeAllBookmarksAsync(kind);
+    await manager.removeAllBookmarksAsync(kind);
   }
+}
+
+async function removeBookmarksAsync(
+  manager: BookmarkManager,
+  treeView: vscode.TreeView<Bookmark | BookmarkGroup | undefined>,
+  bookmark?: Bookmark
+): Promise<boolean> {
+  let bookmarksToRemove: Bookmark[] = [];
+  if (bookmark) {
+    bookmarksToRemove.push(bookmark);
+  } else {
+    treeView.selection.forEach((element) => {
+      if (element instanceof Bookmark) {
+        bookmarksToRemove.push(element);
+      }
+    });
+  }
+
+  const removed = await manager.removeBookmarksAsync(...bookmarksToRemove);
+  return !!removed.length;
 }
 
 // TODO: Move
 async function updateDisplayNameAsync(
-  bookmarkManager: BookmarkManager,
+  manager: BookmarkManager,
   treeView: vscode.TreeView<Bookmark | BookmarkGroup | undefined>,
   bookmark: Bookmark,
   name?: string
@@ -259,14 +276,14 @@ async function updateDisplayNameAsync(
     name !== undefined
       ? name
       : await vscode.window.showInputBox({
-          prompt: 'Update bookmark display name',
-          placeHolder: 'Provide a custom display name',
+          prompt: 'Provide a new bookmark display name',
+          placeHolder: 'Enter a display name…',
           value: bookmark.hasDisplayName ? bookmark.displayName : '',
           validateInput: (value) =>
-            value.trim().length === 0 ? 'Display name cannot be empty' : undefined,
+            value.trim().length === 0 ? 'Name cannot be empty' : undefined,
         });
   if (targetName !== undefined) {
-    const updatedBookmark = await bookmarkManager.updateBookmarkAsync(bookmark, {
+    const updatedBookmark = await manager.updateBookmarkAsync(bookmark, {
       displayName: targetName.trim(),
     });
     await treeView.reveal(updatedBookmark, { focus: true });
@@ -275,11 +292,11 @@ async function updateDisplayNameAsync(
 
 // TODO: Move
 async function updateLineNumberAsync(
-  bookmarkManager: BookmarkManager,
+  manager: BookmarkManager,
   treeView: vscode.TreeView<Bookmark | BookmarkGroup | undefined>,
   bookmark: Bookmark
 ): Promise<void> {
-  const existingLineNumbers = bookmarkManager
+  const existingLineNumbers = manager
     .getBookmarks({
       ignoreLineNumber: true,
       kind: bookmark.kind,
@@ -303,7 +320,7 @@ async function updateLineNumberAsync(
     },
   });
   if (lineNumber !== undefined) {
-    const updatedBookmark = await bookmarkManager.updateBookmarkAsync(bookmark, {
+    const updatedBookmark = await manager.updateBookmarkAsync(bookmark, {
       lineNumber: Number(lineNumber),
     });
     await treeView.reveal(updatedBookmark, { focus: true });

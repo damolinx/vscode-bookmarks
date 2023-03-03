@@ -60,7 +60,7 @@ export class BookmarkTreeDragAndDropController
 
     // Remove Bookmarks that were dragged
     if (draggedBookmarks?.length) {
-      await this.bookmarkManager.removeBookmarksAsync(draggedBookmarks);
+      await this.bookmarkManager.removeBookmarksAsync(...draggedBookmarks);
     }
   }
 }

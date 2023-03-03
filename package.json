@@ -133,6 +133,13 @@
         "icon": "$(close-all)"
       }
     ],
+    "keybindings": [
+      {
+        "command": "bookmarks.removeBookmark.tree",
+        "key": "Delete",
+        "when": "focusedView == bookmarks && !inputFocus"
+      }
+    ],
     "menus": {
       "bookmark.editBookmark.displayName": [
         {

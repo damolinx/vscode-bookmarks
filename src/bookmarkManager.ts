@@ -177,15 +177,18 @@ export class BookmarkManager implements vscode.Disposable {
       throw new Error(`Missing kind for ${pathOrUriOrBookmark}`);
     }
 
-    return !!(bookmark && (await this.removeBookmarksAsync([bookmark])).length);
+    return !!(bookmark && (await this.removeBookmarksAsync(bookmark)).length);
   }
 
   /**
    * Remove bookmarks.
    * @param bookmarks Bookmarks to remove.
    */
-  public async removeBookmarksAsync(bookmarks: Bookmark[]): Promise<Bookmark[]> {
+  public async removeBookmarksAsync(...bookmarks: Bookmark[]): Promise<Bookmark[]> {
     const removedBookmarks: Bookmark[] = [];
+    if (!bookmarks.length) {
+      return removedBookmarks;
+    }
 
     for (const group of this.bookmarkGroups) {
       const groupBookmarks = bookmarks.filter((b) => b.kind === group.kind);

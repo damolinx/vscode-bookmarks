@@ -1,5 +1,9 @@
 # Change Log
 
+# 0.3.4
+
+- Add support for `Delete` key to remove selected node.
+
 ## 0.3.3
 
 - Fix: Ensure datastore upgrade happens for all data stores, not just the global one.
