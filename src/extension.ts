@@ -104,16 +104,16 @@ export async function activate(context: vscode.ExtensionContext) {
     ),
     vscode.commands.registerCommand(
       'bookmarks.removeBookmarks.global',
-      async (): Promise<void> => await manager.removeAllBookmarksAsync('global')
+      (): Promise<void> => removeAllBookmarksAsync(manager, 'global')
     ),
     vscode.commands.registerCommand(
       'bookmarks.removeBookmarks.tree',
-      async (bookmarkGroup: BookmarkGroup): Promise<void> =>
-        await manager.removeAllBookmarksAsync(bookmarkGroup.kind)
+      (bookmarkGroup: BookmarkGroup): Promise<void> =>
+        removeAllBookmarksAsync(manager, bookmarkGroup.kind)
     ),
     vscode.commands.registerCommand(
       'bookmarks.removeBookmarks.workspace',
-      async (): Promise<void> => await manager.removeAllBookmarksAsync('workspace')
+      (): Promise<void> => removeAllBookmarksAsync(manager, 'workspace')
     ),
     vscode.commands.registerCommand(
       'bookmarks.decorators.hide',
@@ -225,6 +225,29 @@ async function navigateAsync(
     const position = new vscode.Position(bookmark.lineNumber - 1, 0);
     editor.selection = new vscode.Selection(position, position);
     editor.revealRange(new vscode.Range(position, position));
+  }
+}
+
+async function removeAllBookmarksAsync(
+  bookmarkManager: BookmarkManager,
+  kind?: BookmarkKind
+): Promise<void> {
+  if (!bookmarkManager.hasBookmarks(kind)) {
+    return; // Nothing to do
+  }
+
+  if (
+    (await vscode.window.showInformationMessage(
+      `Are you sure you want to delete all ${kind ? `'${kind}' ` : ``}bookmarks?`,
+      {
+        modal: true,
+        detail: 'This action only affects the selected group but it is irreversible.',
+      },
+      'Yes',
+      'No'
+    )) === 'Yes'
+  ) {
+    await bookmarkManager.removeAllBookmarksAsync(kind);
   }
 }
 

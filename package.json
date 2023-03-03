@@ -219,10 +219,6 @@
       "view/item/context": [
         {
           "command": "bookmarks.addBookmark.tree",
-          "when": "view == bookmarks && viewItem == bookmarkGroup && editorIsOpen"
-        },
-        {
-          "command": "bookmarks.addBookmark.tree",
           "when": "view == bookmarks && viewItem == bookmarkGroup && editorIsOpen",
           "group": "inline"
         },
