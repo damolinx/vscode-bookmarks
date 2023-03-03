@@ -64,7 +64,7 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(
       'bookmarks.editBookmark.displayName.remove.tree',
       async (bookmark: Bookmark): Promise<void> => {
-        await manager.renameBookmarkAsync(bookmark, undefined);
+        await manager.updateBookmarkAsync(bookmark, { displayName: '' });
         await treeView.reveal(bookmark, { focus: true });
       }
     ),
@@ -242,7 +242,7 @@ async function updateDisplayNameAsync(
       !value.trim().length ? 'Display name cannot be empty' : undefined,
   });
   if (name !== undefined) {
-    await bookmarkManager.renameBookmarkAsync(bookmark, name.trim());
+    await bookmarkManager.updateBookmarkAsync(bookmark, { displayName: name.trim() });
     await treeView.reveal(bookmark, { focus: true });
   }
 }
@@ -277,12 +277,9 @@ async function updateLineNumberAsync(
     },
   });
   if (lineNumber !== undefined) {
-    const updatedBookmark = await bookmarkManager.updateLineNumberAsync(
-      bookmark,
-      Number(lineNumber)
-    );
-    if (updatedBookmark) {
-      await treeView.reveal(updatedBookmark, { focus: true });
-    }
+    const updatedBookmark = await bookmarkManager.updateBookmarkAsync(bookmark, {
+      lineNumber: Number(lineNumber),
+    });
+    await treeView.reveal(updatedBookmark, { focus: true });
   }
 }

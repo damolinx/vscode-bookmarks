@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { Bookmark, BookmarkKind } from './bookmark';
+import { Bookmark, BookmarkKind, BOOKMARK_CHANGE } from './bookmark';
 import { BookmarkDatastore } from './bookmarkDatastore';
 import { BookmarkGroup } from './bookmarkGroup';
 import { MementoDatastore } from './datastore/mementoDatastore';
@@ -214,42 +214,40 @@ export class BookmarkManager implements vscode.Disposable {
   }
 
   /**
-   * Update a bookmark display name.
+   * Update a bookmark.
    * @param bookmark Bookmark to rename.
-   * @param name Bookmark display name. Use `undefined` to remove a previously defined name.
+   * @param change Bookmark change.
+   * @returns Updated {@link Bookmark} instance if any changes were applied,
+   * `bookmark` otherwise.
    */
-  public async renameBookmarkAsync(bookmark: Bookmark, name?: string): Promise<void> {
-    if (bookmark.displayName === name) {
-      return; // Nothing to do
-    }
-    const bookmarkGroup = this.getBookmarkGroup(bookmark.kind);
-    bookmark.displayName = name;
-    await bookmarkGroup.datastore.upsert(bookmark);
-    this.onDidChangeBookmarkEmitter.fire([bookmark]);
-  }
-
-  /**
-   * Update a bookmark line number.
-   * @param bookmark Bookmark to update.
-   * @param lineNumber Bookmark line number.
-   */
-  public async updateLineNumberAsync(
+  public async updateBookmarkAsync(
     bookmark: Bookmark,
-    lineNumber: number
-  ): Promise<Bookmark | undefined> {
-    if (bookmark.lineNumber === lineNumber) {
-      return; // Nothing to do
+    change: Omit<BOOKMARK_CHANGE, 'kind'>
+  ): Promise<Bookmark> {
+    const newBookmark = bookmark.with(change);
+    if (bookmark === newBookmark) {
+      return bookmark; // Nothing to do
     }
 
-    const bookmarkGroup = this.getBookmarkGroup(bookmark.kind);
-    // TODO: bookmark might need to behave more as an immutable.
-    const oldUri = bookmark.uri;
-    bookmark.lineNumber = lineNumber;
-    await bookmarkGroup.datastore.updateBookmarkUri(oldUri, bookmark.uri);
+    const rename = bookmark.uri !== newBookmark.uri;
 
-    this.onDidRemoveBookmarkEmitter.fire([new Bookmark(oldUri, bookmark.kind)]);
-    this.onDidAddBookmarkEmitter.fire([bookmark]);
-    return bookmark;
+    const bookmarkGroup = this.getBookmarkGroup(bookmark.kind);
+    const [updatedBookmark] = await (rename
+      ? bookmarkGroup.datastore.addAsync(newBookmark) //TODO: should be atomic
+      : bookmarkGroup.datastore.upsert(newBookmark));
+
+    if (updatedBookmark) {
+      if (rename) {
+        await bookmarkGroup.datastore.removeAsync(bookmark);
+        this.onDidAddBookmarkEmitter.fire([newBookmark]);
+        this.onDidRemoveBookmarkEmitter.fire([bookmark]);
+      } else {
+        // TODO: old/new or change
+        this.onDidChangeBookmarkEmitter.fire([newBookmark]);
+      }
+    }
+
+    return updatedBookmark || bookmark;
   }
 
   /**

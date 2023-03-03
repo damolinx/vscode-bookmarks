@@ -15,6 +15,15 @@ export type BookmarkKind = 'global' | 'workspace';
 export const DEFAULT_LINE_NUMBER = 1;
 
 /**
+ * Bookmark change.
+ */
+export type BOOKMARK_CHANGE = {
+  displayName?: string | null;
+  kind?: BookmarkKind;
+  lineNumber?: number;
+};
+
+/**
  * Bookmark.
  */
 export class Bookmark {
@@ -113,7 +122,7 @@ export class Bookmark {
   /**
    * Set the bookmark name to use in UI elements.
    */
-  public set displayName(value: string | undefined) {
+  private set displayName(value: string | undefined) {
     if (value) {
       this.metadata[BOOKMARK_CUSTOM_NAME_METADATA_KEY] = value;
     } else {
@@ -138,7 +147,7 @@ export class Bookmark {
   /**
    * Set Bookmark line number.
    */
-  public set lineNumber(value: number) {
+  private set lineNumber(value: number) {
     // TODO: validate positive integer (or really make this immutable).
     if (this._lineNumber !== value) {
       this._defaultName = undefined;
@@ -166,5 +175,43 @@ export class Bookmark {
    */
   public get uri(): vscode.Uri {
     return this._uri;
+  }
+
+  /**
+   * Derive a {@link Bookmark} from `this` (similar to {@link Uri.with}).
+   * @param change An object that describes a change.
+   * @return A {@link Bookmark} that reflects the given change. Returns
+   * `this` if there are no effective changes.
+   */
+  public with(change: BOOKMARK_CHANGE): Bookmark {
+    let { displayName, kind, lineNumber } = change;
+    if (displayName === undefined) {
+      displayName = this.displayName;
+    } else if (!displayName) {
+      displayName = undefined;
+    }
+    if (kind === undefined) {
+      kind = this.kind;
+    }
+    if (lineNumber === undefined) {
+      lineNumber = this.lineNumber;
+    }
+
+    if (
+      this.displayName === displayName &&
+      this.kind === kind &&
+      this.lineNumber === lineNumber
+    ) {
+      return this;
+    }
+
+    const bookmark = new Bookmark(this.uri, kind);
+    if (displayName != undefined) {
+      bookmark.displayName = displayName;
+    }
+    if (lineNumber !== undefined) {
+      bookmark.lineNumber = lineNumber;
+    }
+    return bookmark;
   }
 }
