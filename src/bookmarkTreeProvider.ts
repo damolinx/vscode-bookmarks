@@ -3,13 +3,15 @@ import { Bookmark } from './bookmark';
 import { BookmarkGroup } from './bookmarkGroup';
 import { BookmarkManager } from './bookmarkManager';
 
+type EventType = undefined | Bookmark | Bookmark[];
+
 export class BookmarkTreeProvider
   implements vscode.Disposable, vscode.TreeDataProvider<Bookmark | BookmarkGroup>
 {
+  private readonly disposable: vscode.Disposable;
   private readonly manager: BookmarkManager;
-  private readonly onDidChangeTreeDataEmitter: vscode.EventEmitter<
-    undefined | Bookmark | Bookmark[]
-  >;
+  public readonly onDidChangeTreeData: vscode.Event<EventType>;
+  private readonly onDidChangeTreeDataEmitter: vscode.EventEmitter<EventType>;
 
   /**
    * Constructor.
@@ -17,32 +19,28 @@ export class BookmarkTreeProvider
    */
   constructor(manager: BookmarkManager) {
     this.manager = manager;
-    this.manager.onDidAddBookmark(() => this.refresh());
-    this.manager.onDidChangeBookmark(() => this.refresh());
-    this.manager.onDidRemoveBookmark(() => this.refresh());
-    this.onDidChangeTreeDataEmitter = new vscode.EventEmitter<
-      undefined | Bookmark | Bookmark[]
-    >();
+    this.onDidChangeTreeDataEmitter = new vscode.EventEmitter<EventType>();
+    this.onDidChangeTreeData = this.onDidChangeTreeDataEmitter.event;
+
+    this.disposable = vscode.Disposable.from(
+      this.manager.onDidAddBookmark((e) => this.refresh(e)),
+      this.manager.onDidChangeBookmark((e) => this.refresh(e)),
+      this.manager.onDidRemoveBookmark((e) => this.refresh(e)),
+      this.onDidChangeTreeDataEmitter
+    );
   }
 
   /**
    * Dispose this object.
    */
   public dispose() {
-    this.onDidChangeTreeDataEmitter.dispose();
-  }
-
-  /**
-   * Event to signal that bookmarks have changed.
-   */
-  public get onDidChangeTreeData(): vscode.Event<undefined | Bookmark | Bookmark[]> {
-    return this.onDidChangeTreeDataEmitter.event;
+    this.disposable.dispose();
   }
 
   /**
    * Get parent of `element`.
    * @param element The element for which the parent has to be returned.
-   * @return Parent of `element`, or undefined if it is a root.
+   * @return Parent of `element`, or `undefined` if it is a root.
    */
   public getParent(
     element: Bookmark | BookmarkGroup
@@ -53,8 +51,8 @@ export class BookmarkTreeProvider
   }
 
   /**
-   * Get {@link TreeItem} representation of the `bookmark`.
-   * @param bookmark The bookmark for which {@link TreeItem} representation is asked for.
+   * Get {@link TreeItem} representation of  `element`.
+   * @param element The element for which {@link TreeItem} representation is asked for.
    * @return TreeItem representation of the bookmark.
    */
   public getTreeItem(
