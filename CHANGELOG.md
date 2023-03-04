@@ -3,6 +3,7 @@
 # 0.3.4
 
 - Add support for `Delete` key to remove selected node.
+- Fix: Preserve metadata on drag-and-drop operations.
 
 ## 0.3.3
 
