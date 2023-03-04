@@ -25,7 +25,7 @@ export class BookmarkTreeDragAndDropController
     if (bookmarksOnly.length) {
       treeDataTransfer.set(
         'application/vnd.code.tree.bookmarks',
-        new vscode.DataTransferItem(source)
+        new vscode.DataTransferItem(bookmarksOnly)
       );
     }
   }

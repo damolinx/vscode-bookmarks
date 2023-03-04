@@ -23,9 +23,9 @@ export class BookmarkTreeProvider
     this.onDidChangeTreeData = this.onDidChangeTreeDataEmitter.event;
 
     this.disposable = vscode.Disposable.from(
-      this.manager.onDidAddBookmark((e) => this.refresh(e)),
-      this.manager.onDidChangeBookmark((e) => this.refresh(e)),
-      this.manager.onDidRemoveBookmark((e) => this.refresh(e)),
+      this.manager.onDidAddBookmark(() => this.refresh()),
+      this.manager.onDidChangeBookmark(() => this.refresh()),
+      this.manager.onDidRemoveBookmark(() => this.refresh()),
       this.onDidChangeTreeDataEmitter
     );
   }
@@ -101,7 +101,7 @@ export class BookmarkTreeProvider
   }
 
   /**
-   * Refresh tree,.
+   * Refresh tree.
    * @param data Bookmark(s) to refresh. If `undefined`, it means refresh from the root.
    */
   public refresh(data?: Bookmark | Bookmark[]) {
