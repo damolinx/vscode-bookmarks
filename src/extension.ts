@@ -249,7 +249,7 @@ async function removeBookmarksAsync(
   treeView: vscode.TreeView<Bookmark | BookmarkGroup | undefined>,
   bookmark?: Bookmark
 ): Promise<boolean> {
-  let bookmarksToRemove: Bookmark[] = [];
+  const bookmarksToRemove: Bookmark[] = [];
   if (bookmark) {
     bookmarksToRemove.push(bookmark);
   } else {

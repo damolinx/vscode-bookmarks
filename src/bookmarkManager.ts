@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { Bookmark, BookmarkKind, BOOKMARK_CHANGE } from './bookmark';
 import { BookmarkDatastore } from './bookmarkDatastore';
 import { BookmarkGroup } from './bookmarkGroup';
-import { BOOKMARK_METADATA_TYPE } from './datastore/datastore';
+import { MetadataType } from './datastore/datastore';
 import { MementoDatastore } from './datastore/mementoDatastore';
 
 export type BookmarkFilter = {
@@ -66,7 +66,7 @@ export class BookmarkManager implements vscode.Disposable {
    */
   public async addBookmarksAsync(
     kind: BookmarkKind,
-    ...entries: { uri: string | vscode.Uri; metadata?: BOOKMARK_METADATA_TYPE }[]
+    ...entries: { uri: string | vscode.Uri; metadata?: MetadataType }[]
   ): Promise<Bookmark[]> {
     if (entries.length === 0) {
       return [];

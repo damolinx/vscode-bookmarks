@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { BOOKMARK_METADATA_TYPE } from './datastore/datastore';
+import { MetadataType } from './datastore/datastore';
 
 const BOOKMARK_CUSTOM_NAME_METADATA_KEY = 'displayName';
 
@@ -39,7 +39,7 @@ export class Bookmark {
   /**
    * Metadata.
    */
-  public readonly metadata: BOOKMARK_METADATA_TYPE;
+  public readonly metadata: MetadataType;
 
   /**
    * Constructor.
@@ -50,7 +50,7 @@ export class Bookmark {
   constructor(
     pathOrUri: string | vscode.Uri,
     kind: BookmarkKind,
-    metadata: BOOKMARK_METADATA_TYPE = {}
+    metadata: MetadataType = {}
   ) {
     this.kind = kind;
     this.metadata = metadata;
@@ -116,7 +116,10 @@ export class Bookmark {
    * Get the bookmark name to use in UI elements.
    */
   public get displayName(): string {
-    return this.metadata[BOOKMARK_CUSTOM_NAME_METADATA_KEY] || this.defaultName;
+    return (
+      <string | undefined>this.metadata[BOOKMARK_CUSTOM_NAME_METADATA_KEY] ||
+      this.defaultName
+    );
   }
 
   /**

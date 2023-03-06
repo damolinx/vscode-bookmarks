@@ -1,40 +1,49 @@
 import * as vscode from 'vscode';
 
 /**
- * Bookmark metadata format.
+ * Bookmark metadata format (used from v0.3.0).
+ * - {@link StoreType} was added as after v0.3.3 to support nesting.
  */
-export type BOOKMARK_METADATA_TYPE = V1_BOOKMARK_METADATA_TYPE;
+export type MetadataType = { [key: string]: string | StoreType };
 
 /**
- * Bookmark data format.
+ * Bookmark data format (used from v0.3.1).
  */
-export type STORE_TYPE = V1_STORE_TYPE;
+export type StoreType = { [uri: string]: MetadataType };
 
 /**
- * Data format used up to v0.2.1.
+ * Basic Datastore for {@link StoreType} data.
  */
-export type V0_STORE_TYPE = string[];
-
-/**
- * Metadata format used from v0.3.0.
- */
-export type V1_BOOKMARK_METADATA_TYPE = { [key: string]: string };
-/**
- * Data format used from v0.3.0.
- */
-export type V1_STORE_TYPE = { [uri: string]: V1_BOOKMARK_METADATA_TYPE };
-
-/**
- * This class uses a {@link vscode.Memento} as backing store for
- * bookmark data.
- */
-export interface Datastore<TSTORE = STORE_TYPE, TMETADATA = BOOKMARK_METADATA_TYPE> {
+export interface RawDatastore {
   /**
-   * Add bookmarks.
-   * @param entries Bookmarks to add.
-   * @returns List of added URIs, no duplicates.
+   * Gets the store state. `undefined` means there is no saved state.
    */
-  addAsync(entries: (vscode.Uri | [vscode.Uri, TMETADATA])[]): Promise<vscode.Uri[]>;
+  get(): undefined | StoreType;
+
+  /**
+   * Sets the store state. Using `undefined` as `state` clears any stored state.
+   * @param state Store state. MUST NOT contain cyclic references.
+   */
+  setAsync(state?: StoreType): void | Thenable<void>;
+}
+
+/**
+ * This class represents a datastore with appropriate restrictions and semantics to handle
+ * extension data. This contrasts with the {@link RawDatastore} which caan be anything but
+ * it is forced to expose operations that get and set {@link StoreType} data. This allows
+ * to use a {@link vscode.Memento} to store data or virtualize individual metadata entries
+ * as their own data stores while keeping common data semantics in all cases.
+ */
+export class Datastore<TSTORE extends RawDatastore = RawDatastore> {
+  protected readonly rawStore: TSTORE;
+
+  /**
+   * Constructor.
+   * @param rawStore Raw datastore.
+   */
+  constructor(rawStore: TSTORE) {
+    this.rawStore = rawStore;
+  }
 
   /**
    * Add bookmarks.
@@ -42,46 +51,105 @@ export interface Datastore<TSTORE = STORE_TYPE, TMETADATA = BOOKMARK_METADATA_TY
    * @param override Allow overriding a matching bookmark definition, otherwise ignore.
    * @returns List of added URIs, no duplicates.
    */
-  addAsync(
-    entries: (vscode.Uri | [vscode.Uri, TMETADATA])[],
-    override: boolean
-  ): Promise<vscode.Uri[]>;
+  public async addAsync(
+    entries: (vscode.Uri | [vscode.Uri, MetadataType])[],
+    override: boolean = false
+  ): Promise<vscode.Uri[]> {
+    const addedUris: vscode.Uri[] = [];
+    const bookmarks = this.getAll();
+
+    for (const entry of entries) {
+      let uri: vscode.Uri;
+      let metadata: MetadataType;
+
+      if (entry instanceof vscode.Uri) {
+        uri = entry;
+        metadata = {};
+      } else {
+        [uri, metadata] = entry;
+      }
+
+      const uriStr = uri.toString();
+      if (override || !(uriStr in bookmarks)) {
+        const b: StoreType = {};
+        b[uriStr] = metadata;
+
+        bookmarks[uriStr] = metadata;
+        addedUris.push(uri);
+      }
+    }
+
+    if (addedUris.length) {
+      await this.rawStore.setAsync(bookmarks);
+    }
+    return addedUris;
+  }
 
   /**
    * Checks if `uri` is bookmarked.
    * @param uri URI to test (line data is significant).
    */
-  contains(uri: vscode.Uri): boolean;
+  public contains(uri: vscode.Uri): boolean {
+    const bookmarks = this.getAll();
+    return uri.toString() in bookmarks;
+  }
 
   /**
    * Number of bookmarks in the store.
    */
-  get count(): number;
+  public get count(): number {
+    const bookmarks = this.getAll();
+    return Object.keys(bookmarks).length;
+  }
 
   /**
    * Get bookmark metadata associated with `uri`.
    * @param uri URI to search for (line data is significant).
    * @return Metadata, if found.
    */
-  get(uri: vscode.Uri): TMETADATA | undefined;
+  public get(uri: vscode.Uri): MetadataType | undefined {
+    const bookmarks = this.getAll();
+    return bookmarks[uri.toString()];
+  }
 
   /**
    * Return all bookmark data.
    * @return Stored data.
    */
-  getAll(): TSTORE;
+  public getAll(): StoreType {
+    return this.rawStore.get() || {};
+  }
 
   /**
    * Remove bookmarks.
    * @param uris URIs to search for (line data is significant).
    * @returns List of removed bookmarks, no duplicates.
    */
-  removeAsync(uris: vscode.Uri | Iterable<vscode.Uri>): Promise<vscode.Uri[]>;
+  public async removeAsync(uris: vscode.Uri | Iterable<vscode.Uri>): Promise<vscode.Uri[]> {
+    const removedUris: vscode.Uri[] = [];
+    const bookmarks = this.getAll();
+
+    const iterableUris = uris instanceof vscode.Uri ? [uris] : uris;
+    for (const uri of iterableUris) {
+      const uriStr = uri.toString();
+      if (uriStr in bookmarks) {
+        delete bookmarks[uriStr];
+        removedUris.push(uri);
+      }
+    }
+
+    if (removedUris.length) {
+      await this.rawStore.setAsync(bookmarks);
+    }
+    return removedUris;
+  }
 
   /**
    * Remove all bookmarks.
    */
-  removeAllAsync(): Promise<void>;
+  public async removeAllAsync(): Promise<void> {
+    await this.rawStore.setAsync(undefined);
+  }
 
   /**
    * Replace `uri` with `replaceUri` in a single operation. If `uri` is not found,
@@ -90,10 +158,28 @@ export interface Datastore<TSTORE = STORE_TYPE, TMETADATA = BOOKMARK_METADATA_TY
    * @param newUri Target URI.
    * @returns Metadata that was associated with `replaceUri`, if `uri` was found.
    */
-  replaceAsync(uri: vscode.Uri, newUri: vscode.Uri): Promise<TMETADATA | undefined>;
+  public async replaceAsync(
+    uri: vscode.Uri,
+    newUri: vscode.Uri
+  ): Promise<MetadataType | undefined> {
+    const bookmarks = this.getAll();
+    const uriStr = uri.toString();
+
+    const metadata: MetadataType | undefined = bookmarks[uriStr];
+    if (metadata) {
+      bookmarks[newUri.toString()] = metadata;
+      delete bookmarks[uriStr];
+      await this.rawStore.setAsync(bookmarks);
+    }
+
+    return metadata;
+  }
 
   /**
    * Upgrade datastore.
+   * @returns `true` if any changes were made.
    */
-  upgradeAsync(): Promise<boolean>;
+  public async upgradeAsync(): Promise<boolean> {
+    return false;
+  }
 }

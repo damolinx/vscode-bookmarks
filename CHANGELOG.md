@@ -1,6 +1,6 @@
 # Change Log
 
-# 0.3.4
+# TBD
 
 - Add support for `Delete` key to remove selected node.
 - Fix: Preserve metadata on drag-and-drop operations.
