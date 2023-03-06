@@ -1,5 +1,9 @@
 # Change Log
 
+# TBD
+
+- Use `Cmd+Backspace` in Mac to delete a node (instead of `Cmd+Delete`).
+
 # 0.3.5 - 0.3.6
 
 - Fix: `Delete` bound incorrectly to change display name.

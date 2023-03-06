@@ -149,7 +149,7 @@
       {
         "command": "bookmarks.removeBookmark.tree",
         "key": "Delete",
-        "mac": "Cmd+Delete",
+        "mac": "Cmd+Backspace",
         "when": "focusedView == bookmarks && !inputFocus"
       }
     ],
