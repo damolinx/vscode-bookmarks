@@ -1,8 +1,8 @@
 # Change Log
 
-# 0.3.5
+# 0.3.5 - 0.3.6
 
-- Fix: `Delete` bound incorrectly to change dislay name.
+- Fix: `Delete` bound incorrectly to change display name.
 
 # 0.3.4
 
