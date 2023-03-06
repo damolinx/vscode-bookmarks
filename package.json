@@ -141,6 +141,12 @@
     ],
     "keybindings": [
       {
+        "command": "bookmarks.editBookmark.displayName.update.tree",
+        "key": "Delete",
+        "mac": "Enter",
+        "when": "focusedView == bookmarks && !inputFocus"
+      },
+      {
         "command": "bookmarks.removeBookmark.tree",
         "key": "Delete",
         "when": "focusedView == bookmarks && !inputFocus"

@@ -57,12 +57,12 @@ export async function activate(context: vscode.ExtensionContext) {
     ),
     vscode.commands.registerCommand(
       'bookmarks.editBookmark.displayName.remove.tree',
-      (bookmark: Bookmark): Thenable<void> =>
+      (bookmark?: Bookmark): Thenable<void> =>
         updateDisplayNameAsync(manager, treeView, bookmark, '')
     ),
     vscode.commands.registerCommand(
       'bookmarks.editBookmark.displayName.update.tree',
-      (bookmark: Bookmark): Thenable<void> =>
+      (bookmark?: Bookmark): Thenable<void> =>
         updateDisplayNameAsync(manager, treeView, bookmark)
     ),
     vscode.commands.registerCommand(
@@ -272,21 +272,28 @@ async function removeBookmarksAsync(
 async function updateDisplayNameAsync(
   manager: BookmarkManager,
   treeView: vscode.TreeView<Bookmark | BookmarkGroup | undefined>,
-  bookmark: Bookmark,
+  bookmark?: Bookmark,
   name?: string
 ): Promise<void> {
+  const targetBookmark =
+    bookmark ||
+    <Bookmark | undefined>treeView.selection.filter((b) => b instanceof Bookmark)[0];
+  if (!targetBookmark) {
+    return;
+  }
+
   const targetName =
     name !== undefined
       ? name
       : await vscode.window.showInputBox({
           prompt: 'Provide a new bookmark display name',
           placeHolder: 'Enter a display name…',
-          value: bookmark.hasDisplayName ? bookmark.displayName : '',
+          value: targetBookmark.hasDisplayName ? targetBookmark.displayName : '',
           validateInput: (value) =>
             value.trim().length === 0 ? 'Name cannot be empty' : undefined,
         });
   if (targetName !== undefined) {
-    const updatedBookmark = await manager.updateBookmarkAsync(bookmark, {
+    const updatedBookmark = await manager.updateBookmarkAsync(targetBookmark, {
       displayName: targetName.trim(),
     });
     await treeView.reveal(updatedBookmark, { focus: true });
