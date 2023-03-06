@@ -97,6 +97,12 @@
         "icon": "$(arrow-up)"
       },
       {
+        "command": "bookmarks.refreshBookmarks",
+        "title": "Refresh",
+        "category": "Bookmarks",
+        "icon": "$(refresh)"
+      },
+      {
         "command": "bookmarks.removeBookmark.global",
         "title": "Remove Bookmark (Global)",
         "category": "Bookmarks",
@@ -227,12 +233,17 @@
         {
           "command": "bookmarks.addBookmark.tree",
           "when": "view == bookmarks && viewItem == bookmarkGroup && editorIsOpen",
-          "group": "inline"
+          "group": "inline@1000"
         },
         {
           "command": "bookmarks.copy.path",
           "when": "view == bookmarks && viewItem == bookmark",
           "group": "main"
+        },
+        {
+          "command": "bookmarks.refreshBookmarks",
+          "when": "view == bookmarks && viewItem == bookmarkGroup",
+          "group": "inline@10"
         },
         {
           "command": "bookmarks.removeBookmark.tree",

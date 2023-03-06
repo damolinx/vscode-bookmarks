@@ -3,7 +3,7 @@ import { Bookmark } from './bookmark';
 import { BookmarkGroup } from './bookmarkGroup';
 import { BookmarkManager } from './bookmarkManager';
 
-type EventType = undefined | Bookmark | Bookmark[];
+type EventType = undefined | Bookmark | Bookmark[] | BookmarkGroup;
 
 export class BookmarkTreeProvider
   implements vscode.Disposable, vscode.TreeDataProvider<Bookmark | BookmarkGroup>
@@ -104,7 +104,7 @@ export class BookmarkTreeProvider
    * Refresh tree.
    * @param data Bookmark(s) to refresh. If `undefined`, it means refresh from the root.
    */
-  public refresh(data?: Bookmark | Bookmark[]) {
+  public refresh(data?: Bookmark | Bookmark[] | BookmarkGroup) {
     this.onDidChangeTreeDataEmitter.fire(data);
   }
 }

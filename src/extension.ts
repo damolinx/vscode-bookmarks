@@ -81,6 +81,10 @@ export async function activate(context: vscode.ExtensionContext) {
         navigateAsync(manager, false, pathOrUri)
     ),
     vscode.commands.registerCommand(
+      'bookmarks.refreshBookmarks',
+      (bookmarkGroup?: BookmarkGroup): void => treeProvider.refresh(bookmarkGroup)
+    ),
+    vscode.commands.registerCommand(
       'bookmarks.removeBookmark.global',
       (pathOrUri: string | vscode.Uri): Thenable<boolean> =>
         manager.removeBookmarkAsync(pathOrUri, 'global')
