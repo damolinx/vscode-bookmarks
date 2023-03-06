@@ -1,12 +1,13 @@
 # Change Log
 
-# TBD
+# 0.3.4
 
 - Add `Refresh` action on `Global` and `Workspace` nodes.
 - Add key support to common actions:
   - `Delete` removes selected node.
   - `F2` (default) or `Enter` (Mac) allows to change the display name of currentyl selected node.
 - Fix: Preserve metadata on drag-and-drop operations.
+- This version includes changes to the storage API to support folders in the future. Support is not ready but notify if you see any issues in normal operations.
 
 ## 0.3.3
 
