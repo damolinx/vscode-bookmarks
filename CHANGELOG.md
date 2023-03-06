@@ -1,5 +1,9 @@
 # Change Log
 
+# 0.3.5
+
+- Fix: `Delete` bound incorrectly to change dislay name.
+
 # 0.3.4
 
 - Add `Refresh` action on `Global` and `Workspace` nodes.
