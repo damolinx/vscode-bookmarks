@@ -1,7 +1,9 @@
 import * as vscode from 'vscode';
 import { MetadataType, Datastore, RawDatastore, StoreType } from './datastore';
 
-const CONTAINER_METADATA_KEY = 'container';
+export { MetadataType } from './datastore';
+
+export const CONTAINER_METADATA_KEY = 'container';
 
 /**
  * This class virtualizes a {@link StoreType}'s entry as a datastore for {@link StoreType}.
@@ -87,6 +89,14 @@ export class MetadataDatastore extends Datastore<MetadataRawDatastore> {
       await this.parent.addAsync([[this.rawStore.uri, this.rawStore.metadata]], true);
     }
     return removedUris;
+  }
+
+  /**
+   * Remove all bookmarks.
+   */
+  public async removeAllAsync(): Promise<void> {
+    await this.rawStore.setAsync(undefined);
+    await this.parent.addAsync([[this.rawStore.uri, this.rawStore.metadata]], true);
   }
 
   /**

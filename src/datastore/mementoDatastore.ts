@@ -1,6 +1,8 @@
 import * as vscode from 'vscode';
 import { Datastore, MetadataType, RawDatastore, StoreType } from './datastore';
 
+export { MetadataType } from './datastore';
+
 /**
  * Memento key name used up to v0.2.1.
  */
