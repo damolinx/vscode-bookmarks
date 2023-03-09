@@ -37,7 +37,5 @@ export abstract class TreeItemProvider {
     return treeItem;
   }
 
-  public sort(elements: Bookmark[]): Bookmark[] {
-    return elements.sort((a, b) => a.compare(b));
-  }
+  public abstract sort(elements: Bookmark[]): Bookmark[];
 }
