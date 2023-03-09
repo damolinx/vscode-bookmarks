@@ -123,7 +123,13 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(
       'bookmarks.decorators.toggle',
       (): Thenable<boolean> => decoratorController.toogleVisibilityAsync()
-    )
+    ),
+    vscode.commands.registerCommand('bookmarks.views.name', (): void => {
+      treeProvider.viewMode = 'name';
+    }),
+    vscode.commands.registerCommand('bookmarks.views.path', (): void => {
+      treeProvider.viewMode = 'path';
+    })
   );
 
   // Upgrade, best effort

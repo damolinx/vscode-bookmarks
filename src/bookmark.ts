@@ -1,8 +1,7 @@
 import * as vscode from 'vscode';
-import * as path from 'path';
 import { MetadataType } from './datastore/datastore';
 
-const BOOKMARK_CUSTOM_NAME_METADATA_KEY = 'displayName';
+export const BOOKMARK_CUSTOM_NAME_METADATA_KEY = 'displayName';
 
 /**
  * Supported Bookmark kinds.
@@ -28,7 +27,6 @@ export type BOOKMARK_CHANGE = {
  */
 export class Bookmark {
   private _defaultName?: string;
-  private _description?: string;
   private _lineNumber: number;
   private _uri: vscode.Uri;
 
@@ -77,10 +75,10 @@ export class Bookmark {
     }
 
     const thisA = this.displayName;
-    const thisB = this.hasDisplayName ? this.description : '';
+    const thisB = '';
 
     const thatA = that.displayName;
-    const thatB = that.hasDisplayName ? that.description : '';
+    const thatB = '';
 
     return (
       thisA.localeCompare(thatA, undefined) ||
@@ -98,18 +96,6 @@ export class Bookmark {
       this._defaultName = vscode.workspace.asRelativePath(this.uri);
     }
     return this._defaultName;
-  }
-
-  /**
-   * Get the bookmark description to use in UI elements.
-   */
-  public get description(): string {
-    if (this._description === undefined) {
-      this._description = this.hasDisplayName
-        ? `…${path.join(...this.uri.fsPath.split(path.sep).splice(-2))}:${this.lineNumber}`
-        : `line ${this.lineNumber}`;
-    }
-    return this._description;
   }
 
   /**
@@ -154,7 +140,6 @@ export class Bookmark {
     // TODO: validate positive integer (or really make this immutable).
     if (this._lineNumber !== value) {
       this._defaultName = undefined;
-      this._description = undefined;
       this._lineNumber = value;
       this._uri = this._uri.with({ fragment: `L${value}` });
     }

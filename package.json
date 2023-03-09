@@ -137,6 +137,16 @@
         "title": "Remove All (Workspace)",
         "category": "Bookmarks",
         "icon": "$(close-all)"
+      },
+      {
+        "command": "bookmarks.views.name",
+        "title": "Name",
+        "category": "Bookmarks"
+      },
+      {
+        "command": "bookmarks.views.path",
+        "title": "Path",
+        "category": "Bookmarks"
       }
     ],
     "keybindings": [
@@ -166,8 +176,15 @@
       ],
       "bookmark.editBookmark.lineNumber": [
         {
-          "command": "bookmarks.editBookmark.lineNumber.update.tree",
-          "group": "main@1"
+          "command": "bookmarks.editBookmark.lineNumber.update.tree"
+        }
+      ],
+      "bookmarks.views": [
+        {
+          "command": "bookmarks.views.name"
+        },
+        {
+          "command": "bookmarks.views.path"
         }
       ],
       "commandPalette": [
@@ -234,6 +251,14 @@
         {
           "command": "bookmarks.removeBookmarks.tree",
           "when": "false"
+        },
+        {
+          "command": "bookmarks.views.name",
+          "when": "false"
+        },
+        {
+          "command": "bookmarks.views.path",
+          "when": "false"
         }
       ],
       "view/item/context": [
@@ -280,11 +305,18 @@
       "view/title": [
         {
           "command": "bookmarks.decorators.hide",
-          "when": "view == bookmarks && bookmarks.decorators.visible"
+          "when": "view == bookmarks && bookmarks.decorators.visible",
+          "group": "1_commands"
         },
         {
           "command": "bookmarks.decorators.show",
-          "when": "view == bookmarks && !bookmarks.decorators.visible"
+          "when": "view == bookmarks && !bookmarks.decorators.visible",
+          "group": "1_commands"
+        },
+        {
+          "submenu": "bookmarks.views",
+          "when": "view == bookmarks",
+          "group": "0_view"
         }
       ]
     },
@@ -296,6 +328,10 @@
       {
         "id": "bookmark.editBookmark.lineNumber",
         "label": "Line Number"
+      },
+      {
+        "id": "bookmarks.views",
+        "label": "View"
       }
     ],
     "views": {

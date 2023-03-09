@@ -2,6 +2,9 @@ import * as vscode from 'vscode';
 import { Bookmark } from './bookmark';
 import { BookmarkGroup } from './bookmarkGroup';
 import { BookmarkManager } from './bookmarkManager';
+import { NameTreeItemProvider } from './tree/nameTreeItemProvider';
+import { PathTreeItemProvider } from './tree/pathTreeItemProvider copy';
+import { TreeItemProvider } from './tree/treeItemProvider';
 
 type EventType = undefined | Bookmark | Bookmark[] | BookmarkGroup;
 
@@ -12,15 +15,17 @@ export class BookmarkTreeProvider
   private readonly manager: BookmarkManager;
   public readonly onDidChangeTreeData: vscode.Event<EventType>;
   private readonly onDidChangeTreeDataEmitter: vscode.EventEmitter<EventType>;
+  private treeItemProvider: TreeItemProvider;
 
   /**
    * Constructor.
    * @param manager Bookmark manager.
    */
-  constructor(manager: BookmarkManager) {
+  constructor(manager: BookmarkManager, viewMode: 'name' | 'path' = 'path') {
     this.manager = manager;
     this.onDidChangeTreeDataEmitter = new vscode.EventEmitter<EventType>();
     this.onDidChangeTreeData = this.onDidChangeTreeDataEmitter.event;
+    this.treeItemProvider = BookmarkTreeProvider.getTreeProvider(viewMode);
 
     this.disposable = vscode.Disposable.from(
       this.manager.onDidAddBookmark(() => this.refresh()),
@@ -51,29 +56,24 @@ export class BookmarkTreeProvider
   }
 
   /**
-   * Get {@link TreeItem} representation of  `element`.
+   * Get {@link TreeItem} representation of `element`.
    * @param element The element for which {@link TreeItem} representation is asked for.
    * @return TreeItem representation of the bookmark.
    */
   public getTreeItem(
     element: Bookmark | BookmarkGroup
   ): vscode.TreeItem | Thenable<vscode.TreeItem> {
-    const treeItem: vscode.TreeItem = new vscode.TreeItem(element.displayName);
-    if (element instanceof Bookmark) {
-      treeItem.command = {
-        title: 'Open',
-        command: 'vscode.open',
-        arguments: [element.uri],
-      };
-      treeItem.contextValue = 'bookmark';
-      treeItem.description = element.description;
-      treeItem.resourceUri = element.uri;
-      treeItem.tooltip = element.defaultName;
+    let treeItem: vscode.TreeItem;
+    if (element instanceof BookmarkGroup) {
+      treeItem = new vscode.TreeItem(
+        element.displayName,
+        element.count
+          ? vscode.TreeItemCollapsibleState.Expanded
+          : vscode.TreeItemCollapsibleState.Collapsed
+      );
+      treeItem.contextValue = 'bookmarkGroup';
     } else {
-      treeItem.contextValue = `bookmarkGroup`;
-      treeItem.collapsibleState = this.manager.hasBookmarks(element.kind)
-        ? vscode.TreeItemCollapsibleState.Expanded
-        : vscode.TreeItemCollapsibleState.Collapsed;
+      treeItem = this.treeItemProvider.getTreeItemForBookmark(element);
     }
     return treeItem;
   }
@@ -93,11 +93,20 @@ export class BookmarkTreeProvider
         children.push(this.manager.getBookmarkGroup('workspace')!);
       }
     } else {
-      children = this.manager
-        .getBookmarks({ kind: element.kind })
-        .sort((a, b) => a.compare(b));
+      children = this.treeItemProvider.sort(
+        this.manager.getBookmarks({ kind: element.kind })
+      );
     }
     return children;
+  }
+
+  private static getTreeProvider(value: 'name' | 'path'): TreeItemProvider {
+    switch (value) {
+      case 'name':
+        return new NameTreeItemProvider();
+      case 'path':
+        return new PathTreeItemProvider();
+    }
   }
 
   /**
@@ -106,5 +115,22 @@ export class BookmarkTreeProvider
    */
   public refresh(data?: Bookmark | Bookmark[] | BookmarkGroup) {
     this.onDidChangeTreeDataEmitter.fire(data);
+  }
+
+  /**
+   * Get current view mode.
+   */
+  public get viewMode(): 'name' | 'path' {
+    return this.treeItemProvider.viewType;
+  }
+
+  /**
+   * Set current view mode.  If mode is change, tree will be refreshed.
+   */
+  public set viewMode(value: 'name' | 'path') {
+    if (this.treeItemProvider.viewType !== value) {
+      this.treeItemProvider = BookmarkTreeProvider.getTreeProvider(value);
+      this.refresh();
+    }
   }
 }

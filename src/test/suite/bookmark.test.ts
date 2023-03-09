@@ -26,7 +26,6 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
 
     const normalizedExpectedPath = normalize(expectedPath);
     assert.strictEqual(bookmark.defaultName, normalizedExpectedPath);
-    assert.strictEqual(bookmark.description, `line ${DEFAULT_LINE_NUMBER}`);
     assert.strictEqual(bookmark.displayName, normalizedExpectedPath);
     assert.strictEqual(bookmark.hasDisplayName, false);
   });
@@ -45,7 +44,6 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
 
     const normalizedExpectedPath = normalize(expectedPath);
     assert.strictEqual(bookmark.defaultName, normalizedExpectedPath);
-    assert.strictEqual(bookmark.description, `line ${expectedLineNumber}`);
     assert.strictEqual(bookmark.displayName, normalizedExpectedPath);
     assert.strictEqual(bookmark.hasDisplayName, false);
   });

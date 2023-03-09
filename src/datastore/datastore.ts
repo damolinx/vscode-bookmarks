@@ -4,7 +4,7 @@ import * as vscode from 'vscode';
  * Bookmark metadata format (used from v0.3.0).
  * - {@link StoreType} was added as after v0.3.3 to support nesting.
  */
-export type MetadataType = { [key: string]: string | StoreType };
+export type MetadataType = { [key: string]: string | StoreType | undefined };
 
 /**
  * Bookmark data format (used from v0.3.1).
