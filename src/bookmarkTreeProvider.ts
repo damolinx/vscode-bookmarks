@@ -3,7 +3,7 @@ import { Bookmark } from './bookmark';
 import { BookmarkGroup } from './bookmarkGroup';
 import { BookmarkManager } from './bookmarkManager';
 import { NameTreeItemProvider } from './tree/nameTreeItemProvider';
-import { PathTreeItemProvider } from './tree/pathTreeItemProvider copy';
+import { PathTreeItemProvider } from './tree/pathTreeItemProvider';
 import { TreeItemProvider } from './tree/treeItemProvider';
 
 type EventType = undefined | Bookmark | Bookmark[] | BookmarkGroup;

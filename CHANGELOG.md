@@ -1,14 +1,15 @@
 # Change Log
 
-# TBD
+# 0.3.7
 
-- Use `Cmd+Backspace` in Mac to delete a node (instead of `Cmd+Delete`).
 - Add `View` action that allows to switch between two modes to show bookmarks:
 
   - `Name`: only show `<file>:<line>`.
-  - `Path`: show workspace-relative path.
+  - `Path`: show workspace-relative path. This includes relative paths paths for files that do not live under the workspace folder (only for single-root workspaces).
 
-  On either case, if a display name has been set, that will be used.
+  On either case, if a display name has been set, that will be used instead.
+
+- Fix: Use `Cmd+Backspace` in Mac to delete a node (instead of `Cmd+Delete).
 
 # 0.3.5 - 0.3.6
 
