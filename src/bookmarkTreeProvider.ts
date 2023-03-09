@@ -8,9 +8,11 @@ import { TreeItemProvider } from './tree/treeItemProvider';
 
 type EventType = undefined | Bookmark | Bookmark[] | BookmarkGroup;
 
+const VIEW_PREFERENCE_MEMENTO_KEY = 'bookmarks.preferences.viewMode';
 export class BookmarkTreeProvider
   implements vscode.Disposable, vscode.TreeDataProvider<Bookmark | BookmarkGroup>
 {
+  private readonly context: vscode.ExtensionContext;
   private readonly disposable: vscode.Disposable;
   private readonly manager: BookmarkManager;
   public readonly onDidChangeTreeData: vscode.Event<EventType>;
@@ -19,13 +21,17 @@ export class BookmarkTreeProvider
 
   /**
    * Constructor.
+   * @param context Extension context;
    * @param manager Bookmark manager.
    */
-  constructor(manager: BookmarkManager, viewMode: 'name' | 'path' = 'path') {
+  constructor(context: vscode.ExtensionContext, manager: BookmarkManager) {
+    this.context = context;
     this.manager = manager;
     this.onDidChangeTreeDataEmitter = new vscode.EventEmitter<EventType>();
     this.onDidChangeTreeData = this.onDidChangeTreeDataEmitter.event;
-    this.treeItemProvider = BookmarkTreeProvider.getTreeProvider(viewMode);
+    this.treeItemProvider = BookmarkTreeProvider.getTreeProvider(
+      context.globalState.get(VIEW_PREFERENCE_MEMENTO_KEY, 'path')
+    );
 
     this.disposable = vscode.Disposable.from(
       this.manager.onDidAddBookmark(() => this.refresh()),
@@ -127,8 +133,9 @@ export class BookmarkTreeProvider
   /**
    * Set current view mode.  If mode is change, tree will be refreshed.
    */
-  public set viewMode(value: 'name' | 'path') {
+  public async setViewMode(value: 'name' | 'path'): Promise<void> {
     if (this.treeItemProvider.viewType !== value) {
+      await this.context.globalState.update(VIEW_PREFERENCE_MEMENTO_KEY, value);
       this.treeItemProvider = BookmarkTreeProvider.getTreeProvider(value);
       this.refresh();
     }
