@@ -10,6 +10,16 @@ This helps when working on large or complex codebases as you can pin files you a
 ## Bookmark
 A *bookmark* is a reference to a document that is saved in the context of the current workspace (`Workspace`), or independent from it (`Global`). Full `URI`s are kept around but the UI will adjust how they are displayed, calculating a relative path based on current workspace.
 
+## Bookmars View
+The `Bookmarks` View is the main UI component for this extension. It shows lists all your bookmarks in two different sections: `Global` includes bookmarks that will be displayed in VSCode windows, and `Workspace`, which shows bookmarks associated with currently opened workspace, if any.
+You can change the display mode for the tree:
+- `Name`: shows the file name and target line number. A path hint is shown as description.
+- `Path`: shows the file path relative the currently opened workspace The associated line number is shown as description.  
+
+<p align="center">
+  <img width="448" alt="image" src="https://user-images.githubusercontent.com/38414719/224102129-5dede300-3708-4e43-afab-9baf02f47084.png">
+</p>
+
 ## Adding a Bookmark
 
 ### Commands
