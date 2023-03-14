@@ -8,6 +8,8 @@ import { TreeItemProvider } from './tree/treeItemProvider';
 
 type EventType = undefined | Bookmark | Bookmark[] | BookmarkGroup;
 
+type ViewStyle = 'name' | 'path';
+
 const VIEW_PREFERENCE_MEMENTO_KEY = 'bookmarks.preferences.viewMode';
 export class BookmarkTreeProvider
   implements vscode.Disposable, vscode.TreeDataProvider<Bookmark | BookmarkGroup>
@@ -18,10 +20,11 @@ export class BookmarkTreeProvider
   public readonly onDidChangeTreeData: vscode.Event<EventType>;
   private readonly onDidChangeTreeDataEmitter: vscode.EventEmitter<EventType>;
   private treeItemProvider: TreeItemProvider;
+  private _viewStyle: ViewStyle;
 
   /**
    * Constructor.
-   * @param context Extension context;
+   * @param context Extension context.
    * @param manager Bookmark manager.
    */
   constructor(context: vscode.ExtensionContext, manager: BookmarkManager) {
@@ -29,9 +32,9 @@ export class BookmarkTreeProvider
     this.manager = manager;
     this.onDidChangeTreeDataEmitter = new vscode.EventEmitter<EventType>();
     this.onDidChangeTreeData = this.onDidChangeTreeDataEmitter.event;
-    this.treeItemProvider = BookmarkTreeProvider.getTreeProvider(
-      context.globalState.get(VIEW_PREFERENCE_MEMENTO_KEY, 'path')
-    );
+
+    this._viewStyle = context.globalState.get(VIEW_PREFERENCE_MEMENTO_KEY, 'path');
+    this.treeItemProvider = BookmarkTreeProvider.createTreeProvider(this._viewStyle);
 
     this.disposable = vscode.Disposable.from(
       this.manager.onDidAddBookmark(() => this.refresh()),
@@ -46,6 +49,15 @@ export class BookmarkTreeProvider
    */
   public dispose() {
     this.disposable.dispose();
+  }
+
+  private static createTreeProvider(value: ViewStyle): TreeItemProvider {
+    switch (value) {
+      case 'name':
+        return new NameTreeItemProvider();
+      case 'path':
+        return new PathTreeItemProvider();
+    }
   }
 
   /**
@@ -99,20 +111,12 @@ export class BookmarkTreeProvider
         children.push(this.manager.getBookmarkGroup('workspace')!);
       }
     } else {
-      children = this.treeItemProvider.sort(
-        this.manager.getBookmarks({ kind: element.kind })
+      // TODO: Folder
+      children = <Bookmark[]>(
+        this.treeItemProvider.sort(this.manager.getBookmarks({ kind: element.kind }))
       );
     }
     return children;
-  }
-
-  private static getTreeProvider(value: 'name' | 'path'): TreeItemProvider {
-    switch (value) {
-      case 'name':
-        return new NameTreeItemProvider();
-      case 'path':
-        return new PathTreeItemProvider();
-    }
   }
 
   /**
@@ -126,18 +130,19 @@ export class BookmarkTreeProvider
   /**
    * Get current view mode.
    */
-  public get viewMode(): 'name' | 'path' {
-    return this.treeItemProvider.viewType;
+  public get viewStyle(): ViewStyle {
+    return this._viewStyle;
   }
 
   /**
    * Set current view mode.  If mode is change, tree will be refreshed.
    */
-  public async setViewMode(value: 'name' | 'path'): Promise<void> {
-    if (this.treeItemProvider.viewType !== value) {
-      await this.context.globalState.update(VIEW_PREFERENCE_MEMENTO_KEY, value);
-      this.treeItemProvider = BookmarkTreeProvider.getTreeProvider(value);
+  public async setViewStyle(style: ViewStyle): Promise<void> {
+    if (this._viewStyle !== style) {
+      this.treeItemProvider = BookmarkTreeProvider.createTreeProvider(style);
+      this._viewStyle = style;
       this.refresh();
+      await this.context.globalState.update(VIEW_PREFERENCE_MEMENTO_KEY, style);
     }
   }
 }
