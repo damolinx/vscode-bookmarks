@@ -126,11 +126,11 @@ export async function activate(context: vscode.ExtensionContext) {
     ),
     vscode.commands.registerCommand(
       'bookmarks.views.name',
-      (): Thenable<void> => treeProvider.setViewStyle('name')
+      (): Thenable<void> => treeProvider.setViewKind('name')
     ),
     vscode.commands.registerCommand(
       'bookmarks.views.path',
-      (): Thenable<void> => treeProvider.setViewStyle('path')
+      (): Thenable<void> => treeProvider.setViewKind('path')
     )
   );
 
