@@ -72,9 +72,9 @@ export abstract class TreeItemProvider {
           sensitivity: 'base',
         });
       } else if (aIsFolder) {
-        order = 1;
-      } else if (bIsFolder) {
         order = -1;
+      } else if (bIsFolder) {
+        order = 1;
       } else {
         order = this.compareBookmarks(a, b);
       }
