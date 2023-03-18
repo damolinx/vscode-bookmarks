@@ -1,8 +1,12 @@
 # Change Log
 
-# 0.3.7
+## (next)
 
-- Add `View` action that allows to switch between two modes to show bookmarks:
+- Options in the `View` context menu are enabled/disabled as expected.
+
+## 0.3.7
+
+- Add `View` context menu that allows to switch between two modes to show bookmarks:
 
   - `Name`: only show `<file>:<line>`.
   - `Path`: show workspace-relative path. This includes relative paths paths for files that do not live under the workspace folder (only for single-root workspaces).
@@ -11,11 +15,11 @@
 
 - Fix: Use `Cmd+Backspace` in Mac to delete a node (instead of `Cmd+Delete).
 
-# 0.3.5 - 0.3.6
+## 0.3.5 - 0.3.6
 
 - Fix: `Delete` bound incorrectly to change display name.
 
-# 0.3.4
+## 0.3.4
 
 - Add `Refresh` action on `Global` and `Workspace` nodes.
 - Add key support to common actions:

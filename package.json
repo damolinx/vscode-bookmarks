@@ -142,7 +142,7 @@
       },
       {
         "command": "bookmarks.views.name",
-        "title": "Filename",
+        "title": "Name",
         "category": "Bookmarks",
         "enablement": "bookmarks.tree.view != name"
       },
