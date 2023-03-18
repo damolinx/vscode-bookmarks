@@ -33,35 +33,41 @@
         "command": "bookmarks.addBookmark.global",
         "title": "Bookmark Editor (Global)",
         "category": "Bookmarks",
-        "icon": "$(add)"
+        "icon": "$(add)",
+        "enablement": "editorIsOpen"
       },
       {
         "command": "bookmarks.addBookmark.tree",
         "title": "Bookmark Current Editor",
-        "icon": "$(add)"
+        "icon": "$(add)",
+        "enablement": "editorIsOpen"
       },
       {
         "command": "bookmarks.addBookmark.workspace",
         "title": "Bookmark Editor (Workspace)",
         "category": "Bookmarks",
-        "icon": "$(add)"
+        "icon": "$(add)",
+        "enablement": "editorIsOpen && workbenchState != empty"
       },
       {
-        "command": "bookmarks.copy.path",
+        "command": "bookmarks.copy.path.tree",
         "title": "Copy Path",
-        "icon": "$(copy)"
+        "icon": "$(copy)",
+        "enablement": "view == bookmarks && viewItem == bookmark"
       },
       {
         "command": "bookmarks.decorators.hide",
         "title": "Hide In-Editor Markers",
         "category": "Bookmarks",
-        "icon": "$(eye-closed)"
+        "icon": "$(eye-closed)",
+        "enablement": "bookmarks.decorators.visible"
       },
       {
         "command": "bookmarks.decorators.show",
         "title": "Show In-Editor Markers",
         "category": "Bookmarks",
-        "icon": "$(eye)"
+        "icon": "$(eye)",
+        "enablement": "!bookmarks.decorators.visible"
       },
       {
         "command": "bookmarks.decorators.toggle",
@@ -72,29 +78,34 @@
       {
         "command": "bookmarks.editBookmark.displayName.remove.tree",
         "title": "Remove",
-        "category": "Bookmarks"
+        "category": "Bookmarks",
+        "enablement": "view == bookmarks && viewItem == bookmark"
       },
       {
         "command": "bookmarks.editBookmark.displayName.update.tree",
         "title": "Update…",
-        "category": "Bookmarks"
+        "category": "Bookmarks",
+        "enablement": "view == bookmarks && viewItem == bookmark"
       },
       {
         "command": "bookmarks.editBookmark.lineNumber.update.tree",
         "title": "Update…",
-        "category": "Bookmarks"
+        "category": "Bookmarks",
+        "enablement": "view == bookmarks && viewItem == bookmark"
       },
       {
         "command": "bookmarks.navigate.next.editor",
         "title": "Go to Next in Current Editor",
         "category": "Bookmarks",
-        "icon": "$(arrow-down)"
+        "icon": "$(arrow-down)",
+        "enablement": "editorIsOpen"
       },
       {
         "command": "bookmarks.navigate.previous.editor",
         "title": "Go to Previous in Current Editor",
         "category": "Bookmarks",
-        "icon": "$(arrow-up)"
+        "icon": "$(arrow-up)",
+        "enablement": "editorIsOpen"
       },
       {
         "command": "bookmarks.refreshBookmarks",
@@ -103,22 +114,11 @@
         "icon": "$(refresh)"
       },
       {
-        "command": "bookmarks.removeBookmark.global",
-        "title": "Remove Bookmark (Global)",
-        "category": "Bookmarks",
-        "icon": "$(remove-close)"
-      },
-      {
         "command": "bookmarks.removeBookmark.tree",
         "title": "Remove",
         "category": "Bookmarks",
-        "icon": "$(remove-close)"
-      },
-      {
-        "command": "bookmarks.removeBookmark.workspace",
-        "title": "Remove Bookmark (Workspace)",
-        "category": "Bookmarks",
-        "icon": "$(remove-close)"
+        "icon": "$(remove-close)",
+        "enablement": "view == bookmarks && viewItem == bookmark"
       },
       {
         "command": "bookmarks.removeBookmarks.global",
@@ -130,23 +130,27 @@
         "command": "bookmarks.removeBookmarks.tree",
         "title": "Remove All",
         "category": "Bookmarks",
-        "icon": "$(close-all)"
+        "icon": "$(close-all)",
+        "enablement": "view == bookmarks && viewItem == bookmarkGroup"
       },
       {
         "command": "bookmarks.removeBookmarks.workspace",
         "title": "Remove All (Workspace)",
         "category": "Bookmarks",
-        "icon": "$(close-all)"
+        "icon": "$(close-all)",
+        "enablement": "workbenchState != empty"
       },
       {
         "command": "bookmarks.views.name",
-        "title": "Name",
-        "category": "Bookmarks"
+        "title": "Filename",
+        "category": "Bookmarks",
+        "enablement": "bookmarks.tree.view != name"
       },
       {
         "command": "bookmarks.views.path",
         "title": "Path",
-        "category": "Bookmarks"
+        "category": "Bookmarks",
+        "enablement": "bookmarks.tree.view != path"
       }
     ],
     "keybindings": [
@@ -189,19 +193,11 @@
       ],
       "commandPalette": [
         {
-          "command": "bookmarks.addBookmark.global",
-          "when": "editorIsOpen"
-        },
-        {
           "command": "bookmarks.addBookmark.tree",
           "when": "false"
         },
         {
-          "command": "bookmarks.addBookmark.workspace",
-          "when": "editorIsOpen && workbenchState != empty"
-        },
-        {
-          "command": "bookmarks.copy.path",
+          "command": "bookmarks.copy.path.tree",
           "when": "false"
         },
         {
@@ -229,26 +225,6 @@
           "when": "false"
         },
         {
-          "command": "bookmarks.navigate.next.editor",
-          "when": "editorIsOpen"
-        },
-        {
-          "command": "bookmarks.navigate.previous.editor",
-          "when": "editorIsOpen"
-        },
-        {
-          "command": "bookmarks.removeBookmark.global",
-          "when": "false"
-        },
-        {
-          "command": "bookmarks.removeBookmark.tree",
-          "when": "false"
-        },
-        {
-          "command": "bookmarks.removeBookmark.workspace",
-          "when": "false"
-        },
-        {
           "command": "bookmarks.removeBookmarks.tree",
           "when": "false"
         },
@@ -264,11 +240,11 @@
       "view/item/context": [
         {
           "command": "bookmarks.addBookmark.tree",
-          "when": "view == bookmarks && viewItem == bookmarkGroup && editorIsOpen",
+          "when": "view == bookmarks && viewItem == bookmarkGroup",
           "group": "inline@1000"
         },
         {
-          "command": "bookmarks.copy.path",
+          "command": "bookmarks.copy.path.tree",
           "when": "view == bookmarks && viewItem == bookmark",
           "group": "main"
         },

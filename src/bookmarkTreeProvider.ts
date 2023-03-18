@@ -7,7 +7,9 @@ import { createTreeProvider, TreeViewKind } from './tree/treeUtils';
 
 type EventType = undefined | Bookmark | Bookmark[] | BookmarkGroup;
 
-const VIEW_PREFERENCE_MEMENTO_KEY = 'bookmarks.preferences.viewMode';
+const VIEW_CONTEXT_KEY = 'bookmarks.tree.view';
+const VIEW_MEMENTO_KEY = 'bookmarks.preferences.view';
+
 export class BookmarkTreeProvider
   implements vscode.Disposable, vscode.TreeDataProvider<Bookmark | BookmarkGroup>
 {
@@ -29,8 +31,9 @@ export class BookmarkTreeProvider
     this.onDidChangeTreeDataEmitter = new vscode.EventEmitter<EventType>();
     this.onDidChangeTreeData = this.onDidChangeTreeDataEmitter.event;
 
-    const kind = context.globalState.get(VIEW_PREFERENCE_MEMENTO_KEY, 'path');
+    const kind = context.globalState.get<TreeViewKind>(VIEW_MEMENTO_KEY, 'path');
     this.treeItemProvider = { kind, provider: createTreeProvider(kind) };
+    vscode.commands.executeCommand('setContext', VIEW_CONTEXT_KEY, kind);
 
     this.disposable = vscode.Disposable.from(
       this.manager.onDidAddBookmark(() => this.refresh()),
@@ -130,7 +133,10 @@ export class BookmarkTreeProvider
     if (this.treeItemProvider.kind !== kind) {
       this.treeItemProvider = { kind, provider: createTreeProvider(kind) };
       this.refresh();
-      await this.context.globalState.update(VIEW_PREFERENCE_MEMENTO_KEY, kind);
+      await Promise.all([
+        vscode.commands.executeCommand('setContext', VIEW_CONTEXT_KEY, kind),
+        this.context.globalState.update(VIEW_MEMENTO_KEY, kind),
+      ]);
     }
   }
 }

@@ -49,7 +49,7 @@ export async function activate(context: vscode.ExtensionContext) {
         addBookmarkAsync(manager, treeView, 'workspace', pathOrUri)
     ),
     vscode.commands.registerCommand(
-      'bookmarks.copy.path',
+      'bookmarks.copy.path.tree',
       (bookmark: Bookmark): Thenable<void> =>
         vscode.env.clipboard.writeText(
           bookmark.uri.scheme === 'file' ? bookmark.uri.fsPath : bookmark.uri.path
