@@ -64,16 +64,16 @@ export abstract class TreeItemProvider {
     elements: Array<Bookmark | BookmarkContainer>
   ): Array<Bookmark | BookmarkContainer> {
     return elements.sort((a, b) => {
-      const aIsFolder = a instanceof BookmarkContainer;
-      const bIsFolder = b instanceof BookmarkContainer;
+      const aIsContainer = a instanceof BookmarkContainer;
+      const bIsContainer = b instanceof BookmarkContainer;
       let order: number;
-      if (aIsFolder && bIsFolder) {
+      if (aIsContainer && bIsContainer) {
         return a.displayName.localeCompare(b.displayName, undefined, {
           sensitivity: 'base',
         });
-      } else if (aIsFolder) {
+      } else if (aIsContainer) {
         order = -1;
-      } else if (bIsFolder) {
+      } else if (bIsContainer) {
         order = 1;
       } else {
         order = this.compareBookmarks(a, b);
