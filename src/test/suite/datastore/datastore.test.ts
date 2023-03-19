@@ -37,8 +37,8 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     const datastore = new Datastore(rawDatastore);
 
     const addedUris = await datastore.addAsync([
-      expectedUri1,
-      [expectedUri2, expectedMetadata2],
+      { uri: expectedUri1 },
+      { uri: expectedUri2, metadata: expectedMetadata2 },
     ]);
     assert.deepStrictEqual(addedUris, [expectedUri1, expectedUri2]);
   });
@@ -53,7 +53,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     };
     const datastore = new Datastore(rawDatastore);
 
-    const addedUris = await datastore.addAsync([expectedExistingUri]);
+    const addedUris = await datastore.addAsync([{ uri: expectedExistingUri }]);
     assert.deepStrictEqual(addedUris, []);
   });
 
@@ -74,7 +74,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     };
     const datastore = new Datastore(rawDatastore);
 
-    const addedUris = await datastore.addAsync([expectedExistingUri]);
+    const addedUris = await datastore.addAsync([{ uri: expectedExistingUri }]);
     assert.deepStrictEqual(addedUris, []);
   });
 

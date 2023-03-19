@@ -30,7 +30,9 @@ export class BookmarkDatastore {
    * @return Added bookmarks (no duplicates).
    */
   public async addAsync(...bookmarks: Bookmark[]): Promise<Bookmark[]> {
-    const added = await this.datastore.addAsync(bookmarks.map((b) => [b.uri, b.metadata]));
+    const added = await this.datastore.addAsync(
+      bookmarks.map((b) => ({ uri: b.uri, metadata: b.metadata }))
+    );
     const addedBookmarks = bookmarks.filter((b) => added.includes(b.uri));
     return addedBookmarks;
   }
@@ -98,7 +100,7 @@ export class BookmarkDatastore {
    */
   public async upsert(...bookmarks: Bookmark[]): Promise<Bookmark[]> {
     const upserted = await this.datastore.addAsync(
-      bookmarks.map((b) => [b.uri, b.metadata]),
+      bookmarks.map((b) => ({ uri: b.uri, metadata: b.metadata })),
       true /* override */
     );
     const upsertedBookmarks = bookmarks.filter((b) => upserted.includes(b.uri));

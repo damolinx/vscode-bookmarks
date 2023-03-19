@@ -52,29 +52,16 @@ export class Datastore<TSTORE extends RawDatastore = RawDatastore> {
    * @returns List of added URIs, no duplicates.
    */
   public async addAsync(
-    entries: (vscode.Uri | [vscode.Uri, MetadataType])[],
+    entries: Array<{ uri: vscode.Uri; metadata?: MetadataType }>,
     override: boolean = false
   ): Promise<vscode.Uri[]> {
     const addedUris: vscode.Uri[] = [];
     const bookmarks = this.getAll();
 
-    for (const entry of entries) {
-      let uri: vscode.Uri;
-      let metadata: MetadataType;
-
-      if (entry instanceof vscode.Uri) {
-        uri = entry;
-        metadata = {};
-      } else {
-        [uri, metadata] = entry;
-      }
-
+    for (const { uri, metadata } of entries) {
       const uriStr = uri.toString();
       if (override || !(uriStr in bookmarks)) {
-        const b: StoreType = {};
-        b[uriStr] = metadata;
-
-        bookmarks[uriStr] = metadata;
+        bookmarks[uriStr] = metadata || {};
         addedUris.push(uri);
       }
     }

@@ -55,8 +55,8 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     const datastore = new MetadataDatastore(storeUri, storeMetadata, parentDatastore);
 
     const addedUris = await datastore.addAsync([
-      expectedUri1,
-      [expectedUri2, expectedMetadata2],
+      { uri: expectedUri1 },
+      { uri: expectedUri2, metadata: expectedMetadata2 },
     ]);
     assert.deepStrictEqual(addedUris, [expectedUri1, expectedUri2]);
   });

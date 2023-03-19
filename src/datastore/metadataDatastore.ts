@@ -68,12 +68,15 @@ export class MetadataDatastore extends Datastore<MetadataRawDatastore> {
    * @returns List of added URIs, no duplicates.
    */
   public async addAsync(
-    entries: (vscode.Uri | [vscode.Uri, MetadataType])[],
+    entries: Array<{ uri: vscode.Uri; metadata?: MetadataType }>,
     override: boolean = false
   ): Promise<vscode.Uri[]> {
     const addedUris = await super.addAsync(entries, override);
     if (addedUris.length) {
-      await this.parent.addAsync([[this.rawStore.uri, this.rawStore.metadata]], true);
+      await this.parent.addAsync(
+        [{ uri: this.rawStore.uri, metadata: this.rawStore.metadata }],
+        true
+      );
     }
     return addedUris;
   }
@@ -86,7 +89,10 @@ export class MetadataDatastore extends Datastore<MetadataRawDatastore> {
   public async removeAsync(uris: vscode.Uri | Iterable<vscode.Uri>): Promise<vscode.Uri[]> {
     const removedUris = await super.removeAsync(uris);
     if (removedUris) {
-      await this.parent.addAsync([[this.rawStore.uri, this.rawStore.metadata]], true);
+      await this.parent.addAsync(
+        [{ uri: this.rawStore.uri, metadata: this.rawStore.metadata }],
+        true
+      );
     }
     return removedUris;
   }
@@ -96,7 +102,10 @@ export class MetadataDatastore extends Datastore<MetadataRawDatastore> {
    */
   public async removeAllAsync(): Promise<void> {
     await this.rawStore.setAsync(undefined);
-    await this.parent.addAsync([[this.rawStore.uri, this.rawStore.metadata]], true);
+    await this.parent.addAsync(
+      [{ uri: this.rawStore.uri, metadata: this.rawStore.metadata }],
+      true
+    );
   }
 
   /**
@@ -112,7 +121,10 @@ export class MetadataDatastore extends Datastore<MetadataRawDatastore> {
   ): Promise<MetadataType | undefined> {
     const replacedMetadata = await super.replaceAsync(uri, newUri);
     if (replacedMetadata) {
-      await this.parent.addAsync([[this.rawStore.uri, this.rawStore.metadata]], true);
+      await this.parent.addAsync(
+        [{ uri: this.rawStore.uri, metadata: this.rawStore.metadata }],
+        true
+      );
     }
 
     return replacedMetadata;
