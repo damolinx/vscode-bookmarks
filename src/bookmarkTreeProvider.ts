@@ -95,12 +95,12 @@ export class BookmarkTreeProvider
    */
   public getChildren(
     element?: BookmarkContainer
-  ): vscode.ProviderResult<Bookmark[] | BookmarkContainer[]> {
-    let children: Bookmark[] | BookmarkContainer[];
+  ): vscode.ProviderResult<Array<BookmarkTreeData>> {
+    let children: Array<BookmarkTreeData>;
     if (!element) {
-      children = [this.manager.getRootContainer('global')!];
+      children = [this.manager.getRootContainer('global')];
       if (vscode.workspace.workspaceFolders?.length) {
-        children.push(this.manager.getRootContainer('workspace')!);
+        children.push(this.manager.getRootContainer('workspace'));
       }
     } else {
       // TODO: Folder
