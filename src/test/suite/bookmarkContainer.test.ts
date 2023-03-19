@@ -4,7 +4,8 @@ import { basename } from 'path';
 
 import { createMockDatastore } from './datastore/common';
 import { BookmarkKind } from '../../bookmark';
-import { BookmarkContainer, CONTAINER_SCHEME } from '../../bookmarkContainer';
+import { BookmarkContainer } from '../../bookmarkContainer';
+import { CONTAINER_SCHEME } from '../../datastore/datastore';
 
 suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   let restorables: { restore: () => void }[];

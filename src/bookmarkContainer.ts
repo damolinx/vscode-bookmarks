@@ -1,8 +1,6 @@
 import * as vscode from 'vscode';
 import { Bookmark, BookmarkKind } from './bookmark';
-import { Datastore, MetadataType } from './datastore/datastore';
-
-export const CONTAINER_SCHEME = 'bookmark-container';
+import { CONTAINER_SCHEME, Datastore, MetadataType } from './datastore/datastore';
 
 export class BookmarkContainer {
   public readonly datastore: Datastore;

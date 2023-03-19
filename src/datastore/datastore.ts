@@ -1,6 +1,11 @@
 import * as vscode from 'vscode';
 
 /**
+ * URI scheme used for containers after v0.3.7.
+ */
+export const CONTAINER_SCHEME = 'bookmark-container';
+
+/**
  * Bookmark metadata format (used from v0.3.0).
  * - {@link StoreType} was added as after v0.3.3 to support nesting.
  */

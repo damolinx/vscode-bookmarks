@@ -1,5 +1,11 @@
 import * as vscode from 'vscode';
-import { Datastore, MetadataType, RawDatastore, StoreType } from './datastore';
+import {
+  CONTAINER_SCHEME,
+  Datastore,
+  MetadataType,
+  RawDatastore,
+  StoreType,
+} from './datastore';
 
 export { MetadataType } from './datastore';
 
@@ -91,8 +97,9 @@ export class MementoDatastore extends Datastore<MementoRawDatastore> {
 
     // Fix URLs without line number info (pre-0.3.2)
     Object.keys(v1).forEach((uriStr) => {
-      if (!uriStr.includes('#')) {
-        v1[`${uriStr}#L1`] = v1[uriStr];
+      const uri = vscode.Uri.parse(uriStr);
+      if (uri.scheme !== CONTAINER_SCHEME && !uri.fragment) {
+        v1[uri.with({ fragment: 'L1' }).toString()] = v1[uriStr];
         delete v1[uriStr];
         saveV1 = true;
       }

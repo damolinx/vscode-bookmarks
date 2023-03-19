@@ -8,6 +8,7 @@ import {
   V1StoreType,
   V1_MEMENTO_KEY_NAME,
 } from '../../../datastore/mementoDatastore';
+import { CONTAINER_SCHEME } from '../../../datastore/datastore';
 
 suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   let restorables: { restore: () => void }[];
@@ -79,13 +80,18 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   test('upgradeAsync (upgrade, v1 already exists)', async () => {
     const expectedUri1 = 'file:///workspace/test1.txt';
     const expectedUri2 = 'file:///workspace/folder/test2.txt#L10';
+    const existingContainerUri = `${CONTAINER_SCHEME}:folder1`;
+
     const existingV1: V1StoreType = {};
     existingV1[expectedUri2] = {
       foo: 'bar',
     };
+    existingV1[existingContainerUri] = {};
+
     const expectedV1: V1StoreType = {};
     expectedV1[`${expectedUri1}#L1`] = {};
     expectedV1[expectedUri2] = existingV1[expectedUri2];
+    expectedV1[existingContainerUri] = existingV1[existingContainerUri];
 
     const memento: vscode.Memento = <any>{
       get<T>(key: string, defaultValue: T) {
