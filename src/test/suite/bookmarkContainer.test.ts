@@ -4,7 +4,7 @@ import { basename } from 'path';
 
 import { createMockDatastore } from './datastore/common';
 import { BookmarkKind } from '../../bookmark';
-import { BookmarkContainer } from '../../bookmarkContainer';
+import { BookmarkContainer, CONTAINER_SCHEME } from '../../bookmarkContainer';
 
 suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   let restorables: { restore: () => void }[];
@@ -51,6 +51,26 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     assert.deepStrictEqual(
       addedBookmarks.map((b) => b.uri),
       []
+    );
+  });
+
+  test('createUriForName', () => {
+    const expectedName = 'container';
+    assert.strictEqual(
+      BookmarkContainer.createUriForName(expectedName).toString(),
+      `${CONTAINER_SCHEME}:${expectedName}`
+    );
+
+    const expectedGrandparentName = 'grandParent';
+    const expectedParentName = 'parent';
+    const parent = new BookmarkContainer(
+      expectedParentName,
+      new BookmarkContainer(expectedGrandparentName, 'global', createMockDatastore()),
+      createMockDatastore()
+    );
+    assert.strictEqual(
+      BookmarkContainer.createUriForName(expectedName, parent).toString(),
+      `${CONTAINER_SCHEME}:${expectedGrandparentName}/${expectedParentName}/${expectedName}`
     );
   });
 

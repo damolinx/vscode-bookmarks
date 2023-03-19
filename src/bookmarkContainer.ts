@@ -8,25 +8,32 @@ export class BookmarkContainer {
   public readonly datastore: Datastore;
   public readonly displayName: string;
   public readonly kind: BookmarkKind;
+  public readonly parent?: BookmarkContainer;
   public readonly uri: vscode.Uri;
 
-  constructor(nameOrUri: string | vscode.Uri, kind: BookmarkKind, datastore: Datastore) {
+  constructor(
+    name: string,
+    kindOrParent: BookmarkKind | BookmarkContainer,
+    datastore: Datastore
+  ) {
     this.datastore = datastore;
-    this.kind = kind;
-    if (nameOrUri instanceof vscode.Uri) {
-      this.displayName = nameOrUri.authority;
-      this.uri = nameOrUri;
+    this.displayName = name;
+    if (kindOrParent instanceof BookmarkContainer) {
+      this.kind = kindOrParent.kind;
+      this.parent = kindOrParent;
     } else {
-      this.displayName = nameOrUri;
-      this.uri = BookmarkContainer.createUriForName(nameOrUri);
+      this.kind = kindOrParent;
     }
+    this.uri = BookmarkContainer.createUriForName(this.displayName, this.parent);
   }
 
   /**
    * Create a {@link vscode.Uri} instance appropriate for a container
    */
-  public static createUriForName(name: string): vscode.Uri {
-    return vscode.Uri.from({ scheme: CONTAINER_SCHEME, authority: name });
+  public static createUriForName(name: string, parent?: BookmarkContainer): vscode.Uri {
+    return parent
+      ? parent.uri.with({ path: [parent.uri.path, name].join('/') })
+      : vscode.Uri.from({ scheme: CONTAINER_SCHEME, path: name });
   }
 
   public async addAsync(
