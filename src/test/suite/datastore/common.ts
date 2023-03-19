@@ -1,18 +1,18 @@
-import * as vscode from 'vscode';
-import * as assert from 'assert';
-import { V1_MEMENTO_KEY_NAME } from '../../../datastore/mementoDatastore';
+import { Datastore, RawDatastore, StoreType } from '../../../datastore/datastore';
 
-export function createMockMemento(...uris: string[]): vscode.Memento {
-  let store = Object.fromEntries(uris.map((uri) => [uri, {}]));
-  return <any>{
-    get<T>(key: string, defaultValue: T) {
-      assert.strictEqual(key, V1_MEMENTO_KEY_NAME);
-      return store ?? defaultValue;
-    },
-    update(key: string, value: any): Promise<void> {
-      assert.strictEqual(key, V1_MEMENTO_KEY_NAME);
-      store = value;
-      return Promise.resolve();
+export function createMockDatastore(...uris: string[]): Datastore {
+  const mockRawDatastore = createMockRawDatastore(...uris);
+  return new Datastore(mockRawDatastore);
+}
+
+export function createMockRawDatastore(...uris: string[]): RawDatastore {
+  let store = uris.length
+    ? <StoreType>Object.fromEntries(uris.map((uri) => [uri, {}]))
+    : undefined;
+  return {
+    get: () => store,
+    setAsync: (state?: StoreType) => {
+      store = state;
     },
   };
 }

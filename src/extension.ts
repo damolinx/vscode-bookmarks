@@ -1,10 +1,10 @@
 import * as vscode from 'vscode';
 import { Bookmark, BookmarkKind } from './bookmark';
+import { BookmarkContainer } from './bookmarkContainer';
 import { BookmarkDecoratorController } from './bookmarkDecoratorController';
-import { BookmarkGroup } from './bookmarkGroup';
 import { BookmarkManager } from './bookmarkManager';
 import { BookmarkTreeDragAndDropController } from './bookmarkTreeDragAndDropController';
-import { BookmarkTreeProvider } from './bookmarkTreeProvider';
+import { BookmarkTreeData, BookmarkTreeProvider } from './bookmarkTreeProvider';
 
 /**
  * Extension startup.
@@ -40,8 +40,8 @@ export async function activate(context: vscode.ExtensionContext) {
     ),
     vscode.commands.registerCommand(
       'bookmarks.addBookmark.tree',
-      (group: BookmarkGroup): Thenable<void> =>
-        addBookmarkAsync(manager, treeView, group.kind)
+      (container: BookmarkContainer): Thenable<void> =>
+        addBookmarkAsync(manager, treeView, container.kind)
     ),
     vscode.commands.registerCommand(
       'bookmarks.addBookmark.workspace',
@@ -82,7 +82,7 @@ export async function activate(context: vscode.ExtensionContext) {
     ),
     vscode.commands.registerCommand(
       'bookmarks.refreshBookmarks',
-      (bookmarkGroup?: BookmarkGroup): void => treeProvider.refresh(bookmarkGroup)
+      (container?: BookmarkContainer): void => treeProvider.refresh(container)
     ),
     vscode.commands.registerCommand(
       'bookmarks.removeBookmark.global',
@@ -105,8 +105,8 @@ export async function activate(context: vscode.ExtensionContext) {
     ),
     vscode.commands.registerCommand(
       'bookmarks.removeBookmarks.tree',
-      (bookmarkGroup: BookmarkGroup): Thenable<void> =>
-        removeAllBookmarksAsync(manager, bookmarkGroup.kind)
+      (container: BookmarkContainer): Thenable<void> =>
+        removeAllBookmarksAsync(manager, container.kind)
     ),
     vscode.commands.registerCommand(
       'bookmarks.removeBookmarks.workspace',
@@ -142,7 +142,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
 async function addBookmarkAsync(
   manager: BookmarkManager,
-  treeView: vscode.TreeView<Bookmark | BookmarkGroup | undefined>,
+  treeView: vscode.TreeView<BookmarkTreeData | undefined>,
   kind: BookmarkKind,
   pathOrUri?: string | vscode.Uri
 ): Promise<void> {
@@ -246,7 +246,7 @@ async function removeAllBookmarksAsync(
       `Are you sure you want to delete all ${kind ? `'${kind}' ` : ``}bookmarks?`,
       {
         modal: true,
-        detail: 'This action only affects the selected group but it is irreversible.',
+        detail: 'This action is irreversible.',
       },
       'Yes',
       'No'
@@ -258,7 +258,7 @@ async function removeAllBookmarksAsync(
 
 async function removeBookmarksAsync(
   manager: BookmarkManager,
-  treeView: vscode.TreeView<Bookmark | BookmarkGroup | undefined>,
+  treeView: vscode.TreeView<BookmarkTreeData | undefined>,
   bookmark?: Bookmark
 ): Promise<boolean> {
   const bookmarksToRemove: Bookmark[] = [];
@@ -279,7 +279,7 @@ async function removeBookmarksAsync(
 // TODO: Move
 async function updateDisplayNameAsync(
   manager: BookmarkManager,
-  treeView: vscode.TreeView<Bookmark | BookmarkGroup | undefined>,
+  treeView: vscode.TreeView<BookmarkTreeData | undefined>,
   bookmark?: Bookmark,
   name?: string
 ): Promise<void> {
@@ -311,7 +311,7 @@ async function updateDisplayNameAsync(
 // TODO: Move
 async function updateLineNumberAsync(
   manager: BookmarkManager,
-  treeView: vscode.TreeView<Bookmark | BookmarkGroup | undefined>,
+  treeView: vscode.TreeView<BookmarkTreeData | undefined>,
   bookmark: Bookmark
 ): Promise<void> {
   const existingLineNumbers = manager

@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
 import { Bookmark, BookmarkKind, BOOKMARK_CHANGE } from './bookmark';
-import { BookmarkDatastore } from './bookmarkDatastore';
-import { BookmarkGroup } from './bookmarkGroup';
+import { BookmarkContainer } from './bookmarkContainer';
 import { MetadataType } from './datastore/datastore';
 import { MementoDatastore } from './datastore/mementoDatastore';
 
@@ -24,7 +23,7 @@ export type BookmarkFilter = {
  * Bookmark manager.
  */
 export class BookmarkManager implements vscode.Disposable {
-  private readonly bookmarkGroups: ReadonlyArray<BookmarkGroup>;
+  private readonly rootContainers: ReadonlyArray<BookmarkContainer>;
   private readonly onDidAddBookmarkEmitter: vscode.EventEmitter<Bookmark[] | undefined>;
   private readonly onDidChangeBookmarkEmitter: vscode.EventEmitter<Bookmark[] | undefined>;
   private readonly onDidRemoveBookmarkEmitter: vscode.EventEmitter<Bookmark[] | undefined>;
@@ -34,14 +33,12 @@ export class BookmarkManager implements vscode.Disposable {
    * @param context Context.
    */
   constructor(context: vscode.ExtensionContext) {
-    this.bookmarkGroups = [
-      new BookmarkGroup(
-        'Global',
-        new BookmarkDatastore('global', new MementoDatastore(context.globalState))
-      ),
-      new BookmarkGroup(
+    this.rootContainers = [
+      new BookmarkContainer('Global', 'global', new MementoDatastore(context.globalState)),
+      new BookmarkContainer(
         'Workspace',
-        new BookmarkDatastore('workspace', new MementoDatastore(context.workspaceState))
+        'workspace',
+        new MementoDatastore(context.workspaceState)
       ),
     ];
     this.onDidAddBookmarkEmitter = new vscode.EventEmitter<Bookmark[] | undefined>();
@@ -72,8 +69,8 @@ export class BookmarkManager implements vscode.Disposable {
       return [];
     }
 
-    const group = this.getBookmarkGroup(kind);
-    const addedBookmarks = await group.datastore.addAsync(
+    const container = this.getRootContainer(kind);
+    const addedBookmarks = await container.addAsync(
       ...entries.map((entry) => new Bookmark(entry.uri, kind, entry.metadata))
     );
 
@@ -98,16 +95,16 @@ export class BookmarkManager implements vscode.Disposable {
   }
 
   /**
-   * Get Bookmark group.
+   * Get `kind` root container.
    * @param kind Bookmark kind.
-   * @returns Bookmark group.
+   * @returns Bookmark container.
    */
-  public getBookmarkGroup(kind: BookmarkKind): BookmarkGroup {
-    const group = this.bookmarkGroups.find((group) => group.kind === kind);
-    if (!group) {
+  public getRootContainer(kind: BookmarkKind): BookmarkContainer {
+    const container = this.rootContainers.find((c) => c.kind === kind);
+    if (!container) {
       throw new Error(`Unexpected Bookmark kind: ${kind}`);
     }
-    return group;
+    return container;
   }
 
   /**
@@ -115,9 +112,9 @@ export class BookmarkManager implements vscode.Disposable {
    * @param filter Filters to apply.
    */
   public getBookmarks(filter: BookmarkFilter = {}): Bookmark[] {
-    let bookmarks = this.bookmarkGroups
-      .filter((group) => !filter.kind || filter.kind === group.kind)
-      .flatMap((group) => group.getAll());
+    let bookmarks = this.rootContainers
+      .filter((c) => !filter.kind || filter.kind === c.kind)
+      .flatMap((c) => c.getItems());
     if (filter.uri) {
       bookmarks = bookmarks.filter((bookmark) =>
         bookmark.matchesUri(filter.uri!, filter.ignoreLineNumber)
@@ -131,8 +128,10 @@ export class BookmarkManager implements vscode.Disposable {
    * @param kind Bookmark kind filter.
    */
   public hasBookmarks(kind?: BookmarkKind): boolean {
-    const groups = kind ? [this.getBookmarkGroup(kind)] : this.bookmarkGroups;
-    return groups.some((group) => group.count);
+    const containers = kind
+      ? this.rootContainers.filter((c) => c.kind === kind)
+      : this.rootContainers;
+    return containers.some((c) => c.count);
   }
 
   /**
@@ -173,7 +172,7 @@ export class BookmarkManager implements vscode.Disposable {
         pathOrUriOrBookmark instanceof vscode.Uri
           ? pathOrUriOrBookmark
           : vscode.Uri.parse(pathOrUriOrBookmark);
-      bookmark = this.getBookmarkGroup(kind).get(uri);
+      bookmark = this.getRootContainer(kind).getItem(uri);
     } else {
       throw new Error(`Missing kind for ${pathOrUriOrBookmark}`);
     }
@@ -191,10 +190,10 @@ export class BookmarkManager implements vscode.Disposable {
       return removedBookmarks;
     }
 
-    for (const group of this.bookmarkGroups) {
-      const groupBookmarks = bookmarks.filter((b) => b.kind === group.kind);
-      if (groupBookmarks.length > 0) {
-        const removedGroupBookmarks = await group.datastore.removeAsync(...groupBookmarks);
+    for (const container of this.rootContainers) {
+      const containerBookmarks = bookmarks.filter((b) => b.kind === container.kind);
+      if (containerBookmarks.length > 0) {
+        const removedGroupBookmarks = await container.removeAsync(...containerBookmarks);
         removedBookmarks.push(...removedGroupBookmarks);
       }
     }
@@ -210,10 +209,10 @@ export class BookmarkManager implements vscode.Disposable {
    * @param kind Bookmark kind.
    */
   public async removeAllBookmarksAsync(kind?: BookmarkKind): Promise<void> {
-    const groups = kind ? [this.getBookmarkGroup(kind)] : this.bookmarkGroups;
-    for (const group of groups) {
-      await group.datastore.removeAllAsync();
-    }
+    const containers = kind
+      ? this.rootContainers.filter((c) => c.kind === kind)
+      : this.rootContainers;
+    await Promise.all(containers.map((c) => c.removeAllAsync()));
     this.onDidRemoveBookmarkEmitter.fire(undefined);
   }
 
@@ -235,14 +234,14 @@ export class BookmarkManager implements vscode.Disposable {
 
     const rename = bookmark.uri !== newBookmark.uri;
 
-    const bookmarkGroup = this.getBookmarkGroup(bookmark.kind);
+    const bookmarkGroup = this.getRootContainer(bookmark.kind);
     const [updatedBookmark] = await (rename
-      ? bookmarkGroup.datastore.addAsync(newBookmark) //TODO: should be atomic
-      : bookmarkGroup.datastore.upsert(newBookmark));
+      ? bookmarkGroup.addAsync(newBookmark) //TODO: should be atomic
+      : bookmarkGroup.upsertAsync(newBookmark));
 
     if (updatedBookmark) {
       if (rename) {
-        await bookmarkGroup.datastore.removeAsync(bookmark);
+        await bookmarkGroup.removeAsync(bookmark);
         this.onDidAddBookmarkEmitter.fire([newBookmark]);
         this.onDidRemoveBookmarkEmitter.fire([bookmark]);
       } else {
@@ -258,6 +257,6 @@ export class BookmarkManager implements vscode.Disposable {
    * Upgrade datastores.
    */
   public async upgradeDatastores(): Promise<void> {
-    await Promise.all(this.bookmarkGroups.map((g) => g.datastore.upgradeAsync()));
+    await Promise.all(this.rootContainers.map((c) => c.datastore.upgradeAsync()));
   }
 }

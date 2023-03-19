@@ -1,17 +1,19 @@
 import * as vscode from 'vscode';
 import { Bookmark } from './bookmark';
-import { BookmarkGroup } from './bookmarkGroup';
+import { BookmarkContainer } from './bookmarkContainer';
 import { BookmarkManager } from './bookmarkManager';
 import { TreeItemProvider } from './tree/treeItemProvider';
 import { createTreeProvider, TreeViewKind } from './tree/treeUtils';
 
-type EventType = undefined | Bookmark | Bookmark[] | BookmarkGroup;
+type EventType = undefined | Bookmark | Bookmark[] | BookmarkContainer;
 
 const VIEW_CONTEXT_KEY = 'bookmarks.tree.view';
 const VIEW_MEMENTO_KEY = 'bookmarks.preferences.view';
 
+export type BookmarkTreeData = Bookmark | BookmarkContainer;
+
 export class BookmarkTreeProvider
-  implements vscode.Disposable, vscode.TreeDataProvider<Bookmark | BookmarkGroup>
+  implements vscode.Disposable, vscode.TreeDataProvider<BookmarkTreeData>
 {
   private readonly context: vscode.ExtensionContext;
   private readonly disposable: vscode.Disposable;
@@ -56,11 +58,11 @@ export class BookmarkTreeProvider
    * @return Parent of `element`, or `undefined` if it is a root.
    */
   public getParent(
-    element: Bookmark | BookmarkGroup
-  ): vscode.ProviderResult<BookmarkGroup | undefined> {
-    const group =
-      element instanceof Bookmark ? this.manager.getBookmarkGroup(element.kind) : undefined;
-    return group;
+    element: BookmarkTreeData
+  ): vscode.ProviderResult<BookmarkContainer | undefined> {
+    const container =
+      element instanceof Bookmark ? this.manager.getRootContainer(element.kind) : undefined;
+    return container;
   }
 
   /**
@@ -69,10 +71,10 @@ export class BookmarkTreeProvider
    * @return TreeItem representation of the bookmark.
    */
   public getTreeItem(
-    element: Bookmark | BookmarkGroup
+    element: BookmarkTreeData
   ): vscode.TreeItem | Thenable<vscode.TreeItem> {
     let treeItem: vscode.TreeItem;
-    if (element instanceof BookmarkGroup) {
+    if (element instanceof BookmarkContainer) {
       treeItem = new vscode.TreeItem(
         element.displayName,
         element.count
@@ -92,13 +94,13 @@ export class BookmarkTreeProvider
    * @return Children of `element` or root if no element is passed.
    */
   public getChildren(
-    element?: BookmarkGroup
-  ): vscode.ProviderResult<Bookmark[] | BookmarkGroup[]> {
-    let children: Bookmark[] | BookmarkGroup[];
+    element?: BookmarkContainer
+  ): vscode.ProviderResult<Bookmark[] | BookmarkContainer[]> {
+    let children: Bookmark[] | BookmarkContainer[];
     if (!element) {
-      children = [this.manager.getBookmarkGroup('global')!];
+      children = [this.manager.getRootContainer('global')!];
       if (vscode.workspace.workspaceFolders?.length) {
-        children.push(this.manager.getBookmarkGroup('workspace')!);
+        children.push(this.manager.getRootContainer('workspace')!);
       }
     } else {
       // TODO: Folder
@@ -115,7 +117,7 @@ export class BookmarkTreeProvider
    * Refresh tree.
    * @param data Bookmark(s) to refresh. If `undefined`, it means refresh from the root.
    */
-  public refresh(data?: Bookmark | Bookmark[] | BookmarkGroup) {
+  public refresh(data?: Bookmark | Bookmark[] | BookmarkContainer) {
     this.onDidChangeTreeDataEmitter.fire(data);
   }
 

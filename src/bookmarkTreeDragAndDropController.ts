@@ -1,11 +1,11 @@
 import * as vscode from 'vscode';
 import { Bookmark } from './bookmark';
-import { BookmarkGroup } from './bookmarkGroup';
+import { BookmarkContainer } from './bookmarkContainer';
 import { BookmarkManager } from './bookmarkManager';
 import { MetadataType } from './datastore/datastore';
 
 export class BookmarkTreeDragAndDropController
-  implements vscode.TreeDragAndDropController<BookmarkGroup | Bookmark>
+  implements vscode.TreeDragAndDropController<BookmarkContainer | Bookmark>
 {
   private readonly bookmarkManager: BookmarkManager;
   public readonly dropMimeTypes: ReadonlyArray<string>;
@@ -18,7 +18,7 @@ export class BookmarkTreeDragAndDropController
   }
 
   async handleDrag(
-    source: (BookmarkGroup | Bookmark)[],
+    source: (BookmarkContainer | Bookmark)[],
     treeDataTransfer: vscode.DataTransfer,
     _token: vscode.CancellationToken
   ): Promise<void> {
@@ -32,7 +32,7 @@ export class BookmarkTreeDragAndDropController
   }
 
   async handleDrop(
-    target: BookmarkGroup | Bookmark | undefined,
+    target: BookmarkContainer | Bookmark | undefined,
     dataTransfer: vscode.DataTransfer,
     _token: vscode.CancellationToken
   ): Promise<void> {

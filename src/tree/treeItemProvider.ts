@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { Bookmark } from '../bookmark';
-import { BookmarkFolder } from '../bookmarkFolder';
+import { BookmarkContainer } from '../bookmarkContainer';
 
 export abstract class TreeItemProvider {
   protected abstract compareBookmarks(a: Bookmark, b: Bookmark): number;
@@ -9,8 +9,8 @@ export abstract class TreeItemProvider {
     bookmark: Bookmark
   ): Pick<vscode.TreeItem, 'label' | 'description' | 'iconPath' | 'tooltip'>;
 
-  protected getBookmarkFolderOverrides(
-    _folder: BookmarkFolder
+  protected getBookmarkContainerOverrides(
+    _container: BookmarkContainer
   ): Pick<vscode.TreeItem, 'label' | 'description' | 'iconPath' | 'tooltip'> {
     return {};
   }
@@ -40,10 +40,10 @@ export abstract class TreeItemProvider {
     return treeItem;
   }
 
-  public getTreeItemForBookmarkFolder(folder: BookmarkFolder): vscode.TreeItem {
-    const overrides = this.getBookmarkFolderOverrides(folder);
+  public getTreeItemForBookmarkContainer(container: BookmarkContainer): vscode.TreeItem {
+    const overrides = this.getBookmarkContainerOverrides(container);
     const treeItem: vscode.TreeItem = new vscode.TreeItem(
-      overrides.label || folder.displayName,
+      overrides.label || container.displayName,
       vscode.TreeItemCollapsibleState.Expanded
     );
     treeItem.contextValue = 'bookmarkFolder';
@@ -61,11 +61,11 @@ export abstract class TreeItemProvider {
   }
 
   public sort(
-    elements: Array<Bookmark | BookmarkFolder>
-  ): Array<Bookmark | BookmarkFolder> {
+    elements: Array<Bookmark | BookmarkContainer>
+  ): Array<Bookmark | BookmarkContainer> {
     return elements.sort((a, b) => {
-      const aIsFolder = a instanceof BookmarkFolder;
-      const bIsFolder = b instanceof BookmarkFolder;
+      const aIsFolder = a instanceof BookmarkContainer;
+      const bIsFolder = b instanceof BookmarkContainer;
       let order: number;
       if (aIsFolder && bIsFolder) {
         return a.displayName.localeCompare(b.displayName, undefined, {
