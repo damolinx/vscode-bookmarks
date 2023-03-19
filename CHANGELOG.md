@@ -3,6 +3,7 @@
 ## (next)
 
 - Options in the `View` context menu are enabled/disabled as expected.
+- D'n'D operations should not remove the source item if
 
 ## 0.3.7
 

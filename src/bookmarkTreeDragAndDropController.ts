@@ -52,15 +52,17 @@ export class BookmarkTreeDragAndDropController
     }
 
     // Add URIs to Target Kind.
-    let addedItems = false;
+    let addedBookmarks: Bookmark[] | undefined;
     if (droppedUris?.length) {
-      addedItems = !!(await this.bookmarkManager.addBookmarksAsync(kind, ...droppedUris))
-        .length;
+      addedBookmarks = await this.bookmarkManager.addBookmarksAsync(kind, ...droppedUris);
     }
 
-    // Remove Bookmarks that were dragged, but dont remove if we didt move anything.
-    if (draggedBookmarks?.length && addedItems) {
-      await this.bookmarkManager.removeBookmarksAsync(...draggedBookmarks);
+    // Remove Bookmarks that were dragged.
+    if (draggedBookmarks?.length && addedBookmarks?.length) {
+      const movedBookmarks = draggedBookmarks.filter((db) =>
+        addedBookmarks!.some((ad) => ad.matchesUri(db.uri))
+      );
+      await this.bookmarkManager.removeBookmarksAsync(...movedBookmarks);
     }
   }
 }
