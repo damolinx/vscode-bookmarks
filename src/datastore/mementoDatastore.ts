@@ -55,7 +55,7 @@ class MementoRawDatastore implements RawDatastore {
    */
   setAsync(state?: RawData): Thenable<void> {
     if (process.env.VSCODE_EXT_BOOKMARKS_DEBUG === 'true') {
-      console.log(JSON.stringify(state));
+      console.log(state);
     }
     return this.memento.update(V1_MEMENTO_KEY_NAME, state);
   }
