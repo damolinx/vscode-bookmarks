@@ -3,12 +3,12 @@ import * as process from 'process';
 import {
   CONTAINER_SCHEME,
   Datastore,
-  MetadataType,
+  RawMetadata,
   RawDatastore,
-  StoreType,
+  RawData,
 } from './datastore';
 
-export { MetadataType } from './datastore';
+export { RawMetadata } from './datastore';
 
 /**
  * Memento key name used up to v0.2.1.
@@ -26,14 +26,14 @@ export const V1_MEMENTO_KEY_NAME = 'bookmarks.v1';
 /**
  * Metadata format used from v0.3.0.
  */
-export type V1MetadataType = MetadataType;
+export type V1MetadataType = RawMetadata;
 /**
  * Data format used from v0.3.0.
  */
-export type V1StoreType = StoreType;
+export type V1StoreType = RawData;
 
 /**
- * {@link vscode.Memento}-based datastore for {@link StoreType}.
+ * {@link vscode.Memento}-based datastore for {@link RawData}.
  */
 class MementoRawDatastore implements RawDatastore {
   public readonly memento: vscode.Memento;
@@ -45,7 +45,7 @@ class MementoRawDatastore implements RawDatastore {
   /**
    * Gets the store state. `undefined` means there is no saved state.
    */
-  get(): StoreType | undefined {
+  get(): RawData | undefined {
     return this.memento.get<V1StoreType>(V1_MEMENTO_KEY_NAME);
   }
 
@@ -53,7 +53,7 @@ class MementoRawDatastore implements RawDatastore {
    * Sets the store state. Using `undefined` as `state` clears any stored state.
    * @param state Store state. MUST NOT contain cyclic references.
    */
-  setAsync(state?: StoreType): Thenable<void> {
+  setAsync(state?: RawData): Thenable<void> {
     if (process.env.VSCODE_EXT_BOOKMARKS_DEBUG === 'true') {
       console.log(JSON.stringify(state));
     }

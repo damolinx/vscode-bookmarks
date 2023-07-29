@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import { Bookmark, BookmarkKind } from './bookmark';
-import { CONTAINER_SCHEME, Datastore, MetadataType } from './datastore/datastore';
+import { CONTAINER_SCHEME, Datastore, RawMetadata } from './datastore/datastore';
 
 export class BookmarkContainer {
   public readonly datastore: Datastore;
@@ -35,7 +35,7 @@ export class BookmarkContainer {
   }
 
   public async addAsync(
-    ...entries: Array<{ uri: vscode.Uri; metadata?: MetadataType }>
+    ...entries: Array<{ uri: vscode.Uri; metadata?: RawMetadata }>
   ): Promise<Array<Bookmark>> {
     const addedUris = await this.datastore.addAsync(entries);
     const addedItems = addedUris.map((uri) => {
@@ -54,7 +54,7 @@ export class BookmarkContainer {
     return this.datastore.count;
   }
 
-  private createItem(uri: vscode.Uri, metadata?: MetadataType): Bookmark {
+  private createItem(uri: vscode.Uri, metadata?: RawMetadata): Bookmark {
     return new Bookmark(uri, this.kind, metadata);
   }
 

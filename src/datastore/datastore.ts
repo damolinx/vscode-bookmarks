@@ -7,35 +7,35 @@ export const CONTAINER_SCHEME = 'bookmark-container';
 
 /**
  * Bookmark metadata format (used from v0.3.0).
- * - {@link StoreType} was added as after v0.3.3 to support nesting.
+ * - {@link RawData} was added as after v0.3.3 to support nesting.
  */
-export type MetadataType = { [key: string]: string | StoreType | undefined };
+export type RawMetadata = { [key: string]: string | RawData | undefined };
 
 /**
  * Bookmark data format (used from v0.3.1).
  */
-export type StoreType = { [uri: string]: MetadataType };
+export type RawData = { [uri: string]: RawMetadata };
 
 /**
- * Basic Datastore for {@link StoreType} data.
+ * Basic Datastore for {@link RawData} data.
  */
 export interface RawDatastore {
   /**
    * Gets the store state. `undefined` means there is no saved state.
    */
-  get(): undefined | StoreType;
+  get(): undefined | RawData;
 
   /**
    * Sets the store state. Using `undefined` as `state` clears any stored state.
    * @param state Store state. MUST NOT contain cyclic references.
    */
-  setAsync(state?: StoreType): void | Thenable<void>;
+  setAsync(state?: RawData): void | Thenable<void>;
 }
 
 /**
  * This class represents a datastore with appropriate restrictions and semantics to handle
- * extension data. This contrasts with the {@link RawDatastore} which caan be anything but
- * it is forced to expose operations that get and set {@link StoreType} data. This allows
+ * extension data. This contrasts with the {@link RawDatastore} which can be anything but
+ * is forced to expose operations that get and set {@link RawData} data. This allows
  * to use a {@link vscode.Memento} to store data or virtualize individual metadata entries
  * as their own data stores while keeping common data semantics in all cases.
  */
@@ -57,7 +57,7 @@ export class Datastore<TSTORE extends RawDatastore = RawDatastore> {
    * @returns List of added URIs, no duplicates.
    */
   public async addAsync(
-    entries: Array<{ uri: vscode.Uri; metadata?: MetadataType }>,
+    entries: Array<{ uri: vscode.Uri; metadata?: RawMetadata }>,
     override: boolean = false
   ): Promise<vscode.Uri[]> {
     const addedUris: vscode.Uri[] = [];
@@ -99,7 +99,7 @@ export class Datastore<TSTORE extends RawDatastore = RawDatastore> {
    * @param uri URI to search for (line data is significant).
    * @return Metadata, if found.
    */
-  public get(uri: vscode.Uri): MetadataType | undefined {
+  public get(uri: vscode.Uri): RawMetadata | undefined {
     const bookmarks = this.getAll();
     return bookmarks[uri.toString()];
   }
@@ -108,7 +108,7 @@ export class Datastore<TSTORE extends RawDatastore = RawDatastore> {
    * Return all bookmark data.
    * @return Stored data.
    */
-  public getAll(): StoreType {
+  public getAll(): RawData {
     return this.rawStore.get() || {};
   }
 
@@ -153,11 +153,11 @@ export class Datastore<TSTORE extends RawDatastore = RawDatastore> {
   public async replaceAsync(
     uri: vscode.Uri,
     newUri: vscode.Uri
-  ): Promise<MetadataType | undefined> {
+  ): Promise<RawMetadata | undefined> {
     const bookmarks = this.getAll();
     const uriStr = uri.toString();
 
-    const metadata: MetadataType | undefined = bookmarks[uriStr];
+    const metadata: RawMetadata | undefined = bookmarks[uriStr];
     if (metadata) {
       bookmarks[newUri.toString()] = metadata;
       delete bookmarks[uriStr];

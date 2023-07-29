@@ -93,7 +93,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
       createMockDatastore(...expectedUris)
     );
     assert.deepStrictEqual(
-      container.getItem(vscode.Uri.parse(expectedUris[1]))?.uri.toString(),
+      container.getItem(vscode.Uri.parse(expectedUris[1], true))?.uri.toString(),
       expectedUris[1]
     );
   });

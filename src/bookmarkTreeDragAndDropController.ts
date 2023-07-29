@@ -2,7 +2,7 @@ import * as vscode from 'vscode';
 import { Bookmark } from './bookmark';
 import { BookmarkContainer } from './bookmarkContainer';
 import { BookmarkManager } from './bookmarkManager';
-import { MetadataType } from './datastore/datastore';
+import { RawMetadata } from './datastore/datastore';
 
 export class BookmarkTreeDragAndDropController
   implements vscode.TreeDragAndDropController<BookmarkContainer | Bookmark>
@@ -36,7 +36,7 @@ export class BookmarkTreeDragAndDropController
     dataTransfer: vscode.DataTransfer,
     _token: vscode.CancellationToken
   ): Promise<void> {
-    let droppedUris: { uri: string | vscode.Uri; metadata?: MetadataType }[] | undefined;
+    let droppedUris: { uri: string | vscode.Uri; metadata?: RawMetadata }[] | undefined;
     const kind =
       target?.kind || (vscode.workspace.workspaceFolders?.length ? 'workspace' : 'global');
     const draggedBookmarks = (<Bookmark[] | undefined>(

@@ -1,23 +1,32 @@
 import * as vscode from 'vscode';
-import { MetadataType, Datastore, RawDatastore, StoreType } from './datastore';
+import {
+  CONTAINER_SCHEME,
+  Datastore,
+  RawMetadata,
+  RawDatastore,
+  RawData,
+} from './datastore';
 
-export { MetadataType } from './datastore';
+export { RawMetadata } from './datastore';
 
 export const CONTAINER_METADATA_KEY = 'container';
 
 /**
- * This class virtualizes a {@link StoreType}'s entry as a datastore for {@link StoreType}.
+ * This class virtualizes a {@link RawData}'s entry as a datastore for {@link RawData}.
  */
 class MetadataRawDatastore implements RawDatastore {
   public readonly uri: vscode.Uri;
-  public readonly metadata: MetadataType;
-  private readonly metadataKey: keyof StoreType;
+  public readonly metadata: RawMetadata;
+  private readonly metadataKey: keyof RawData;
 
   constructor(
     uri: vscode.Uri,
-    metadata: MetadataType,
-    metadataKey: keyof StoreType = CONTAINER_METADATA_KEY
+    metadata: RawMetadata,
+    metadataKey: keyof RawData = CONTAINER_METADATA_KEY
   ) {
+    if (uri.scheme !== CONTAINER_SCHEME) {
+      throw new Error(`Scheme must be '${CONTAINER_SCHEME}' but is '${uri.scheme}'`);
+    }
     this.metadata = metadata;
     this.metadataKey = metadataKey;
     this.uri = uri;
@@ -26,8 +35,8 @@ class MetadataRawDatastore implements RawDatastore {
   /**
    * Gets the store state. `undefined` means there is no saved state.
    */
-  get(): StoreType | undefined {
-    const container = <StoreType | undefined>this.metadata[this.metadataKey];
+  get(): RawData | undefined {
+    const container = <RawData | undefined>this.metadata[this.metadataKey];
     return container;
   }
 
@@ -35,7 +44,7 @@ class MetadataRawDatastore implements RawDatastore {
    * Sets the store state. Using `undefined` as `state` clears any stored state.
    * @param state Store state. MUST NOT contain cyclic references.
    */
-  setAsync(state?: StoreType): void {
+  setAsync(state?: RawData): void {
     if (state === undefined || Object.keys(state).length === 0) {
       delete this.metadata[CONTAINER_METADATA_KEY];
     } else {
@@ -53,10 +62,10 @@ export class MetadataDatastore extends Datastore<MetadataRawDatastore> {
 
   /**
    * Constructor.
-   * @param metadata Metatadta data store
+   * @param metadata Metadata datastore
    * @param parent Parent data store.
    */
-  constructor(uri: vscode.Uri, metadata: MetadataType, parent: Datastore) {
+  constructor(uri: vscode.Uri, metadata: RawMetadata, parent: Datastore) {
     super(new MetadataRawDatastore(uri, metadata));
     this.parent = parent;
   }
@@ -68,7 +77,7 @@ export class MetadataDatastore extends Datastore<MetadataRawDatastore> {
    * @returns List of added URIs, no duplicates.
    */
   public async addAsync(
-    entries: Array<{ uri: vscode.Uri; metadata?: MetadataType }>,
+    entries: Array<{ uri: vscode.Uri; metadata?: RawMetadata }>,
     override: boolean = false
   ): Promise<vscode.Uri[]> {
     const addedUris = await super.addAsync(entries, override);
@@ -118,7 +127,7 @@ export class MetadataDatastore extends Datastore<MetadataRawDatastore> {
   public async replaceAsync(
     uri: vscode.Uri,
     newUri: vscode.Uri
-  ): Promise<MetadataType | undefined> {
+  ): Promise<RawMetadata | undefined> {
     const replacedMetadata = await super.replaceAsync(uri, newUri);
     if (replacedMetadata) {
       await this.parent.addAsync(

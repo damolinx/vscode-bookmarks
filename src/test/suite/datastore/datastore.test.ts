@@ -14,9 +14,9 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   teardown(() => restorables.forEach((r) => r.restore()));
 
   test('addAsync: non-existing', async () => {
-    const expectedUri1 = vscode.Uri.parse('file://global/file1');
+    const expectedUri1 = vscode.Uri.file('/global/file1');
     const expectedMetadata1 = {};
-    const expectedUri2 = vscode.Uri.parse('file://global/file2');
+    const expectedUri2 = vscode.Uri.file('/global/file2');
     const expectedMetadata2 = {
       prop1: 'test prop1 value',
       prop2: 'test prop2 value',
@@ -44,7 +44,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   });
 
   test('addAsync: existing (override: false)', async () => {
-    const expectedExistingUri = vscode.Uri.parse('file://global/file');
+    const expectedExistingUri = vscode.Uri.file('/global/file');
     const rawDatastore: RawDatastore = {
       get: () => Object.fromEntries([[expectedExistingUri, {}]]),
       setAsync: () => {
@@ -58,7 +58,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   });
 
   test('addAsync: existing (override: true)', async () => {
-    const expectedExistingUri = vscode.Uri.parse('file://global/file');
+    const expectedExistingUri = vscode.Uri.file('/global/file');
     const expectedMetadata = {
       prop: 'test prop value',
     };
@@ -79,7 +79,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   });
 
   test('contains: empty', () => {
-    const expectedUri = vscode.Uri.parse('file://global/file');
+    const expectedUri = vscode.Uri.file('/global/file');
     const rawDatastore: RawDatastore = {
       get: () => ({}),
       setAsync: () => {
@@ -92,7 +92,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   });
 
   test('contains: existing', () => {
-    const expectedUri = vscode.Uri.parse('file://global/file');
+    const expectedUri = vscode.Uri.file('/global/file');
 
     const rawDatastore: RawDatastore = {
       get: () => Object.fromEntries([[expectedUri, {}]]),
@@ -106,8 +106,8 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   });
 
   test('contains: non-existing', () => {
-    const expectedUri = vscode.Uri.parse('file://global/file1');
-    const expectedExistingUri = vscode.Uri.parse('file://global/file2');
+    const expectedUri = vscode.Uri.file('/global/file1');
+    const expectedExistingUri = vscode.Uri.file('/global/file2');
 
     const rawDatastore: RawDatastore = {
       get: () => Object.fromEntries([[expectedExistingUri, {}]]),
@@ -134,7 +134,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
 
   test('count: not-empty', () => {
     const rawDatastore: RawDatastore = {
-      get: () => Object.fromEntries([[vscode.Uri.parse('file://global/file'), {}]]),
+      get: () => Object.fromEntries([[vscode.Uri.file('/global/file'), {}]]),
       setAsync: () => {
         assert.fail('Unexpected call');
       },
@@ -145,7 +145,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   });
 
   test('get: existing', () => {
-    const expectedUri = vscode.Uri.parse('file://global/file');
+    const expectedUri = vscode.Uri.file('/global/file');
     const expectedMetadata = {
       prop: 'test prop value',
     };
@@ -162,8 +162,8 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   });
 
   test('get: non-existing', () => {
-    const expectedUri = vscode.Uri.parse('file://global/file1');
-    const expectedExistingUri = vscode.Uri.parse('file://global/file2');
+    const expectedUri = vscode.Uri.file('/global/file1');
+    const expectedExistingUri = vscode.Uri.file('/global/file2');
 
     const rawDatastore: RawDatastore = {
       get: () => Object.fromEntries([[expectedExistingUri, {}]]),
@@ -190,8 +190,8 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
 
   test('getAll: not-empty', () => {
     const expectedStore = Object.fromEntries([
-      [vscode.Uri.parse('file://global/file1'), {}],
-      [vscode.Uri.parse('file://global/file2'), {}],
+      [vscode.Uri.file('/global/file1'), {}],
+      [vscode.Uri.file('/global/file2'), {}],
     ]);
 
     const rawDatastore: RawDatastore = {
@@ -206,11 +206,11 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   });
 
   test('removeAsync: existing', async () => {
-    const expectedUri1 = vscode.Uri.parse('file://global/file1');
+    const expectedUri1 = vscode.Uri.file('/global/file1');
     const expectedMetadata1 = {
       prop1: 'test prop1 value',
     };
-    const expectedUri2 = vscode.Uri.parse('file://global/file2');
+    const expectedUri2 = vscode.Uri.file('/global/file2');
     const expectedMetadata2 = {
       prop2: 'test prop2 value',
     };
@@ -234,11 +234,11 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   });
 
   test('removeAsync: non-existing', async () => {
-    const expectedUri = vscode.Uri.parse('file://global/file1');
+    const expectedUri = vscode.Uri.file('/global/file1');
     const expectedMetadata = {
       prop: 'test prop value',
     };
-    const expectedUriNonExisting = vscode.Uri.parse('file://global/file2');
+    const expectedUriNonExisting = vscode.Uri.file('/global/file2');
     const rawDatastore: RawDatastore = {
       get: () => Object.fromEntries([[expectedUri, expectedMetadata]]),
       setAsync: () => {
@@ -263,11 +263,11 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   });
 
   test('removeAllAsync: non-empty', async () => {
-    const expectedUri1 = vscode.Uri.parse('file://global/file1');
+    const expectedUri1 = vscode.Uri.file('/global/file1');
     const expectedMetadata1 = {
       prop1: 'test prop1 value',
     };
-    const expectedUri2 = vscode.Uri.parse('file://global/file2');
+    const expectedUri2 = vscode.Uri.file('/global/file2');
     const expectedMetadata2 = {
       prop2: 'test prop1 value',
     };
@@ -288,8 +288,8 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   });
 
   test('replaceAsync: existing', async () => {
-    const expectedUri = vscode.Uri.parse('file://global/file');
-    const expectedNewUri = vscode.Uri.parse('file://global/fileNew');
+    const expectedUri = vscode.Uri.file('/global/file');
+    const expectedNewUri = vscode.Uri.file('/global/fileNew');
     const expectedMetadata = {
       prop: 'test prop value',
     };
@@ -311,7 +311,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   });
 
   test('replaceAsync: non-existing', async () => {
-    const expectedUri = vscode.Uri.parse('file://global/file1');
+    const expectedUri = vscode.Uri.file('/global/file1');
     const rawDatastore: RawDatastore = {
       get: () => Object.fromEntries([[expectedUri, {}]]),
       setAsync: () => {
@@ -322,8 +322,8 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
 
     assert.strictEqual(
       await datastore.replaceAsync(
-        vscode.Uri.parse('file://global/file2'),
-        vscode.Uri.parse('file://global/file3')
+        vscode.Uri.file('/global/file2'),
+        vscode.Uri.file('/global/file3')
       ),
       undefined
     );

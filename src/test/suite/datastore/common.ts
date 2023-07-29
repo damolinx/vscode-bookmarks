@@ -1,4 +1,4 @@
-import { Datastore, RawDatastore, StoreType } from '../../../datastore/datastore';
+import { Datastore, RawDatastore, RawData } from '../../../datastore/datastore';
 
 export function createMockDatastore(...uris: string[]): Datastore {
   const mockRawDatastore = createMockRawDatastore(...uris);
@@ -7,11 +7,11 @@ export function createMockDatastore(...uris: string[]): Datastore {
 
 export function createMockRawDatastore(...uris: string[]): RawDatastore {
   let store = uris.length
-    ? <StoreType>Object.fromEntries(uris.map((uri) => [uri, {}]))
+    ? <RawData>Object.fromEntries(uris.map((uri) => [uri, {}]))
     : undefined;
   return {
     get: () => store,
-    setAsync: (state?: StoreType) => {
+    setAsync: (state?: RawData) => {
       store = state;
     },
   };
