@@ -71,6 +71,14 @@ export class BookmarkContainer {
   }
 
   /**
+   * Whether container is a root node. This should be `true` for `Global` or
+   * `Workspace` nodes.
+   */
+  public get isRoot(): boolean {
+    return !this.parent;
+  }
+
+  /**
    * Remove all items.
    */
   public removeAllAsync(): Promise<void> {
