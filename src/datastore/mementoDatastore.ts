@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import * as process from 'process';
 import {
   CONTAINER_SCHEME,
   Datastore,
@@ -53,6 +54,9 @@ class MementoRawDatastore implements RawDatastore {
    * @param state Store state. MUST NOT contain cyclic references.
    */
   setAsync(state?: StoreType): Thenable<void> {
+    if (process.env.VSCODE_EXT_BOOKMARKS_DEBUG === 'true') {
+      console.log(JSON.stringify(state));
+    }
     return this.memento.update(V1_MEMENTO_KEY_NAME, state);
   }
 }
