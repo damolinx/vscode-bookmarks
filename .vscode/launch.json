@@ -10,7 +10,7 @@
 			"env": {
 				"VSCODE_EXT_BOOKMARKS_DEBUG": "true"
 			},
-			"outFiles": ["${workspaceFolder}/out/**/*.js"],
+			"outFiles": [],
 			"preLaunchTask": "npm: watch"
 		},
 		{
@@ -22,7 +22,7 @@
 				"--extensionDevelopmentPath=${workspaceFolder}",
 				"--extensionTestsPath=${workspaceFolder}/out/test/suite/index"
 			],
-			"outFiles": ["${workspaceFolder}/out/test/**/*.js"],
+			"outFiles": [],
 			"preLaunchTask": "npm: watch"
 		}
 	]
