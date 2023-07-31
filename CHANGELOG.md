@@ -2,8 +2,12 @@
 
 ## (next)
 
+## 0.4.0
+
+- Add support for folders.
+  - Limitation: cannot drag-and-drop folders.
 - Options in the `View` context menu are enabled/disabled as expected.
-- D'n'D operations should not remove the source item if
+- Some actions are moved under context menus (instead of inlined) to simplify experience.
 
 ## 0.3.7
 
