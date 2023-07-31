@@ -1,12 +1,14 @@
 import * as vscode from 'vscode';
+import { basename } from 'path';
 import { Bookmark, BookmarkKind } from './bookmark';
 import { CONTAINER_SCHEME, Datastore, RawMetadata } from './datastore/datastore';
+import { MetadataDatastore } from './datastore/metadataDatastore';
 
 export class BookmarkContainer {
   public readonly datastore: Datastore;
   public readonly displayName: string;
   public readonly kind: BookmarkKind;
-  public readonly parent?: BookmarkContainer;
+  public readonly container?: BookmarkContainer;
   public readonly uri: vscode.Uri;
 
   constructor(
@@ -18,11 +20,11 @@ export class BookmarkContainer {
     this.displayName = name;
     if (kindOrParent instanceof BookmarkContainer) {
       this.kind = kindOrParent.kind;
-      this.parent = kindOrParent;
+      this.container = kindOrParent;
     } else {
       this.kind = kindOrParent;
     }
-    this.uri = BookmarkContainer.createUriForName(this.displayName, this.parent);
+    this.uri = BookmarkContainer.createUriForName(this.displayName, this.container);
   }
 
   /**
@@ -36,11 +38,11 @@ export class BookmarkContainer {
 
   public async addAsync(
     ...entries: Array<{ uri: vscode.Uri; metadata?: RawMetadata }>
-  ): Promise<Array<Bookmark>> {
+  ): Promise<Array<Bookmark | BookmarkContainer>> {
     const addedUris = await this.datastore.addAsync(entries);
     const addedItems = addedUris.map((uri) => {
       const entry = entries.find((entry) => entry.uri === uri);
-      return this.createItem(uri, entry?.metadata);
+      return this.createItem(uri, entry?.metadata || {}); //TODO: return metadata
     });
 
     return addedItems;
@@ -54,16 +56,30 @@ export class BookmarkContainer {
     return this.datastore.count;
   }
 
-  private createItem(uri: vscode.Uri, metadata?: RawMetadata): Bookmark {
-    return new Bookmark(uri, this.kind, metadata);
+  private createItem(uri: vscode.Uri, metadata: RawMetadata) {
+    if (uri.scheme === CONTAINER_SCHEME) {
+      // TODO: metadata does not make sense to be undefined here
+      return new BookmarkContainer(
+        basename(uri.fsPath), //TODO:
+        this,
+        new MetadataDatastore(uri, metadata || {}, this.datastore)
+      );
+    } else {
+      return new Bookmark(this, uri, metadata);
+    }
   }
 
-  public getItem(uri: vscode.Uri): Bookmark | undefined {
+  public get id(): string {
+    // Using DisplayName as dups are not allowed
+    return this.isRoot ? this.kind : [this.container!.id, this.displayName].join('/');
+  }
+
+  public getItem(uri: vscode.Uri): Bookmark | BookmarkContainer | undefined {
     const metadata = this.datastore.get(uri);
     return metadata && this.createItem(uri, metadata);
   }
 
-  public getItems(): Array<Bookmark> {
+  public getItems(): Array<Bookmark | BookmarkContainer> {
     const rawItems = this.datastore.getAll();
     return Object.entries(rawItems).map(([uriStr, metadata]) =>
       this.createItem(vscode.Uri.parse(uriStr, true), metadata)
@@ -75,7 +91,15 @@ export class BookmarkContainer {
    * `Workspace` nodes.
    */
   public get isRoot(): boolean {
-    return !this.parent;
+    return !this.container;
+  }
+
+  /**
+   * Tests whether `uri` matches current bookmark.
+   * @param uri URI to test against.
+   */
+  public matchesUri(uri: vscode.Uri): boolean {
+    return uri.authority === this.uri.authority && uri.path === this.uri.path;
   }
 
   /**
@@ -90,7 +114,9 @@ export class BookmarkContainer {
    * @param items Items to remove.
    * @return Removed items (no duplicates).
    */
-  public async removeAsync(...items: Array<Bookmark>): Promise<Array<Bookmark>> {
+  public async removeAsync(
+    ...items: Array<Bookmark | BookmarkContainer>
+  ): Promise<Array<Bookmark | BookmarkContainer>> {
     const removed = await this.datastore.removeAsync(items.map((b) => b.uri));
     const removedBookmarks = items.filter((b) => removed.includes(b.uri));
     return removedBookmarks;

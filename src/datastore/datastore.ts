@@ -3,7 +3,7 @@ import * as vscode from 'vscode';
 /**
  * URI scheme used for containers after v0.3.7.
  */
-export const CONTAINER_SCHEME = 'bookmark-container';
+export const CONTAINER_SCHEME = 'container';
 
 /**
  * Bookmark metadata format (used from v0.3.0).
@@ -40,7 +40,7 @@ export interface RawDatastore {
  * as their own data stores while keeping common data semantics in all cases.
  */
 export class Datastore<TSTORE extends RawDatastore = RawDatastore> {
-  protected readonly rawStore: TSTORE;
+  public readonly rawStore: TSTORE;
 
   /**
    * Constructor.

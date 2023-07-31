@@ -54,11 +54,17 @@ export class BookmarkDecoratorController implements vscode.Disposable {
       vscode.window.onDidChangeVisibleTextEditors((editors) =>
         showDecorations(this.manager, editors)
       ),
-      this.manager.onDidAddBookmark((bookmarks) =>
-        refreshDecorations(this.manager, bookmarks)
+      this.manager.onDidAddBookmark((items) =>
+        refreshDecorations(
+          this.manager,
+          <Bookmark[]>items?.filter((i) => i instanceof Bookmark)
+        )
       ),
-      this.manager.onDidRemoveBookmark((bookmarks) =>
-        refreshDecorations(this.manager, bookmarks)
+      this.manager.onDidRemoveBookmark((items) =>
+        refreshDecorations(
+          this.manager,
+          <Bookmark[]>items?.filter((i) => i instanceof Bookmark)
+        )
       )
     );
     refreshDecorations(this.manager);
@@ -90,11 +96,13 @@ export class BookmarkDecoratorController implements vscode.Disposable {
       manager: BookmarkManager,
       editors: ReadonlyArray<vscode.TextEditor>
     ): void {
+      //TODO: need to only get bookmarks AND get them recursive
       editors.forEach((editor) => {
         const options: vscode.DecorationOptions[] = manager
           .getBookmarks({ ignoreLineNumber: true, uri: editor.document.uri })
+          .filter((i) => i instanceof Bookmark)
           .map((bookmark) => ({
-            range: editor.document.lineAt(bookmark.lineNumber - 1).range,
+            range: editor.document.lineAt((<Bookmark>bookmark).lineNumber - 1).range,
           }));
         editor.setDecorations(decorationType, options);
       });

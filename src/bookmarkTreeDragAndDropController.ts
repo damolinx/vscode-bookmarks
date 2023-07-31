@@ -1,11 +1,12 @@
 import * as vscode from 'vscode';
 import { Bookmark } from './bookmark';
-import { BookmarkContainer } from './bookmarkContainer';
 import { BookmarkManager } from './bookmarkManager';
+import { BookmarkTreeData } from './bookmarkTreeProvider';
 import { RawMetadata } from './datastore/datastore';
+import { BookmarkContainer } from './bookmarkContainer';
 
 export class BookmarkTreeDragAndDropController
-  implements vscode.TreeDragAndDropController<BookmarkContainer | Bookmark>
+  implements vscode.TreeDragAndDropController<BookmarkTreeData>
 {
   private readonly bookmarkManager: BookmarkManager;
   public readonly dropMimeTypes: ReadonlyArray<string>;
@@ -18,7 +19,7 @@ export class BookmarkTreeDragAndDropController
   }
 
   async handleDrag(
-    source: (BookmarkContainer | Bookmark)[],
+    source: Array<BookmarkTreeData>,
     treeDataTransfer: vscode.DataTransfer,
     _token: vscode.CancellationToken
   ): Promise<void> {
@@ -32,29 +33,35 @@ export class BookmarkTreeDragAndDropController
   }
 
   async handleDrop(
-    target: BookmarkContainer | Bookmark | undefined,
+    target: BookmarkTreeData | undefined,
     dataTransfer: vscode.DataTransfer,
     _token: vscode.CancellationToken
   ): Promise<void> {
-    let droppedUris: { uri: string | vscode.Uri; metadata?: RawMetadata }[] | undefined;
+    let droppedUris: { uri: vscode.Uri; metadata?: RawMetadata }[] | undefined;
     const kind =
       target?.kind || (vscode.workspace.workspaceFolders?.length ? 'workspace' : 'global');
-    const draggedBookmarks = (<Bookmark[] | undefined>(
+    const draggedBookmarks = <Bookmark[] | undefined>(
       dataTransfer.get('application/vnd.code.tree.bookmarks')?.value
-    ))?.filter((b) => b.kind != kind);
+    );
     if (draggedBookmarks) {
       droppedUris = draggedBookmarks.map((b) => ({ uri: b.uri, metadata: b.metadata }));
     } else {
       const draggedUriList = await dataTransfer.get('text/uri-list')?.asString();
       if (draggedUriList) {
-        droppedUris = draggedUriList.split('\n').map((uri) => ({ uri }));
+        droppedUris = draggedUriList
+          .split('\n')
+          .map((uriStr) => ({ uri: vscode.Uri.parse(uriStr, true) }));
       }
     }
 
     // Add URIs to Target Kind.
-    let addedBookmarks: Bookmark[] | undefined;
+    let addedBookmarks: BookmarkTreeData[] | undefined;
     if (droppedUris?.length) {
-      addedBookmarks = await this.bookmarkManager.addBookmarksAsync(kind, ...droppedUris);
+      if (target instanceof BookmarkContainer) {
+        addedBookmarks = await target.addAsync(...droppedUris);
+      } else {
+        addedBookmarks = await this.bookmarkManager.addAsync(kind, ...droppedUris);
+      }
     }
 
     // Remove Bookmarks that were dragged.

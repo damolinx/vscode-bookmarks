@@ -2,25 +2,31 @@ import * as assert from 'assert';
 import { basename, normalize } from 'path';
 import { Uri } from 'vscode';
 import { Bookmark, DEFAULT_LINE_NUMBER } from '../../bookmark';
+import { BookmarkContainer } from '../../bookmarkContainer';
+import { createMockDatastore } from './datastore/common';
 
 suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   let restorables: { restore: () => void }[];
+  let globalContainer: BookmarkContainer;
+  let workspaceContainer: BookmarkContainer;
 
   setup(() => {
     restorables = [];
+    const mockDatastore = createMockDatastore();
+    globalContainer = new BookmarkContainer('', 'global', mockDatastore);
+    workspaceContainer = new BookmarkContainer('', 'workspace', mockDatastore);
   });
 
   teardown(() => restorables.forEach((r) => r.restore()));
 
   test('basic props', () => {
-    const expectedKind = 'workspace';
     const expectedPath = '/workspace/test.txt';
     const sourceUri = `file://${expectedPath}`;
     const expectedUri = `${sourceUri}#L${DEFAULT_LINE_NUMBER}`;
 
-    const bookmark = new Bookmark(sourceUri, expectedKind);
+    const bookmark = new Bookmark(workspaceContainer, sourceUri);
 
-    assert.strictEqual(bookmark.kind, expectedKind);
+    assert.strictEqual(bookmark.kind, workspaceContainer.kind);
     assert.strictEqual(bookmark.lineNumber, DEFAULT_LINE_NUMBER);
     assert.strictEqual(bookmark.uri.toString(), expectedUri);
 
@@ -31,14 +37,13 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   });
 
   test('basic props (with line-number)', () => {
-    const expectedKind = 'global';
     const expectedLineNumber = 6;
     const expectedPath = '/workspace/test.txt';
     const expectedUri = `file://${expectedPath}#L${expectedLineNumber}`;
 
-    const bookmark = new Bookmark(expectedUri, expectedKind);
+    const bookmark = new Bookmark(globalContainer, expectedUri);
 
-    assert.strictEqual(bookmark.kind, expectedKind);
+    assert.strictEqual(bookmark.kind, globalContainer.kind);
     assert.strictEqual(bookmark.lineNumber, expectedLineNumber);
     assert.strictEqual(bookmark.uri.toString(), expectedUri);
 
@@ -49,11 +54,11 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   });
 
   test('compare', () => {
-    const bookmark1 = new Bookmark('file://file1#1', 'global');
-    const bookmark2 = new Bookmark('file://file1#2', 'global');
-    const bookmark3 = new Bookmark('file://file1#10', 'global');
-    const bookmark4 = new Bookmark('file://file2#3', 'global');
-    const bookmark5 = new Bookmark('file://file2#9', 'global');
+    const bookmark1 = new Bookmark(globalContainer, 'file://file1#1');
+    const bookmark2 = new Bookmark(globalContainer, 'file://file1#2');
+    const bookmark3 = new Bookmark(globalContainer, 'file://file1#10');
+    const bookmark4 = new Bookmark(globalContainer, 'file://file2#3');
+    const bookmark5 = new Bookmark(globalContainer, 'file://file2#9');
 
     assert.deepStrictEqual(
       [bookmark4, bookmark1, bookmark5, bookmark3, bookmark2]
@@ -64,16 +69,16 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   });
 
   test('compare (with same display name)', () => {
-    const bookmark1 = new Bookmark('file://file1#10', 'global').with({
+    const bookmark1 = new Bookmark(globalContainer, 'file://file1#10').with({
       displayName: 'FOO',
     });
-    const bookmark2 = new Bookmark('file://file1#101', 'global').with({
+    const bookmark2 = new Bookmark(globalContainer, 'file://file1#101').with({
       displayName: 'FOO',
     });
-    const bookmark3 = new Bookmark('file://file2#20', 'global').with({
+    const bookmark3 = new Bookmark(globalContainer, 'file://file2#20').with({
       displayName: 'FOO',
     });
-    const bookmark4 = new Bookmark('file://file2#202', 'global').with({
+    const bookmark4 = new Bookmark(globalContainer, 'file://file2#202').with({
       displayName: 'FOO',
     });
 
@@ -86,10 +91,10 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   });
 
   test('compare (with different kind)', () => {
-    const bookmark1 = new Bookmark('file://file1#1', 'global');
-    const bookmark2 = new Bookmark('file://file1#10', 'global');
-    const bookmark3 = new Bookmark('file://file1#1', 'workspace');
-    const bookmark4 = new Bookmark('file://file1#10', 'workspace');
+    const bookmark1 = new Bookmark(globalContainer, 'file://file1#1');
+    const bookmark2 = new Bookmark(globalContainer, 'file://file1#10');
+    const bookmark3 = new Bookmark(workspaceContainer, 'file://file1#1');
+    const bookmark4 = new Bookmark(workspaceContainer, 'file://file1#10');
 
     assert.deepStrictEqual(
       [bookmark4, bookmark1, bookmark3, bookmark2]
@@ -107,7 +112,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
       fragment: `L${expectedLineNumber}`,
     });
 
-    const bookmark = new Bookmark(expectedUri, 'global');
+    const bookmark = new Bookmark(globalContainer, expectedUri);
     assert.ok(bookmark.matchesUri(expectedUri));
     assert.ok(bookmark.matchesUri(expectedUri, true));
 

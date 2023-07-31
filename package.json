@@ -50,6 +50,12 @@
         "enablement": "editorIsOpen && workbenchState != empty"
       },
       {
+        "command": "bookmarks.addBookmarkFolder.tree",
+        "title": "New Folder…",
+        "icon": "$(new-folder)",
+        "enablement": "view == bookmarks && viewItem =~ /bookmarkContainer/"
+      },
+      {
         "command": "bookmarks.copy.path.tree",
         "title": "Copy Path",
         "icon": "$(copy)",
@@ -121,6 +127,13 @@
         "enablement": "view == bookmarks && viewItem == bookmark"
       },
       {
+        "command": "bookmarks.removeBookmarkFolder.tree",
+        "title": "Remove Bookmark Folder",
+        "category": "Bookmarks",
+        "icon": "$(remove-close)",
+        "enablement": "view == bookmarks && viewItem =~ /bookmarkContainer/"
+      },
+      {
         "command": "bookmarks.removeBookmarks.global",
         "title": "Remove All (Global)",
         "category": "Bookmarks",
@@ -131,7 +144,7 @@
         "title": "Remove All",
         "category": "Bookmarks",
         "icon": "$(close-all)",
-        "enablement": "view == bookmarks && viewItem == bookmarkGroup"
+        "enablement": "view == bookmarks && viewItem =~ /bookmarkContainer/"
       },
       {
         "command": "bookmarks.removeBookmarks.workspace",
@@ -165,6 +178,11 @@
         "key": "Delete",
         "mac": "Cmd+Backspace",
         "when": "focusedView == bookmarks && !inputFocus"
+      },
+      {
+        "command": "bookmarks.removeBookmarkFolder.tree",
+        "key": "Delete",
+        "when": "focusedView == bookmarks && !inputFocus"
       }
     ],
     "menus": {
@@ -197,6 +215,10 @@
           "when": "false"
         },
         {
+          "command": "bookmarks.addBookmarkFolder.tree",
+          "when": "false"
+        },
+        {
           "command": "bookmarks.copy.path.tree",
           "when": "false"
         },
@@ -225,6 +247,10 @@
           "when": "false"
         },
         {
+          "command": "bookmarks.removeBookmarkFolder.tree",
+          "when": "false"
+        },
+        {
           "command": "bookmarks.removeBookmarks.tree",
           "when": "false"
         },
@@ -240,8 +266,13 @@
       "view/item/context": [
         {
           "command": "bookmarks.addBookmark.tree",
-          "when": "view == bookmarks && viewItem == bookmarkGroup",
-          "group": "inline@1000"
+          "when": "view == bookmarks && viewItem =~ /bookmarkContainer/",
+          "group": "inline@10"
+        },
+        {
+          "command": "bookmarks.addBookmarkFolder.tree",
+          "when": "view == bookmarks && viewItem =~ /bookmarkContainer/",
+          "group": "inline@1"
         },
         {
           "command": "bookmarks.copy.path.tree",
@@ -250,13 +281,13 @@
         },
         {
           "command": "bookmarks.refreshBookmarks",
-          "when": "view == bookmarks && viewItem == bookmarkGroup",
-          "group": "inline@10"
+          "when": "view == bookmarks && viewItem =~ /root/",
+          "group": "main@1"
         },
         {
           "command": "bookmarks.removeBookmark.tree",
           "when": "view == bookmarks && viewItem == bookmark",
-          "group": "main"
+          "group": "1_main"
         },
         {
           "command": "bookmarks.removeBookmark.tree",
@@ -264,8 +295,13 @@
           "group": "inline"
         },
         {
+          "command": "bookmarks.removeBookmarkFolder.tree",
+          "when": "view == bookmarks && viewItem =~ /bookmarkContainer/ && !(viewItem =~ /root/)"
+        },
+        {
           "command": "bookmarks.removeBookmarks.tree",
-          "when": "view == bookmarks && viewItem == bookmarkGroup"
+          "when": "view == bookmarks  && viewItem =~ /bookmarkContainer/ && viewItem =~ /root/",
+          "group": "2_refresh"
         },
         {
           "submenu": "bookmark.editBookmark.displayName",

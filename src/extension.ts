@@ -1,10 +1,16 @@
 import * as vscode from 'vscode';
-import { Bookmark, BookmarkKind } from './bookmark';
+import { Bookmark } from './bookmark';
 import { BookmarkContainer } from './bookmarkContainer';
 import { BookmarkDecoratorController } from './bookmarkDecoratorController';
 import { BookmarkManager } from './bookmarkManager';
 import { BookmarkTreeDragAndDropController } from './bookmarkTreeDragAndDropController';
-import { BookmarkTreeData, BookmarkTreeProvider } from './bookmarkTreeProvider';
+import { BookmarkTreeProvider } from './bookmarkTreeProvider';
+import { addBookmarkAsync } from './commands/addBookmark';
+import { addBookmarkFolderAsync } from './commands/addBookmarkFolder';
+import { updateDisplayNameAsync } from './commands/updateDisplayName';
+import { updateLineNumberAsync } from './commands/updateLineNumber';
+import { removeBookmarkOrFolderAsync } from './commands/removeBookmarkOrFolder';
+import { resetRootContainersAsync } from './commands/resetRootContainer';
 
 /**
  * Extension startup.
@@ -35,18 +41,23 @@ export async function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(
     vscode.commands.registerCommand(
       'bookmarks.addBookmark.global',
-      (pathOrUri?: string | vscode.Uri): Thenable<void> =>
-        addBookmarkAsync(manager, treeView, 'global', pathOrUri)
+      (pathOrUri: string | vscode.Uri | undefined): Thenable<void> =>
+        addBookmarkAsync(manager, treeView, pathOrUri, 'global')
     ),
     vscode.commands.registerCommand(
       'bookmarks.addBookmark.tree',
       (container: BookmarkContainer): Thenable<void> =>
-        addBookmarkAsync(manager, treeView, container.kind)
+        addBookmarkAsync(manager, treeView, undefined, container)
     ),
     vscode.commands.registerCommand(
       'bookmarks.addBookmark.workspace',
       (pathOrUri?: string | vscode.Uri): Thenable<void> =>
-        addBookmarkAsync(manager, treeView, 'workspace', pathOrUri)
+        addBookmarkAsync(manager, treeView, pathOrUri, 'workspace')
+    ),
+    vscode.commands.registerCommand(
+      'bookmarks.addBookmarkFolder.tree',
+      (container: BookmarkContainer): Thenable<void> =>
+        addBookmarkFolderAsync(manager, treeView, container)
     ),
     vscode.commands.registerCommand(
       'bookmarks.copy.path.tree',
@@ -57,12 +68,12 @@ export async function activate(context: vscode.ExtensionContext) {
     ),
     vscode.commands.registerCommand(
       'bookmarks.editBookmark.displayName.remove.tree',
-      (bookmark?: Bookmark): Thenable<void> =>
+      (bookmark: Bookmark): Thenable<void> =>
         updateDisplayNameAsync(manager, treeView, bookmark, '')
     ),
     vscode.commands.registerCommand(
       'bookmarks.editBookmark.displayName.update.tree',
-      (bookmark?: Bookmark): Thenable<void> =>
+      (bookmark: Bookmark): Thenable<void> =>
         updateDisplayNameAsync(manager, treeView, bookmark)
     ),
     vscode.commands.registerCommand(
@@ -92,7 +103,7 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(
       'bookmarks.removeBookmark.tree',
       (bookmark?: Bookmark): Thenable<boolean> =>
-        removeBookmarksAsync(manager, treeView, bookmark)
+        removeBookmarkOrFolderAsync(manager, treeView, bookmark)
     ),
     vscode.commands.registerCommand(
       'bookmarks.removeBookmark.workspace',
@@ -100,17 +111,22 @@ export async function activate(context: vscode.ExtensionContext) {
         manager.removeBookmarkAsync(pathOrUri, 'workspace')
     ),
     vscode.commands.registerCommand(
+      'bookmarks.removeBookmarkFolder.tree',
+      (folder?: Bookmark): Thenable<boolean> =>
+        removeBookmarkOrFolderAsync(manager, treeView, folder)
+    ),
+    vscode.commands.registerCommand(
       'bookmarks.removeBookmarks.global',
-      (): Thenable<void> => removeAllBookmarksAsync(manager, 'global')
+      (): Thenable<void> => resetRootContainersAsync(manager, 'global')
     ),
     vscode.commands.registerCommand(
       'bookmarks.removeBookmarks.tree',
       (container: BookmarkContainer): Thenable<void> =>
-        removeAllBookmarksAsync(manager, container.kind)
+        resetRootContainersAsync(manager, container.kind)
     ),
     vscode.commands.registerCommand(
       'bookmarks.removeBookmarks.workspace',
-      (): Thenable<void> => removeAllBookmarksAsync(manager, 'workspace')
+      (): Thenable<void> => resetRootContainersAsync(manager, 'workspace')
     ),
     vscode.commands.registerCommand(
       'bookmarks.decorators.hide',
@@ -140,29 +156,6 @@ export async function activate(context: vscode.ExtensionContext) {
     .catch((error) => console.error(`Bookmarks: Failed to upgrade datastores.`, error));
 }
 
-async function addBookmarkAsync(
-  manager: BookmarkManager,
-  treeView: vscode.TreeView<BookmarkTreeData | undefined>,
-  kind: BookmarkKind,
-  pathOrUri?: string | vscode.Uri
-): Promise<void> {
-  if (!pathOrUri) {
-    const editor = vscode.window.activeTextEditor;
-    if (editor) {
-      pathOrUri = editor.document.uri.with({
-        fragment: `L${editor.selection.start.line + 1}`,
-      });
-    }
-  }
-
-  if (pathOrUri) {
-    const bookmarks = await manager.addBookmarksAsync(kind, { uri: pathOrUri });
-    if (bookmarks.length === 0) {
-      treeView.reveal(manager.getBookmark(kind, pathOrUri));
-    }
-  }
-}
-
 async function getMatchingBookmarksAsync(
   pathOrUri: string | vscode.Uri | undefined,
   manager: BookmarkManager,
@@ -181,7 +174,9 @@ async function getMatchingBookmarksAsync(
     return; // No document to look at.
   }
 
-  const documentBookmarks = manager.getBookmarks().filter((b) => b.uri.path === uri?.path);
+  const documentBookmarks = <Bookmark[]>(
+    manager.getBookmarks().filter((b) => b.uri.path === uri?.path)
+  );
   if (documentBookmarks.length === 0) {
     return; // No bookmarks matching document.
   }
@@ -230,117 +225,5 @@ async function navigateAsync(
     const position = new vscode.Position(bookmark.lineNumber - 1, 0);
     editor.selection = new vscode.Selection(position, position);
     editor.revealRange(new vscode.Range(position, position));
-  }
-}
-
-async function removeAllBookmarksAsync(
-  manager: BookmarkManager,
-  kind?: BookmarkKind
-): Promise<void> {
-  if (!manager.hasBookmarks(kind)) {
-    return; // Nothing to do
-  }
-
-  if (
-    (await vscode.window.showInformationMessage(
-      `Are you sure you want to delete all ${kind ? `'${kind}' ` : ``}bookmarks?`,
-      {
-        modal: true,
-        detail: 'This action is irreversible.',
-      },
-      'Yes',
-      'No'
-    )) === 'Yes'
-  ) {
-    await manager.removeAllBookmarksAsync(kind);
-  }
-}
-
-async function removeBookmarksAsync(
-  manager: BookmarkManager,
-  treeView: vscode.TreeView<BookmarkTreeData | undefined>,
-  bookmark?: Bookmark
-): Promise<boolean> {
-  const bookmarksToRemove: Bookmark[] = [];
-  if (bookmark) {
-    bookmarksToRemove.push(bookmark);
-  } else {
-    treeView.selection.forEach((element) => {
-      if (element instanceof Bookmark) {
-        bookmarksToRemove.push(element);
-      }
-    });
-  }
-
-  const removed = await manager.removeBookmarksAsync(...bookmarksToRemove);
-  return !!removed.length;
-}
-
-// TODO: Move
-async function updateDisplayNameAsync(
-  manager: BookmarkManager,
-  treeView: vscode.TreeView<BookmarkTreeData | undefined>,
-  bookmark?: Bookmark,
-  name?: string
-): Promise<void> {
-  const targetBookmark =
-    bookmark ||
-    <Bookmark | undefined>treeView.selection.filter((b) => b instanceof Bookmark)[0];
-  if (!targetBookmark) {
-    return;
-  }
-
-  const targetName =
-    name !== undefined
-      ? name
-      : await vscode.window.showInputBox({
-          prompt: 'Provide a new bookmark display name',
-          placeHolder: 'Enter a display name…',
-          value: targetBookmark.hasDisplayName ? targetBookmark.displayName : '',
-          validateInput: (value) =>
-            value.trim().length === 0 ? 'Name cannot be empty' : undefined,
-        });
-  if (targetName !== undefined) {
-    const updatedBookmark = await manager.updateBookmarkAsync(targetBookmark, {
-      displayName: targetName.trim(),
-    });
-    await treeView.reveal(updatedBookmark, { focus: true });
-  }
-}
-
-// TODO: Move
-async function updateLineNumberAsync(
-  manager: BookmarkManager,
-  treeView: vscode.TreeView<BookmarkTreeData | undefined>,
-  bookmark: Bookmark
-): Promise<void> {
-  const existingLineNumbers = manager
-    .getBookmarks({
-      ignoreLineNumber: true,
-      kind: bookmark.kind,
-      uri: bookmark.uri,
-    })
-    .map((b) => b.lineNumber)
-    .filter((l) => l !== bookmark.lineNumber);
-  const lineNumber = await vscode.window.showInputBox({
-    prompt: 'Update bookmark line number',
-    placeHolder: 'Provide a line number',
-    value: bookmark.lineNumber.toString(),
-    validateInput: (value) => {
-      const n = Number(value);
-      if (!Number.isInteger(n) || n < 1) {
-        return 'Line number must be an integer value greater than or equal to 1';
-      }
-      if (existingLineNumbers.includes(n)) {
-        return 'Line number conflicts with an existing bookmark';
-      }
-      return undefined;
-    },
-  });
-  if (lineNumber !== undefined) {
-    const updatedBookmark = await manager.updateBookmarkAsync(bookmark, {
-      lineNumber: Number(lineNumber),
-    });
-    await treeView.reveal(updatedBookmark, { focus: true });
   }
 }

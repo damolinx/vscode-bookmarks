@@ -15,6 +15,16 @@ export abstract class TreeItemProvider {
     return {};
   }
 
+  public getTreeItem(item: Bookmark | BookmarkContainer): vscode.TreeItem {
+    let treeItem: vscode.TreeItem;
+    if (item instanceof BookmarkContainer) {
+      treeItem = this.getTreeItemForBookmarkContainer(item);
+    } else {
+      treeItem = this.getTreeItemForBookmark(item);
+    }
+    return treeItem;
+  }
+
   public getTreeItemForBookmark(bookmark: Bookmark): vscode.TreeItem {
     const overrides = this.getBookmarkOverrides(bookmark);
     const treeItem: vscode.TreeItem = new vscode.TreeItem(
@@ -25,7 +35,9 @@ export abstract class TreeItemProvider {
       command: 'vscode.open',
       arguments: [bookmark.uri],
     };
+
     treeItem.contextValue = 'bookmark';
+    treeItem.id = bookmark.id;
     treeItem.resourceUri = bookmark.uri;
 
     if (overrides.description) {
@@ -46,7 +58,13 @@ export abstract class TreeItemProvider {
       overrides.label || container.displayName,
       vscode.TreeItemCollapsibleState.Expanded
     );
-    treeItem.contextValue = 'bookmarkFolder';
+
+    treeItem.contextValue = 'bookmarkContainer';
+    treeItem.id = container.id;
+
+    if (container.isRoot) {
+      treeItem.contextValue += ';root';
+    }
 
     if (overrides.description) {
       treeItem.description = overrides.description;

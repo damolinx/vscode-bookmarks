@@ -5,12 +5,11 @@ import { BookmarkManager } from './bookmarkManager';
 import { TreeItemProvider } from './tree/treeItemProvider';
 import { createTreeProvider, TreeViewKind } from './tree/treeUtils';
 
-type EventType = undefined | Bookmark | Bookmark[] | BookmarkContainer;
-
 const VIEW_CONTEXT_KEY = 'bookmarks.tree.view';
 const VIEW_MEMENTO_KEY = 'bookmarks.preferences.view';
 
 export type BookmarkTreeData = Bookmark | BookmarkContainer;
+export type EventType = undefined | BookmarkTreeData | Array<BookmarkTreeData>;
 
 export class BookmarkTreeProvider
   implements vscode.Disposable, vscode.TreeDataProvider<BookmarkTreeData>
@@ -70,21 +69,8 @@ export class BookmarkTreeProvider
    * @param element The element for which {@link TreeItem} representation is asked for.
    * @return TreeItem representation of the bookmark.
    */
-  public getTreeItem(
-    element: BookmarkTreeData
-  ): vscode.TreeItem | Thenable<vscode.TreeItem> {
-    let treeItem: vscode.TreeItem;
-    if (element instanceof BookmarkContainer) {
-      treeItem = new vscode.TreeItem(
-        element.displayName,
-        element.count
-          ? vscode.TreeItemCollapsibleState.Expanded
-          : vscode.TreeItemCollapsibleState.Collapsed
-      );
-      treeItem.contextValue = 'bookmarkGroup';
-    } else {
-      treeItem = this.treeItemProvider.provider.getTreeItemForBookmark(element);
-    }
+  public getTreeItem(element: BookmarkTreeData): vscode.TreeItem {
+    const treeItem = this.treeItemProvider.provider.getTreeItem(element);
     return treeItem;
   }
 
@@ -97,18 +83,13 @@ export class BookmarkTreeProvider
     element?: BookmarkContainer
   ): vscode.ProviderResult<Array<BookmarkTreeData>> {
     let children: Array<BookmarkTreeData>;
-    if (!element) {
+    if (element) {
+      children = this.treeItemProvider.provider.sort(element.getItems());
+    } else {
       children = [this.manager.getRootContainer('global')];
       if (vscode.workspace.workspaceFolders?.length) {
         children.push(this.manager.getRootContainer('workspace'));
       }
-    } else {
-      // TODO: Folder
-      children = <Bookmark[]>(
-        this.treeItemProvider.provider.sort(
-          this.manager.getBookmarks({ kind: element.kind })
-        )
-      );
     }
     return children;
   }
@@ -117,7 +98,7 @@ export class BookmarkTreeProvider
    * Refresh tree.
    * @param data Bookmark(s) to refresh. If `undefined`, it means refresh from the root.
    */
-  public refresh(data?: Bookmark | Bookmark[] | BookmarkContainer) {
+  public refresh(data?: BookmarkTreeData | Array<BookmarkTreeData>) {
     this.onDidChangeTreeDataEmitter.fire(data);
   }
 

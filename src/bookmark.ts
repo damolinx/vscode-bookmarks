@@ -1,5 +1,6 @@
 import * as vscode from 'vscode';
 import { RawMetadata } from './datastore/datastore';
+import { BookmarkContainer } from './bookmarkContainer';
 
 export const BOOKMARK_CUSTOM_NAME_METADATA_KEY = 'displayName';
 
@@ -30,10 +31,7 @@ export class Bookmark {
   private _lineNumber: number;
   private _uri: vscode.Uri;
 
-  /**
-   * Bookmark kind.
-   */
-  public readonly kind: BookmarkKind;
+  public readonly container: BookmarkContainer;
   /**
    * Metadata.
    */
@@ -41,18 +39,18 @@ export class Bookmark {
 
   /**
    * Constructor.
+   * @param container Parent container.
    * @param pathOrUri URI to bookmark.
-   * @param kind Bookmark kind.
    * @param metadata Additional data.
    */
   constructor(
+    container: BookmarkContainer,
     pathOrUri: string | vscode.Uri,
-    kind: BookmarkKind,
     metadata: RawMetadata = {}
   ) {
-    this.kind = kind;
-    this.metadata = metadata;
+    this.container = container;
     this._uri = pathOrUri instanceof vscode.Uri ? pathOrUri : vscode.Uri.parse(pathOrUri);
+    this.metadata = metadata;
 
     const lineFragment = this._uri.fragment.substring(1);
     if (lineFragment) {
@@ -65,7 +63,7 @@ export class Bookmark {
 
   /**
    * Determine sort order of bookmarks.
-   * @param that
+   * @param that Bookmark to compare to.
    * @returns A negative value if this bookmark should be sorted before `that`,
    * zero if they're equal, and a positive value otherwise.
    */
@@ -124,6 +122,14 @@ export class Bookmark {
    */
   public get hasDisplayName(): boolean {
     return !!this.metadata[BOOKMARK_CUSTOM_NAME_METADATA_KEY];
+  }
+
+  public get id(): string {
+    return [this.container.id, this.uri].join('/');
+  }
+
+  public get kind(): BookmarkKind {
+    return this.container.kind;
   }
 
   /**
@@ -193,7 +199,7 @@ export class Bookmark {
       return this;
     }
 
-    const bookmark = new Bookmark(this.uri, kind);
+    const bookmark = new Bookmark(this.container, this.uri);
     if (displayName != undefined) {
       bookmark.displayName = displayName;
     }
