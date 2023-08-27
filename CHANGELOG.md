@@ -2,7 +2,12 @@
 
 ## (next)
 
-- Add `Open All` action to bookmark folders to open all bookmarks (non-recursive).
+- Add followign actions to allows save and resume work in sets of files.
+
+  - `New Folder with Open Editors…` action to bookmark all currently opened files. This is limitedto the current tab group.
+  - Add `Open All` action to folders to open all contained bookmarks (non-recursive) in editors.
+
+- Update action names and sorting in context menus for clarity.
 - Fix: drag-and-drop an editor breaks the tree.
 - Fix: Use `Cmd+Backspace` in Mac to a `Remove Bookmark Folder` (instead of `Delete`).
 

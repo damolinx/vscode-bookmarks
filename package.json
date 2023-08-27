@@ -38,7 +38,7 @@
       },
       {
         "command": "bookmarks.addBookmark.tree",
-        "title": "Bookmark Current Editor",
+        "title": "Add Current Editor",
         "icon": "$(add)",
         "enablement": "editorIsOpen"
       },
@@ -54,6 +54,26 @@
         "title": "New Folder…",
         "icon": "$(new-folder)",
         "enablement": "view == bookmarks && viewItem =~ /bookmarkContainer/"
+      },
+      {
+        "command": "bookmarks.addBookmarkFolder.allOpen.global",
+        "title": "Bookmark Open Editors (Global)",
+        "category": "Bookmarks",
+        "icon": "$(new-folder)",
+        "enablement": "editorIsOpen"
+      },
+      {
+        "command": "bookmarks.addBookmarkFolder.allOpen.tree",
+        "title": "New Folder with Open Editors…",
+        "icon": "$(new-folder)",
+        "enablement": "editorIsOpen"
+      },
+      {
+        "command": "bookmarks.addBookmarkFolder.allOpen.workspace",
+        "title": "Bookmark Open Editors (Workspace)",
+        "category": "Bookmarks",
+        "icon": "$(new-folder)",
+        "enablement": "editorIsOpen && workbenchState != empty"
       },
       {
         "command": "bookmarks.copy.path.tree",
@@ -133,7 +153,7 @@
       },
       {
         "command": "bookmarks.removeBookmarkFolder.tree",
-        "title": "Remove Bookmark Folder",
+        "title": "Remove Folder",
         "category": "Bookmarks",
         "icon": "$(remove-close)",
         "enablement": "view == bookmarks && viewItem =~ /bookmarkContainer/"
@@ -221,6 +241,10 @@
           "when": "false"
         },
         {
+          "command": "bookmarks.addBookmarkFolder.allOpen.tree",
+          "when": "false"
+        },
+        {
           "command": "bookmarks.addBookmarkFolder.tree",
           "when": "false"
         },
@@ -280,6 +304,21 @@
           "group": "inline@10"
         },
         {
+          "command": "bookmarks.addBookmark.tree",
+          "when": "view == bookmarks && viewItem =~ /bookmarkContainer/",
+          "group": "1_addbookmark@1"
+        },
+        {
+          "command": "bookmarks.addBookmarkFolder.allOpen.tree",
+          "when": "view == bookmarks && viewItem =~ /bookmarkContainer/",
+          "group": "1_main@2"
+        },
+        {
+          "command": "bookmarks.addBookmarkFolder.tree",
+          "when": "view == bookmarks && viewItem =~ /bookmarkContainer/",
+          "group": "1_main@1"
+        },
+        {
           "command": "bookmarks.addBookmarkFolder.tree",
           "when": "view == bookmarks && viewItem =~ /bookmarkContainer/",
           "group": "inline@1"
@@ -287,22 +326,22 @@
         {
           "command": "bookmarks.copy.path.tree",
           "when": "view == bookmarks && viewItem == bookmark",
-          "group": "main"
+          "group": "1_main@1"
         },
         {
           "command": "bookmarks.openFolder.tree",
           "when": "view == bookmarks && viewItem =~ /bookmarkContainer/ && !(viewItem =~ /root/)",
-          "group": "main@1"
+          "group": "1_main@3"
         },
         {
           "command": "bookmarks.refreshBookmarks",
           "when": "view == bookmarks && viewItem =~ /root/",
-          "group": "main@1"
+          "group": "3_refresh@1"
         },
         {
           "command": "bookmarks.removeBookmark.tree",
           "when": "view == bookmarks && viewItem == bookmark",
-          "group": "1_main"
+          "group": "3_other@1"
         },
         {
           "command": "bookmarks.removeBookmark.tree",
@@ -312,22 +351,22 @@
         {
           "command": "bookmarks.removeBookmarkFolder.tree",
           "when": "view == bookmarks && viewItem =~ /bookmarkContainer/ && !(viewItem =~ /root/)",
-          "group": "main@10"
+          "group": "3_other@1"
         },
         {
           "command": "bookmarks.removeBookmarks.tree",
           "when": "view == bookmarks  && viewItem =~ /bookmarkContainer/ && viewItem =~ /root/",
-          "group": "2_refresh"
+          "group": "3_other@2"
         },
         {
           "submenu": "bookmark.editBookmark.displayName",
           "when": "view == bookmarks && viewItem == bookmark",
-          "group": "properties"
+          "group": "2_properties@1"
         },
         {
           "submenu": "bookmark.editBookmark.lineNumber",
           "when": "view == bookmarks && viewItem == bookmark",
-          "group": "properties"
+          "group": "2_properties@2"
         }
       ],
       "view/title": [

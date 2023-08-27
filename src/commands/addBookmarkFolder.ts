@@ -1,4 +1,5 @@
-import { TreeView, window } from 'vscode';
+import { TabInputText, TreeView, window } from 'vscode';
+import { BookmarkKind } from '../bookmark';
 import { BookmarkContainer } from '../bookmarkContainer';
 import { BookmarkManager } from '../bookmarkManager';
 import { BookmarkTreeData } from '../bookmarkTreeProvider';
@@ -9,13 +10,31 @@ import { BookmarkTreeData } from '../bookmarkTreeProvider';
 export async function addBookmarkFolderAsync(
   manager: BookmarkManager,
   treeView: TreeView<BookmarkTreeData | undefined>,
-  parent: BookmarkContainer
+  parentOrKind: BookmarkContainer | BookmarkKind,
+  includeAllOpen?: boolean,
 ): Promise<void> {
+  const parent =
+    parentOrKind instanceof BookmarkContainer
+      ? parentOrKind
+      : manager.getRootContainer(parentOrKind);
+
   const folderName = await window.showInputBox({
     prompt: 'Provide a folder name',
     placeHolder: 'Enter a folder name…',
-    validateInput: (value) =>
-      value.trim().length === 0 ? 'Name cannot be empty' : undefined,
+    validateInput: (value) => {
+      const normalized = value.trim();
+      if (normalized.length === 0) {
+        return 'Name cannot be empty';
+      }
+      if (
+        parent
+          .getItems()
+          .some((i) => i instanceof BookmarkContainer && i.displayName === normalized)
+      ) {
+        return 'Folder already exists';
+      }
+      return;
+    },
   });
   if (folderName) {
     const targetUri = BookmarkContainer.createUriForName(folderName, parent);
@@ -23,16 +42,35 @@ export async function addBookmarkFolderAsync(
       uri: targetUri,
     });
 
-    let folder: any | undefined;
+    let folder: BookmarkContainer | undefined;
     if (addedItems.length) {
-      folder = addedItems[0];
+      folder = <BookmarkContainer>addedItems[0];
     } else {
-      folder = parent.getItem(targetUri);
+      folder = <BookmarkContainer | undefined>parent.getItem(targetUri);
     }
 
     if (folder) {
-      // DO NOT await, for some reason it ends on error sometimes.
-      treeView.reveal(folder, { expand: true, select: true });
+      if (includeAllOpen) {
+        await addOpenEditors(folder);
+      }
+
+      // Max. recursive expansion is 3, and with current structure any second-level
+      // subfolder hits this limit, so it is required to expand the parent (which
+      // must be visible as this is only invoked via context menu today).
+      await treeView.reveal(folder.container, { expand: true });
+      await treeView.reveal(folder, { expand: true, select: true });
     }
   }
+}
+
+async function addOpenEditors(folder: BookmarkContainer): Promise<void> {
+  const tabUris = window.tabGroups.activeTabGroup.tabs
+    .filter((t) => t.input instanceof TabInputText)
+    .map((t) => (<TabInputText>t.input).uri);
+
+  await folder.addAsync(
+    ...tabUris.map((uri) => ({
+      uri: uri.with({ fragment: 'L1' }),
+    })),
+  );
 }

@@ -61,6 +61,19 @@ export async function activate(context: vscode.ExtensionContext) {
         addBookmarkFolderAsync(manager, treeView, container),
     ),
     vscode.commands.registerCommand(
+      'bookmarks.addBookmarkFolder.allOpen.global',
+      (): Thenable<void> => addBookmarkFolderAsync(manager, treeView, 'global', true),
+    ),
+    vscode.commands.registerCommand(
+      'bookmarks.addBookmarkFolder.allOpen.tree',
+      (container: BookmarkContainer): Thenable<void> =>
+        addBookmarkFolderAsync(manager, treeView, container, true),
+    ),
+    vscode.commands.registerCommand(
+      'bookmarks.addBookmarkFolder.allOpen.workspace',
+      (): Thenable<void> => addBookmarkFolderAsync(manager, treeView, 'workspace', true),
+    ),
+    vscode.commands.registerCommand(
       'bookmarks.copy.path.tree',
       (bookmark: Bookmark): Thenable<void> =>
         vscode.env.clipboard.writeText(
