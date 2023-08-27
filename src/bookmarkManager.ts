@@ -45,7 +45,7 @@ export class BookmarkManager implements vscode.Disposable {
       new BookmarkContainer(
         'Workspace',
         'workspace',
-        new MementoDatastore(context.workspaceState)
+        new MementoDatastore(context.workspaceState),
       ),
     ];
     this.disposable = vscode.Disposable.from(
@@ -57,7 +57,7 @@ export class BookmarkManager implements vscode.Disposable {
       >()),
       (this.onDidRemoveBookmarkEmitter = new vscode.EventEmitter<
         ReadonlyArray<Bookmark | BookmarkContainer> | undefined
-      >())
+      >()),
     );
   }
 
@@ -100,7 +100,7 @@ export class BookmarkManager implements vscode.Disposable {
    */
   public getBookmark(
     kind: BookmarkKind,
-    pathOrUri: string | vscode.Uri
+    pathOrUri: string | vscode.Uri,
   ): Bookmark | BookmarkContainer | undefined {
     const uri = pathOrUri instanceof vscode.Uri ? pathOrUri : vscode.Uri.parse(pathOrUri);
     return this.getBookmarks({ kind, uri })[0];
@@ -134,7 +134,7 @@ export class BookmarkManager implements vscode.Disposable {
       items = items.filter((item) =>
         item instanceof BookmarkContainer
           ? item.uri === filter.uri
-          : item.matchesUri(filter.uri!, filter.ignoreLineNumber)
+          : item.matchesUri(filter.uri!, filter.ignoreLineNumber),
       );
     }
     return items;
@@ -185,7 +185,7 @@ export class BookmarkManager implements vscode.Disposable {
    */
   public async removeBookmarkAsync(
     pathOrUriOrBookmark: Bookmark | string | vscode.Uri,
-    kind?: BookmarkKind
+    kind?: BookmarkKind,
   ): Promise<boolean> {
     let item: Bookmark | BookmarkContainer | undefined;
     if (pathOrUriOrBookmark instanceof Bookmark) {
@@ -246,7 +246,7 @@ export class BookmarkManager implements vscode.Disposable {
    */
   public async updateBookmarkAsync(
     bookmark: Bookmark,
-    change: Omit<BOOKMARK_CHANGE, 'kind'>
+    change: Omit<BOOKMARK_CHANGE, 'kind'>,
   ): Promise<Bookmark> {
     const newBookmark = bookmark.with(change);
     if (bookmark === newBookmark) {
@@ -255,7 +255,8 @@ export class BookmarkManager implements vscode.Disposable {
 
     const rename = bookmark.uri !== newBookmark.uri;
 
-    const container = this.getRootContainer(bookmark.kind);
+    const { container } = bookmark;
+
     const [updatedBookmark] = await (rename
       ? container.addAsync(newBookmark) //TODO: should be atomic
       : container.upsertAsync(newBookmark));

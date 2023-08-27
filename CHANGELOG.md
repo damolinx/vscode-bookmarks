@@ -8,7 +8,9 @@
   - Add `Open All` action to folders to open all contained bookmarks (non-recursive) in editors.
 
 - Update action names and sorting in context menus for clarity.
-- Fix: drag-and-drop an editor breaks the tree.
+- Fix: drag-and-drop of an editor breaks the tree.
+- Fix: Update `Display Name` or `Line Number` of a bookmark within a folder moves it out of the folder.
+- Fix: Update `Line Number` unexpectednly sets a `Display Name` on the bookmark.
 - Fix: Use `Cmd+Backspace` in Mac to a `Remove Bookmark Folder` (instead of `Delete`).
 
 ## 0.4.0

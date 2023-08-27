@@ -46,7 +46,7 @@ export class Bookmark {
   constructor(
     container: BookmarkContainer,
     pathOrUri: string | vscode.Uri,
-    metadata: RawMetadata = {}
+    metadata: RawMetadata = {},
   ) {
     this.container = container;
     this._uri = pathOrUri instanceof vscode.Uri ? pathOrUri : vscode.Uri.parse(pathOrUri);
@@ -180,7 +180,9 @@ export class Bookmark {
   public with(change: BOOKMARK_CHANGE): Bookmark {
     let { displayName, kind, lineNumber } = change;
     if (displayName === undefined) {
-      displayName = this.displayName;
+      if (this.hasDisplayName) {
+        displayName = this.displayName;
+      }
     } else if (!displayName) {
       displayName = undefined;
     }
