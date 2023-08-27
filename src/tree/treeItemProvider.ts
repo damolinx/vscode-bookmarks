@@ -6,11 +6,11 @@ export abstract class TreeItemProvider {
   protected abstract compareBookmarks(a: Bookmark, b: Bookmark): number;
 
   protected abstract getBookmarkOverrides(
-    bookmark: Bookmark
+    bookmark: Bookmark,
   ): Pick<vscode.TreeItem, 'label' | 'description' | 'iconPath' | 'tooltip'>;
 
   protected getBookmarkContainerOverrides(
-    _container: BookmarkContainer
+    _container: BookmarkContainer,
   ): Pick<vscode.TreeItem, 'label' | 'description' | 'iconPath' | 'tooltip'> {
     return {};
   }
@@ -28,7 +28,7 @@ export abstract class TreeItemProvider {
   public getTreeItemForBookmark(bookmark: Bookmark): vscode.TreeItem {
     const overrides = this.getBookmarkOverrides(bookmark);
     const treeItem: vscode.TreeItem = new vscode.TreeItem(
-      overrides.label || bookmark.defaultName
+      overrides.label || bookmark.defaultName,
     );
     treeItem.command = {
       title: 'Open',
@@ -46,7 +46,7 @@ export abstract class TreeItemProvider {
     if (overrides.iconPath) {
       treeItem.iconPath = overrides.iconPath;
     }
-    if (treeItem.tooltip) {
+    if (overrides.tooltip) {
       treeItem.tooltip = overrides.tooltip;
     }
     return treeItem;
@@ -56,7 +56,7 @@ export abstract class TreeItemProvider {
     const overrides = this.getBookmarkContainerOverrides(container);
     const treeItem: vscode.TreeItem = new vscode.TreeItem(
       overrides.label || container.displayName,
-      vscode.TreeItemCollapsibleState.Expanded
+      vscode.TreeItemCollapsibleState.Expanded,
     );
 
     treeItem.contextValue = 'bookmarkContainer';
@@ -72,14 +72,14 @@ export abstract class TreeItemProvider {
     if (overrides.iconPath) {
       treeItem.iconPath = overrides.iconPath;
     }
-    if (treeItem.tooltip) {
+    if (overrides.tooltip) {
       treeItem.tooltip = overrides.tooltip;
     }
     return treeItem;
   }
 
   public sort(
-    elements: Array<Bookmark | BookmarkContainer>
+    elements: Array<Bookmark | BookmarkContainer>,
   ): Array<Bookmark | BookmarkContainer> {
     return elements.sort((a, b) => {
       const aIsContainer = a instanceof BookmarkContainer;
