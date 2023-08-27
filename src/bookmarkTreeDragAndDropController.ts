@@ -57,11 +57,8 @@ export class BookmarkTreeDragAndDropController
     // Add URIs to Target Kind.
     let addedBookmarks: BookmarkTreeData[] | undefined;
     if (droppedUris?.length) {
-      if (target instanceof BookmarkContainer) {
-        addedBookmarks = await target.addAsync(...droppedUris);
-      } else {
-        addedBookmarks = await this.bookmarkManager.addAsync(kind, ...droppedUris);
-      }
+      const targetOrKind = target instanceof BookmarkContainer ? target : kind;
+      addedBookmarks = await this.bookmarkManager.addAsync(targetOrKind, ...droppedUris);
     }
 
     // Remove Bookmarks that were dragged.
