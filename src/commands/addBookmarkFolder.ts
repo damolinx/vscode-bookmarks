@@ -51,7 +51,7 @@ export async function addBookmarkFolderAsync(
 
     if (folder) {
       if (includeAllOpen) {
-        await addOpenEditors(folder);
+        await addOpenEditors(manager, folder);
       }
 
       // Max. recursive expansion is 3, and with current structure any second-level
@@ -63,12 +63,16 @@ export async function addBookmarkFolderAsync(
   }
 }
 
-async function addOpenEditors(folder: BookmarkContainer): Promise<void> {
+async function addOpenEditors(
+  manager: BookmarkManager,
+  folder: BookmarkContainer,
+): Promise<void> {
   const tabUris = window.tabGroups.activeTabGroup.tabs
     .filter((t) => t.input instanceof TabInputText)
     .map((t) => (<TabInputText>t.input).uri);
 
-  await folder.addAsync(
+  await manager.addAsync(
+    folder,
     ...tabUris.map((uri) => ({
       uri: uri.with({ fragment: 'L1' }),
     })),
