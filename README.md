@@ -1,6 +1,10 @@
 # `Bookmarks` extension
 
-The `Bookmarks` extension allows you to easily bookmark file locations, eitehr globally or per workspace. This is intended to help when working on large or complex codebases, or when working on a specific set of files for a given task.
+The `Bookmarks` extension allows you keep track of files and files locations to easily go back to them when needed. This not only helps you to leave breadcrumbs as you debug or navigate your code, but also enables you to quickly switch between tasks as it is possible to save and restore all editors.
+
+- Bookmarks can be saved per-workspace or be always available.
+- Bookmarks can be organized using folders.
+- Bookmarks can be managed via commands, UI controls, or UI gestures (e.g., drag-and-drop).
 
 <p align="center">
   <img width="520" alt="image" src="https://user-images.githubusercontent.com/38414719/168446287-e57f5fb4-fdf8-4fd7-bf00-6707743c0f3d.png">
@@ -8,15 +12,24 @@ The `Bookmarks` extension allows you to easily bookmark file locations, eitehr g
 
 ## Bookmark
 
-A _bookmark_ is a reference to a document that is saved in the context of the current workspace (`Workspace`), or independent from it (`Global`). Full `URI`s are kept around but the UI will adjust how they are displayed, calculating a relative path based on current workspace.
+A _bookmark_ is a reference to a document that is saved in the context of the current workspace (`Workspace`), or independent from it (`Global`). Absolute `URI`s are used as location descriptors so any filesystem supported by VSCode can be bookmarked.
+The UI, however, will adjust how bookmarks are displayed, e.g., calculating a relative path based on current workspace.
 
-## Folders
+A bookmark's identity is tied to its URL, which always includes a one-based line number fragment (e.g., `file://workspace/file.rb#L1`).
 
-A _folder_ is a container that allows you to group bookmarks. Note that bookmakrs must be unique within a given folder.
+## Bookmark Folders
+
+A _folder_ is a container for bookmarks. As such, they are not related to the associated file-system structure.
+
+The only constraint imposed by folders is that a given bookmark must be unique within it, i.e., you can add a bookmark to `file://workspace/file.rb#L1` to every single folder, but only once per folder. Every bookmark is its own entity, so for example, if you change the display name on one of them, only the specific entry is updated.
 
 ## Bookmarks View
 
-The `Bookmarks` View is the main UI component for this extension. It lists all your bookmarks in two different sections: `Global` includes bookmarks that will be displayed in all VSCode windows, and `Workspace`, which shows bookmarks associated with currently opened workspace, if any.
+The `Bookmarks` View is the main UI component for this extension. It lists all your bookmarks in two different sections:
+
+- `Global`: shows bookmarks that are always available, regardless of what current workspace is.
+- `Workspace`: shows bookmarks associated with the currently opened workspace, if any.
+
 You can change the display mode for the tree:
 
 - `Name`: shows the file name and target line number. A path hint is shown as description.
@@ -33,9 +46,9 @@ You can change the display mode for the tree:
 There are two commands available to add a bookmark, `Bookmarks: Bookmark Editor (Global)` and `Bookmarks: Bookmark Editor (Workspace)`, both working on the currently active editor and adding a bookmark to the appropriate category.
 When a bookmark is created via these commands, current line information is captured.
 
-#### Programatic access
+#### Programmatic access
 
-The following commads are exposed for other extensions to use: `bookmarks.addBookmark.global` and `bookmarks.addBookmark.workspace`. They take a single argument that is the path or URI to the file to bookmark.
+The following commands are exposed for other extensions to use: `bookmarks.addBookmark.global` and `bookmarks.addBookmark.workspace`. They take a single argument that is the path or URI to the file to bookmark.
 
 Line information can be added by adding a fragment to the URI with the format: `L<lineNumber>`, with `lineNumber` being a 1-based index.
 
@@ -54,12 +67,12 @@ There is a `+` button available on every category node, `Global` and `Workspace`
 
 There are two commands available: `Bookmarks: Remove All (Global)` and `Bookmarks: Remove All (Workspace)`.
 
-#### Programatic access
+#### Programmatic access
 
-The following commads are exposed for other extensions to use:
+The following commands are exposed for other extensions to use:
 
-- `bookmarks.removeBookmark.global` and`bookmarks.removeBookmark.workspace`. They take a single argument that is the path or URI to the file to remove.
-- `bookmarks.removeBookmarks.global` and`bookmarks.removeBookmarks.workspace`. They take no argument and remove all bookmarks from corresponding category.
+- `bookmarks.removeBookmark.global` and `bookmarks.removeBookmark.workspace`. They take a single argument that is the path or URI to the file to remove.
+- `bookmarks.removeBookmarks.global` and `bookmarks.removeBookmarks.workspace`. They take no argument and remove all bookmarks from corresponding category.
 
 ### Tree
 
@@ -94,9 +107,9 @@ Under the `Line Number` context menu for a given bookmark, use:
 
 There are two commands, `Bookmarks: Go to Next in Current Editor` and `Bookmarks: Go to Previous in Current Editor`, that can be used to jump between bookmarks set in current editor.
 
-#### Programatic access
+#### Programmatic access
 
-The following commads are exposed for other extensions to use: `bookmarks.navigate.next.editor` and `bookmarks.navigate.previous.editor`. They take a single optional argument that is the path or URI to the file to navigate (it will be opened if needed).
+The following commands are exposed for other extensions to use: `bookmarks.navigate.next.editor` and `bookmarks.navigate.previous.editor`. They take a single optional argument that is the path or URI to the file to navigate (it will be opened if needed).
 
 ## Visualization
 
