@@ -2,6 +2,10 @@
 
 ## (next)
 
+- Add `Open All` action to bookmark folders to open all bookmarks (non-recursive).
+- Fix: drag-and-drop an editor breaks the tree.
+- Fix: Use `Cmd+Backspace` in Mac to a `Remove Bookmark Folder` (instead of `Delete`).
+
 ## 0.4.0
 
 - Add support for folders.
@@ -18,7 +22,7 @@
 
   On either case, if a display name has been set, that will be used instead.
 
-- Fix: Use `Cmd+Backspace` in Mac to delete a node (instead of `Cmd+Delete).
+- Fix: Use `Cmd+Backspace` in Mac to delete a node (instead of `Cmd+Delete`).
 
 ## 0.3.5 - 0.3.6
 

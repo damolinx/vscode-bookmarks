@@ -114,6 +114,11 @@
         "enablement": "editorIsOpen"
       },
       {
+        "command": "bookmarks.openFolder.tree",
+        "title": "Open All",
+        "category": "Bookmarks"
+      },
+      {
         "command": "bookmarks.refreshBookmarks",
         "title": "Refresh",
         "category": "Bookmarks",
@@ -248,6 +253,10 @@
           "when": "false"
         },
         {
+          "command": "bookmarks.openFolder.tree",
+          "when": "false"
+        },
+        {
           "command": "bookmarks.removeBookmarkFolder.tree",
           "when": "false"
         },
@@ -281,6 +290,11 @@
           "group": "main"
         },
         {
+          "command": "bookmarks.openFolder.tree",
+          "when": "view == bookmarks && viewItem =~ /bookmarkContainer/ && !(viewItem =~ /root/)",
+          "group": "main@1"
+        },
+        {
           "command": "bookmarks.refreshBookmarks",
           "when": "view == bookmarks && viewItem =~ /root/",
           "group": "main@1"
@@ -297,7 +311,8 @@
         },
         {
           "command": "bookmarks.removeBookmarkFolder.tree",
-          "when": "view == bookmarks && viewItem =~ /bookmarkContainer/ && !(viewItem =~ /root/)"
+          "when": "view == bookmarks && viewItem =~ /bookmarkContainer/ && !(viewItem =~ /root/)",
+          "group": "main@10"
         },
         {
           "command": "bookmarks.removeBookmarks.tree",
