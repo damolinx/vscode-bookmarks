@@ -2,6 +2,8 @@
 
 ## (next)
 
+## 0.4.1
+
 - Add `New Folder with Open Editors…` action to bookmark all currently opened files. This is limited to the current tab group.
 - Add `Open All` action to folders to open all contained bookmarks (non-recursive) in editors.
 - Add `Notes` action to bookmark context menu to attach text notes to a bookmark. Displayed as tooltips as bare text (markdown might be possible in the future).
