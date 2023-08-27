@@ -1,14 +1,12 @@
 import * as vscode from 'vscode';
 import * as path from 'path';
-import { Bookmark, BOOKMARK_CUSTOM_NAME_METADATA_KEY } from '../bookmark';
-import { TreeItemProvider } from './treeItemProvider';
+import { Bookmark, BOOKMARK_DISPLAY_NAME_KEY } from '../bookmark';
+import { TreeItemOverrides, TreeItemProvider } from './treeItemProvider';
 
 export class NameTreeItemProvider extends TreeItemProvider {
-  protected getBookmarkOverrides(bookmark: Bookmark): Partial<vscode.TreeItem> {
+  protected getBookmarkOverrides(bookmark: Bookmark): TreeItemOverrides {
     const bookmarkPath = bookmark.uri.fsPath;
-    const displayName = <string | undefined>(
-      bookmark.metadata[BOOKMARK_CUSTOM_NAME_METADATA_KEY]
-    );
+    const displayName = <string | undefined>bookmark.metadata[BOOKMARK_DISPLAY_NAME_KEY];
 
     let treeItemOverrides: Partial<vscode.TreeItem>;
     if (displayName) {
@@ -21,7 +19,7 @@ export class NameTreeItemProvider extends TreeItemProvider {
     } else {
       treeItemOverrides = {
         description: `…${path.sep}${path.join(
-          ...bookmarkPath.split(path.sep).splice(-3, 2)
+          ...bookmarkPath.split(path.sep).splice(-3, 2),
         )}`,
         label: `${path.basename(bookmarkPath)}:${bookmark.lineNumber}`,
       };
@@ -31,11 +29,11 @@ export class NameTreeItemProvider extends TreeItemProvider {
 
   protected compareBookmarks(a: Bookmark, b: Bookmark): number {
     const a1 =
-      <string | undefined>a.metadata[BOOKMARK_CUSTOM_NAME_METADATA_KEY] ||
+      <string | undefined>a.metadata[BOOKMARK_DISPLAY_NAME_KEY] ||
       path.basename(a.uri.fsPath);
     const a2 = a1 || a.uri.fsPath;
     const b1 =
-      <string | undefined>b.metadata[BOOKMARK_CUSTOM_NAME_METADATA_KEY] ||
+      <string | undefined>b.metadata[BOOKMARK_DISPLAY_NAME_KEY] ||
       path.basename(b.uri.fsPath);
     const b2 = b1 || b.uri.fsPath;
 

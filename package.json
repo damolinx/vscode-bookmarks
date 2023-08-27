@@ -120,6 +120,18 @@
         "enablement": "view == bookmarks && viewItem == bookmark"
       },
       {
+        "command": "bookmarks.editBookmark.notes.remove.tree",
+        "title": "Remove",
+        "category": "Bookmarks",
+        "enablement": "view == bookmarks && viewItem == bookmark"
+      },
+      {
+        "command": "bookmarks.editBookmark.notes.update.tree",
+        "title": "Update…",
+        "category": "Bookmarks",
+        "enablement": "view == bookmarks && viewItem == bookmark"
+      },
+      {
         "command": "bookmarks.navigate.next.editor",
         "title": "Go to Next in Current Editor",
         "category": "Bookmarks",
@@ -227,6 +239,16 @@
           "command": "bookmarks.editBookmark.lineNumber.update.tree"
         }
       ],
+      "bookmark.editBookmark.notes": [
+        {
+          "command": "bookmarks.editBookmark.notes.update.tree",
+          "group": "main@1"
+        },
+        {
+          "command": "bookmarks.editBookmark.notes.remove.tree",
+          "group": "main@2"
+        }
+      ],
       "bookmarks.views": [
         {
           "command": "bookmarks.views.name"
@@ -274,6 +296,14 @@
         },
         {
           "command": "bookmarks.editBookmark.lineNumber.update.tree",
+          "when": "false"
+        },
+        {
+          "command": "bookmarks.editBookmark.notes.remove.tree",
+          "when": "false"
+        },
+        {
+          "command": "bookmarks.editBookmark.notes.update.tree",
           "when": "false"
         },
         {
@@ -367,6 +397,11 @@
           "submenu": "bookmark.editBookmark.lineNumber",
           "when": "view == bookmarks && viewItem == bookmark",
           "group": "2_properties@2"
+        },
+        {
+          "submenu": "bookmark.editBookmark.notes",
+          "when": "view == bookmarks && viewItem == bookmark",
+          "group": "2_properties@3"
         }
       ],
       "view/title": [
@@ -395,6 +430,10 @@
       {
         "id": "bookmark.editBookmark.lineNumber",
         "label": "Line Number"
+      },
+      {
+        "id": "bookmark.editBookmark.notes",
+        "label": "Notes"
       },
       {
         "id": "bookmarks.views",

@@ -12,6 +12,7 @@ import { removeBookmarkOrFolderAsync } from './commands/removeBookmarkOrFolder';
 import { resetRootContainersAsync } from './commands/resetRootContainer';
 import { updateDisplayNameAsync } from './commands/updateDisplayName';
 import { updateLineNumberAsync } from './commands/updateLineNumber';
+import { updateNotesAsync } from './commands/updateNotes';
 
 /**
  * Extension startup.
@@ -94,6 +95,15 @@ export async function activate(context: vscode.ExtensionContext) {
       'bookmarks.editBookmark.lineNumber.update.tree',
       (bookmark: Bookmark): Thenable<void> =>
         updateLineNumberAsync(manager, treeView, bookmark),
+    ),
+    vscode.commands.registerCommand(
+      'bookmarks.editBookmark.notes.remove.tree',
+      (bookmark: Bookmark): Thenable<void> =>
+        updateNotesAsync(manager, treeView, bookmark, ''),
+    ),
+    vscode.commands.registerCommand(
+      'bookmarks.editBookmark.notes.update.tree',
+      (bookmark: Bookmark): Thenable<void> => updateNotesAsync(manager, treeView, bookmark),
     ),
     vscode.commands.registerCommand(
       'bookmarks.navigate.next.editor',

@@ -2,16 +2,19 @@ import * as vscode from 'vscode';
 import { Bookmark } from '../bookmark';
 import { BookmarkContainer } from '../bookmarkContainer';
 
+export type TreeItemOverrides = Pick<
+  vscode.TreeItem,
+  'label' | 'description' | 'iconPath' | 'tooltip'
+>;
+
 export abstract class TreeItemProvider {
   protected abstract compareBookmarks(a: Bookmark, b: Bookmark): number;
 
-  protected abstract getBookmarkOverrides(
-    bookmark: Bookmark,
-  ): Pick<vscode.TreeItem, 'label' | 'description' | 'iconPath' | 'tooltip'>;
+  protected abstract getBookmarkOverrides(bookmark: Bookmark): TreeItemOverrides;
 
   protected getBookmarkContainerOverrides(
     _container: BookmarkContainer,
-  ): Pick<vscode.TreeItem, 'label' | 'description' | 'iconPath' | 'tooltip'> {
+  ): TreeItemOverrides {
     return {};
   }
 
@@ -30,6 +33,7 @@ export abstract class TreeItemProvider {
     const treeItem: vscode.TreeItem = new vscode.TreeItem(
       overrides.label || bookmark.defaultName,
     );
+
     treeItem.command = {
       title: 'Open',
       command: 'vscode.open',
@@ -48,6 +52,8 @@ export abstract class TreeItemProvider {
     }
     if (overrides.tooltip) {
       treeItem.tooltip = overrides.tooltip;
+    } else if (bookmark.notes) {
+      treeItem.tooltip = `${bookmark.uri.fsPath}\n\nNotes\n${bookmark.notes}`;
     }
     return treeItem;
   }

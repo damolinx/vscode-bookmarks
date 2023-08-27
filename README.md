@@ -101,6 +101,17 @@ Under the `Line Number` context menu for a given bookmark, use:
 
 - `Update…` to update the line number.
 
+### Notes
+
+Attach text notes to a bookmark for reference. Text is displayed on the the bookmark's tooltip.
+
+#### Context Menu
+
+Under the `Notes` context menu for a given bookmark, use:
+
+- `Update…` to update the display name.
+- `Remove` to remove any custom display name.
+
 ## Navigation
 
 ### Commands

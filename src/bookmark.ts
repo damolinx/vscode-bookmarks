@@ -2,7 +2,8 @@ import * as vscode from 'vscode';
 import { RawMetadata } from './datastore/datastore';
 import { BookmarkContainer } from './bookmarkContainer';
 
-export const BOOKMARK_CUSTOM_NAME_METADATA_KEY = 'displayName';
+export const BOOKMARK_DISPLAY_NAME_KEY = 'displayName';
+export const BOOKMARK_NOTES_KEY = 'notes';
 
 /**
  * Supported Bookmark kinds.
@@ -21,6 +22,7 @@ export type BOOKMARK_CHANGE = {
   displayName?: string | null;
   kind?: BookmarkKind;
   lineNumber?: number;
+  notes?: string;
 };
 
 /**
@@ -100,10 +102,7 @@ export class Bookmark {
    * Get the bookmark name to use in UI elements.
    */
   public get displayName(): string {
-    return (
-      <string | undefined>this.metadata[BOOKMARK_CUSTOM_NAME_METADATA_KEY] ||
-      this.defaultName
-    );
+    return <string | undefined>this.metadata[BOOKMARK_DISPLAY_NAME_KEY] || this.defaultName;
   }
 
   /**
@@ -111,9 +110,9 @@ export class Bookmark {
    */
   private set displayName(value: string | undefined) {
     if (value) {
-      this.metadata[BOOKMARK_CUSTOM_NAME_METADATA_KEY] = value;
+      this.metadata[BOOKMARK_DISPLAY_NAME_KEY] = value;
     } else {
-      delete this.metadata[BOOKMARK_CUSTOM_NAME_METADATA_KEY];
+      delete this.metadata[BOOKMARK_DISPLAY_NAME_KEY];
     }
   }
 
@@ -121,7 +120,7 @@ export class Bookmark {
    * Checks if bookmark defines a custom display name.
    */
   public get hasDisplayName(): boolean {
-    return !!this.metadata[BOOKMARK_CUSTOM_NAME_METADATA_KEY];
+    return !!this.metadata[BOOKMARK_DISPLAY_NAME_KEY];
   }
 
   public get id(): string {
@@ -165,6 +164,24 @@ export class Bookmark {
   }
 
   /**
+   * Get notes associated with bookmark.
+   */
+  public get notes(): string | undefined {
+    return <string | undefined>this.metadata[BOOKMARK_NOTES_KEY];
+  }
+
+  /**
+   * Set notes associated with bookmark.
+   */
+  private set notes(value: string | undefined) {
+    if (value) {
+      this.metadata[BOOKMARK_NOTES_KEY] = value;
+    } else {
+      delete this.metadata[BOOKMARK_NOTES_KEY];
+    }
+  }
+
+  /**
    * Bookmark URI. Prefer this value to identify a bookmark.
    */
   public get uri(): vscode.Uri {
@@ -178,7 +195,7 @@ export class Bookmark {
    * `this` if there are no effective changes.
    */
   public with(change: BOOKMARK_CHANGE): Bookmark {
-    let { displayName, kind, lineNumber } = change;
+    let { displayName, kind, lineNumber, notes } = change;
     if (displayName === undefined) {
       if (this.hasDisplayName) {
         displayName = this.displayName;
@@ -192,11 +209,15 @@ export class Bookmark {
     if (lineNumber === undefined) {
       lineNumber = this.lineNumber;
     }
+    if (notes === undefined) {
+      notes = this.notes;
+    }
 
     if (
       this.displayName === displayName &&
       this.kind === kind &&
-      this.lineNumber === lineNumber
+      this.lineNumber === lineNumber &&
+      this.notes === notes
     ) {
       return this;
     }
@@ -207,6 +228,9 @@ export class Bookmark {
     }
     if (lineNumber !== undefined) {
       bookmark.lineNumber = lineNumber;
+    }
+    if (notes !== undefined) {
+      bookmark.notes = notes;
     }
     return bookmark;
   }
