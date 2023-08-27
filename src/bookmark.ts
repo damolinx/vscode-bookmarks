@@ -124,7 +124,7 @@ export class Bookmark {
   }
 
   public get id(): string {
-    return [this.container.id, this.uri].join('/');
+    return [this.container.id, this.uri.toString(true)].join('/');
   }
 
   public get kind(): BookmarkKind {
