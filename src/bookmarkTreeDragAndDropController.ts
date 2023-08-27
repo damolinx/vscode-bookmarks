@@ -21,13 +21,13 @@ export class BookmarkTreeDragAndDropController
   async handleDrag(
     source: Array<BookmarkTreeData>,
     treeDataTransfer: vscode.DataTransfer,
-    _token: vscode.CancellationToken
+    _token: vscode.CancellationToken,
   ): Promise<void> {
     const bookmarksOnly = source.filter((s) => s instanceof Bookmark);
     if (bookmarksOnly.length) {
       treeDataTransfer.set(
         'application/vnd.code.tree.bookmarks',
-        new vscode.DataTransferItem(bookmarksOnly)
+        new vscode.DataTransferItem(bookmarksOnly),
       );
     }
   }
@@ -35,7 +35,7 @@ export class BookmarkTreeDragAndDropController
   async handleDrop(
     target: BookmarkTreeData | undefined,
     dataTransfer: vscode.DataTransfer,
-    _token: vscode.CancellationToken
+    _token: vscode.CancellationToken,
   ): Promise<void> {
     let droppedUris: { uri: vscode.Uri; metadata?: RawMetadata }[] | undefined;
     const kind =
@@ -50,7 +50,7 @@ export class BookmarkTreeDragAndDropController
       if (draggedUriList) {
         droppedUris = draggedUriList
           .split('\n')
-          .map((uriStr) => ({ uri: vscode.Uri.parse(uriStr, true) }));
+          .map((uriStr) => ({ uri: vscode.Uri.parse(uriStr + '#L1', true) }));
       }
     }
 
@@ -67,7 +67,7 @@ export class BookmarkTreeDragAndDropController
     // Remove Bookmarks that were dragged.
     if (draggedBookmarks?.length && addedBookmarks?.length) {
       const movedBookmarks = draggedBookmarks.filter((db) =>
-        addedBookmarks!.some((ad) => ad.matchesUri(db.uri))
+        addedBookmarks!.some((ad) => ad.matchesUri(db.uri)),
       );
       await this.bookmarkManager.removeBookmarksAsync(...movedBookmarks);
     }
