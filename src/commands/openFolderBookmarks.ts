@@ -9,6 +9,6 @@ export async function openFolderBookmarks(container: BookmarkContainer): Promise
   const openPromises = container
     .getItems()
     .filter((i): i is Bookmark => i instanceof Bookmark)
-    .map((b) => commands.executeCommand('vscode.open', b.uri));
+    .map((b) => commands.executeCommand('vscode.open', b.uri, { preview: false }));
   await Promise.all(openPromises);
 }

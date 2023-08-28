@@ -2,6 +2,10 @@
 
 ## (next)
 
+## 0.4.2
+
+- Fix: `Open All` does not work as expected when using `preview` mode.
+
 ## 0.4.1
 
 - Add `New Folder with Open Editors…` action to bookmark all currently opened files. This is limited to the current tab group.
