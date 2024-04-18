@@ -203,6 +203,19 @@
         "enablement": "bookmarks.tree.view != path"
       }
     ],
+    "configuration": [
+      {
+        "title": "Bookmarks",
+        "properties": {
+          "bookmarks.marker.showByDefault": {
+            "type": "boolean",
+            "default": false,
+            "description": "Controls whether bookmark markers are rendered by default at startup.",
+            "scope": "application"
+          }
+        }
+      }
+    ],
     "keybindings": [
       {
         "command": "bookmarks.editBookmark.displayName.update.tree",
