@@ -2,6 +2,10 @@
 
 ## (next)
 
+## 0.4.3
+
+- Add `bookmarks.marker.showByDefault` configuration setting to control whether glyphs are render by default at startup.
+
 ## 0.4.2
 
 - Fix: `Open All` does not work as expected when using `preview` mode.
