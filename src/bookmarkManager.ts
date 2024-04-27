@@ -93,20 +93,6 @@ export class BookmarkManager implements vscode.Disposable {
   }
 
   /**
-   * Get bookmark associated with `pathOrUri`.
-   * @param kind Bookmark kind.
-   * @param pathOrUri URI to bookmark.
-   * @returns Bookmark instance or `undefined`.
-   */
-  public getBookmark(
-    kind: BookmarkKind,
-    pathOrUri: string | vscode.Uri,
-  ): Bookmark | BookmarkContainer | undefined {
-    const uri = pathOrUri instanceof vscode.Uri ? pathOrUri : vscode.Uri.parse(pathOrUri);
-    return this.getBookmarks({ kind, uri })[0];
-  }
-
-  /**
    * Get `kind` root container.
    * @param kind Bookmark kind.
    * @returns Bookmark container.
@@ -123,21 +109,26 @@ export class BookmarkManager implements vscode.Disposable {
    * Get all bookmarks.
    * @param filter Filters to apply.
    */
-  public getBookmarks(filter: BookmarkFilter = {}): Array<Bookmark | BookmarkContainer> {
-    let containers = this.rootContainers;
+  public getBookmarks(filter: BookmarkFilter = {}): Bookmark[] {
+    const bookmarks: Bookmark[] = [];
+
+    let containers = [...this.rootContainers];
     if (filter.kind) {
       containers = containers.filter((container) => filter.kind === container.kind);
     }
 
-    let items = containers.flatMap((container) => container.getItems());
-    if (filter.uri) {
-      items = items.filter((item) =>
-        item instanceof BookmarkContainer
-          ? item.uri === filter.uri
-          : item.matchesUri(filter.uri!, filter.ignoreLineNumber),
-      );
+    while (containers.length) {
+      const container = containers.pop();
+      container!.getItems().forEach((item) => {
+        if (item instanceof BookmarkContainer) {
+          containers.push(item);
+        } else if (!filter.uri || item.matchesUri(filter.uri, filter.ignoreLineNumber)) {
+          bookmarks.push(item);
+        }
+      });
     }
-    return items;
+
+    return bookmarks;
   }
 
   /**

@@ -12,7 +12,7 @@ export async function addBookmarkAsync(
   manager: BookmarkManager,
   treeView: TreeView<BookmarkTreeData | undefined>,
   pathOrUri: string | Uri | undefined,
-  parentOrKind: BookmarkContainer | BookmarkKind
+  parentOrKind: BookmarkContainer | BookmarkKind,
 ): Promise<void> {
   let targetUri: Uri | undefined;
   if (pathOrUri instanceof Uri) {
@@ -36,8 +36,6 @@ export async function addBookmarkAsync(
       bookmark = addedItems[0];
     } else if (parentOrKind instanceof BookmarkContainer) {
       bookmark = parentOrKind.getItem(targetUri);
-    } else {
-      bookmark = manager.getBookmark(parentOrKind, targetUri);
     }
 
     if (bookmark) {

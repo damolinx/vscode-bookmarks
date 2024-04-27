@@ -52,20 +52,20 @@ export class BookmarkDecoratorController implements vscode.Disposable {
     this.visibilityDisposable = vscode.Disposable.from(
       decorationType,
       vscode.window.onDidChangeVisibleTextEditors((editors) =>
-        showDecorations(this.manager, editors)
+        showDecorations(this.manager, editors),
       ),
       this.manager.onDidAddBookmark((items) =>
         refreshDecorations(
           this.manager,
-          <Bookmark[]>items?.filter((i) => i instanceof Bookmark)
-        )
+          <Bookmark[]>items?.filter((i) => i instanceof Bookmark),
+        ),
       ),
       this.manager.onDidRemoveBookmark((items) =>
         refreshDecorations(
           this.manager,
-          <Bookmark[]>items?.filter((i) => i instanceof Bookmark)
-        )
-      )
+          <Bookmark[]>items?.filter((i) => i instanceof Bookmark),
+        ),
+      ),
     );
     refreshDecorations(this.manager);
     return;
@@ -76,7 +76,7 @@ export class BookmarkDecoratorController implements vscode.Disposable {
         const visibleEditors = new Set<vscode.TextEditor>();
         bookmarks.forEach((bookmark) => {
           const visibleEditor = vscode.window.visibleTextEditors.find((editor) =>
-            bookmark.matchesUri(editor.document.uri, true)
+            bookmark.matchesUri(editor.document.uri, true),
           );
           if (visibleEditor) {
             visibleEditors.add(visibleEditor);
@@ -94,13 +94,12 @@ export class BookmarkDecoratorController implements vscode.Disposable {
 
     function showDecorations(
       manager: BookmarkManager,
-      editors: ReadonlyArray<vscode.TextEditor>
+      editors: ReadonlyArray<vscode.TextEditor>,
     ): void {
-      //TODO: need to only get bookmarks AND get them recursive
       editors.forEach((editor) => {
         const options: vscode.DecorationOptions[] = manager
           .getBookmarks({ ignoreLineNumber: true, uri: editor.document.uri })
-          .filter((i) => i instanceof Bookmark)
+          .filter((b) => b.lineNumber <= editor.document.lineCount)
           .map((bookmark) => ({
             range: editor.document.lineAt((<Bookmark>bookmark).lineNumber - 1).range,
           }));
@@ -122,7 +121,7 @@ export class BookmarkDecoratorController implements vscode.Disposable {
     await vscode.commands.executeCommand(
       'setContext',
       'bookmarks.decorators.visible',
-      this.visible
+      this.visible,
     );
     return this.visible;
   }
