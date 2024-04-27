@@ -53,7 +53,7 @@
         "command": "bookmarks.addBookmarkFolder.tree",
         "title": "New Folder…",
         "icon": "$(new-folder)",
-        "enablement": "view == bookmarks && viewItem =~ /bookmarkContainer/"
+        "enablement": "focusedView == bookmarks && viewItem =~ /bookmarkContainer/"
       },
       {
         "command": "bookmarks.addBookmarkFolder.allOpen.global",
@@ -79,7 +79,7 @@
         "command": "bookmarks.copy.path.tree",
         "title": "Copy Path",
         "icon": "$(copy)",
-        "enablement": "view == bookmarks && viewItem == bookmark"
+        "enablement": "focusedView == bookmarks"
       },
       {
         "command": "bookmarks.decorators.hide",
@@ -105,31 +105,31 @@
         "command": "bookmarks.editBookmark.displayName.remove.tree",
         "title": "Remove",
         "category": "Bookmarks",
-        "enablement": "view == bookmarks && viewItem == bookmark"
+        "enablement": "focusedView == bookmarks"
       },
       {
         "command": "bookmarks.editBookmark.displayName.update.tree",
         "title": "Update…",
         "category": "Bookmarks",
-        "enablement": "view == bookmarks && viewItem == bookmark"
+        "enablement": "focusedView == bookmarks"
       },
       {
         "command": "bookmarks.editBookmark.lineNumber.update.tree",
         "title": "Update…",
         "category": "Bookmarks",
-        "enablement": "view == bookmarks && viewItem == bookmark"
+        "enablement": "focusedView == bookmarks"
       },
       {
         "command": "bookmarks.editBookmark.notes.remove.tree",
         "title": "Remove",
         "category": "Bookmarks",
-        "enablement": "view == bookmarks && viewItem == bookmark"
+        "enablement": "focusedView == bookmarks"
       },
       {
         "command": "bookmarks.editBookmark.notes.update.tree",
         "title": "Update…",
         "category": "Bookmarks",
-        "enablement": "view == bookmarks && viewItem == bookmark"
+        "enablement": "focusedView == bookmarks"
       },
       {
         "command": "bookmarks.navigate.next.editor",
@@ -161,14 +161,14 @@
         "title": "Remove",
         "category": "Bookmarks",
         "icon": "$(remove-close)",
-        "enablement": "view == bookmarks && viewItem == bookmark"
+        "enablement": "focusedView == bookmarks"
       },
       {
         "command": "bookmarks.removeBookmarkFolder.tree",
         "title": "Remove Folder",
         "category": "Bookmarks",
         "icon": "$(remove-close)",
-        "enablement": "view == bookmarks && viewItem =~ /bookmarkContainer/"
+        "enablement": "focusedView == bookmarks"
       },
       {
         "command": "bookmarks.removeBookmarks.global",
@@ -181,7 +181,7 @@
         "title": "Remove All",
         "category": "Bookmarks",
         "icon": "$(close-all)",
-        "enablement": "view == bookmarks && viewItem =~ /bookmarkContainer/"
+        "enablement": "focusedView == bookmarks && viewItem =~ /bookmarkContainer/"
       },
       {
         "command": "bookmarks.removeBookmarks.workspace",
@@ -398,7 +398,7 @@
         },
         {
           "command": "bookmarks.removeBookmarks.tree",
-          "when": "view == bookmarks  && viewItem =~ /bookmarkContainer/ && viewItem =~ /root/",
+          "when": "view == bookmarks && viewItem =~ /bookmarkContainer/ && viewItem =~ /root/",
           "group": "3_other@2"
         },
         {

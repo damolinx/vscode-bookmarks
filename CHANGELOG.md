@@ -9,6 +9,7 @@
 - Fix: Only bookmark markers for bookmarks not within a folder would be rendered.
 - Fix: Bookmark markers would not be removed when a folder containing them was removed.
 - Fix: `Update Line Number` checks for line number conflicts globally rather than per folder.
+- Fix: Keybindings for `Update Display Name` and `Remove` would not work.
 
 ## 0.4.3
 

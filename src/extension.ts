@@ -83,12 +83,12 @@ export async function activate(context: vscode.ExtensionContext) {
     ),
     vscode.commands.registerCommand(
       'bookmarks.editBookmark.displayName.remove.tree',
-      (bookmark: Bookmark): Thenable<void> =>
+      (bookmark?: Bookmark): Thenable<void> =>
         updateDisplayNameAsync(manager, treeView, bookmark, ''),
     ),
     vscode.commands.registerCommand(
       'bookmarks.editBookmark.displayName.update.tree',
-      (bookmark: Bookmark): Thenable<void> =>
+      (bookmark?: Bookmark): Thenable<void> =>
         updateDisplayNameAsync(manager, treeView, bookmark),
     ),
     vscode.commands.registerCommand(
