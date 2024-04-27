@@ -38,7 +38,7 @@
       },
       {
         "command": "bookmarks.addBookmark.tree",
-        "title": "Add Current Editor",
+        "title": "Bookmark Current Editor Line",
         "icon": "$(add)",
         "enablement": "editorIsOpen"
       },
