@@ -52,8 +52,7 @@
       {
         "command": "bookmarks.addBookmarkFolder.tree",
         "title": "New Folder…",
-        "icon": "$(new-folder)",
-        "enablement": "focusedView == bookmarks && viewItem =~ /bookmarkContainer/"
+        "icon": "$(new-folder)"
       },
       {
         "command": "bookmarks.addBookmarkFolder.allOpen.global",
@@ -161,7 +160,7 @@
         "title": "Remove",
         "category": "Bookmarks",
         "icon": "$(remove-close)",
-        "enablement": "focusedView == bookmarks"
+        "enablement": "view == bookmarks"
       },
       {
         "command": "bookmarks.removeBookmarkFolder.tree",
