@@ -1,12 +1,12 @@
 import * as vscode from 'vscode';
 import { Bookmark } from './bookmark';
 import { BookmarkManager } from './bookmarkManager';
-import { BookmarkTreeData } from './bookmarkTreeProvider';
+import { BookmarkTreeItem } from './bookmarkTreeProvider';
 import { RawMetadata } from './datastore/datastore';
 import { BookmarkContainer } from './bookmarkContainer';
 
 export class BookmarkTreeDragAndDropController
-  implements vscode.TreeDragAndDropController<BookmarkTreeData>
+  implements vscode.TreeDragAndDropController<BookmarkTreeItem>
 {
   private readonly bookmarkManager: BookmarkManager;
   public readonly dropMimeTypes: ReadonlyArray<string>;
@@ -18,8 +18,12 @@ export class BookmarkTreeDragAndDropController
     this.dropMimeTypes = ['application/vnd.code.tree.bookmarks', 'text/uri-list'];
   }
 
-  async handleDrag(
-    source: Array<BookmarkTreeData>,
+  private getDefaultKind() {
+    return vscode.workspace.workspaceFolders?.length ? 'workspace' : 'global';
+  }
+
+  public async handleDrag(
+    source: BookmarkTreeItem[],
     treeDataTransfer: vscode.DataTransfer,
     _token: vscode.CancellationToken,
   ): Promise<void> {
@@ -32,41 +36,54 @@ export class BookmarkTreeDragAndDropController
     }
   }
 
-  async handleDrop(
-    target: BookmarkTreeData | undefined,
+  public async handleDrop(
+    target: BookmarkTreeItem | undefined,
     dataTransfer: vscode.DataTransfer,
     _token: vscode.CancellationToken,
   ): Promise<void> {
-    let droppedUris: { uri: vscode.Uri; metadata?: RawMetadata }[] | undefined;
-    const kind =
-      target?.kind || (vscode.workspace.workspaceFolders?.length ? 'workspace' : 'global');
-    const draggedBookmarks = <Bookmark[] | undefined>(
-      dataTransfer.get('application/vnd.code.tree.bookmarks')?.value
-    );
-    if (draggedBookmarks) {
-      droppedUris = draggedBookmarks.map((b) => ({ uri: b.uri, metadata: b.metadata }));
-    } else {
-      const draggedUriList = await dataTransfer.get('text/uri-list')?.asString();
-      if (draggedUriList) {
-        droppedUris = draggedUriList
-          .split('\n')
-          .map((uriStr) => ({ uri: vscode.Uri.parse(uriStr + '#L1', true) }));
+    dataTransfer.forEach(async (item, mimeType) => {
+      switch (mimeType) {
+        case 'application/vnd.code.tree.bookmarks':
+          const bookmarks = <Bookmark[]>item.value;
+          await this.handleBookmarkDrop(bookmarks, target);
+          break;
+        case 'text/uri-list':
+          const uris = (await item.asString())
+            .split('n')
+            .map((uriStr) => ({ uri: vscode.Uri.parse(uriStr + '#L1', true) }));
+          await this.handleUriDrop(uris, target);
+          break;
       }
-    }
+    });
+  }
 
-    // Add URIs to Target Kind.
-    let addedBookmarks: BookmarkTreeData[] | undefined;
-    if (droppedUris?.length) {
-      const targetOrKind = target instanceof BookmarkContainer ? target : kind;
-      addedBookmarks = await this.bookmarkManager.addAsync(targetOrKind, ...droppedUris);
-    }
+  private async handleBookmarkDrop(
+    bookmarks: Bookmark[],
+    target: BookmarkTreeItem | undefined,
+  ): Promise<BookmarkTreeItem[]> {
+    const addedItems = await this.handleUriDrop(
+      bookmarks.map((b) => ({ uri: b.uri, metadata: b.metadata })),
+      target,
+    );
 
     // Remove Bookmarks that were dragged.
-    if (draggedBookmarks?.length && addedBookmarks?.length) {
-      const movedBookmarks = draggedBookmarks.filter((db) =>
-        addedBookmarks!.some((ad) => ad.matchesUri(db.uri)),
+    if (addedItems?.length) {
+      const movedBookmarks = bookmarks.filter((db) =>
+        addedItems!.some((ad) => ad.matchesUri(db.uri)),
       );
       await this.bookmarkManager.removeBookmarksAsync(...movedBookmarks);
     }
+
+    return addedItems;
+  }
+
+  private async handleUriDrop(
+    uris: { uri: vscode.Uri; metadata?: RawMetadata }[],
+    target: BookmarkTreeItem | undefined,
+  ): Promise<BookmarkTreeItem[]> {
+    const targetOrKind =
+      target instanceof BookmarkContainer ? target : this.getDefaultKind();
+    const addedItems = await this.bookmarkManager.addAsync(targetOrKind, ...uris);
+    return addedItems;
   }
 }

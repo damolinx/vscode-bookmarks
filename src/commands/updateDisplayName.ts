@@ -1,11 +1,11 @@
 import { TreeView, window } from 'vscode';
 import { Bookmark } from '../bookmark';
 import { BookmarkManager } from '../bookmarkManager';
-import { BookmarkTreeData } from '../bookmarkTreeProvider';
+import { BookmarkTreeItem } from '../bookmarkTreeProvider';
 
 export async function updateDisplayNameAsync(
   manager: BookmarkManager,
-  treeView: TreeView<BookmarkTreeData | undefined>,
+  treeView: TreeView<BookmarkTreeItem | undefined>,
   bookmark: Bookmark,
   name?: string,
 ): Promise<void> {

@@ -8,11 +8,11 @@ import { createTreeProvider, TreeViewKind } from './tree/treeUtils';
 const VIEW_CONTEXT_KEY = 'bookmarks.tree.view';
 const VIEW_MEMENTO_KEY = 'bookmarks.preferences.view';
 
-export type BookmarkTreeData = Bookmark | BookmarkContainer;
-export type EventType = undefined | BookmarkTreeData | Array<BookmarkTreeData>;
+export type BookmarkTreeItem = Bookmark | BookmarkContainer;
+export type EventType = undefined | BookmarkTreeItem | Array<BookmarkTreeItem>;
 
 export class BookmarkTreeProvider
-  implements vscode.Disposable, vscode.TreeDataProvider<BookmarkTreeData>
+  implements vscode.Disposable, vscode.TreeDataProvider<BookmarkTreeItem>
 {
   private readonly context: vscode.ExtensionContext;
   private readonly disposable: vscode.Disposable;
@@ -40,7 +40,7 @@ export class BookmarkTreeProvider
       this.manager.onDidAddBookmark(() => this.refresh()),
       this.manager.onDidChangeBookmark(() => this.refresh()),
       this.manager.onDidRemoveBookmark(() => this.refresh()),
-      this.onDidChangeTreeDataEmitter
+      this.onDidChangeTreeDataEmitter,
     );
   }
 
@@ -57,7 +57,7 @@ export class BookmarkTreeProvider
    * @return Parent of `element`, or `undefined` if it is a root.
    */
   public getParent(
-    element: BookmarkTreeData
+    element: BookmarkTreeItem,
   ): vscode.ProviderResult<BookmarkContainer | undefined> {
     const container =
       element instanceof Bookmark ? this.manager.getRootContainer(element.kind) : undefined;
@@ -69,7 +69,7 @@ export class BookmarkTreeProvider
    * @param element The element for which {@link TreeItem} representation is asked for.
    * @return TreeItem representation of the bookmark.
    */
-  public getTreeItem(element: BookmarkTreeData): vscode.TreeItem {
+  public getTreeItem(element: BookmarkTreeItem): vscode.TreeItem {
     const treeItem = this.treeItemProvider.provider.getTreeItem(element);
     return treeItem;
   }
@@ -80,9 +80,9 @@ export class BookmarkTreeProvider
    * @return Children of `element` or root if no element is passed.
    */
   public getChildren(
-    element?: BookmarkContainer
-  ): vscode.ProviderResult<Array<BookmarkTreeData>> {
-    let children: Array<BookmarkTreeData>;
+    element?: BookmarkContainer,
+  ): vscode.ProviderResult<Array<BookmarkTreeItem>> {
+    let children: Array<BookmarkTreeItem>;
     if (element) {
       children = this.treeItemProvider.provider.sort(element.getItems());
     } else {
@@ -98,7 +98,7 @@ export class BookmarkTreeProvider
    * Refresh tree.
    * @param data Bookmark(s) to refresh. If `undefined`, it means refresh from the root.
    */
-  public refresh(data?: BookmarkTreeData | Array<BookmarkTreeData>) {
+  public refresh(data?: BookmarkTreeItem | Array<BookmarkTreeItem>) {
     this.onDidChangeTreeDataEmitter.fire(data);
   }
 

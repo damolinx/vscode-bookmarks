@@ -2,7 +2,7 @@ import { TreeView, Uri, window } from 'vscode';
 import { BookmarkKind } from '../bookmark';
 import { BookmarkContainer } from '../bookmarkContainer';
 import { BookmarkManager } from '../bookmarkManager';
-import { BookmarkTreeData } from '../bookmarkTreeProvider';
+import { BookmarkTreeItem } from '../bookmarkTreeProvider';
 
 /**
  * Add a bookmark. If `pathOrUri` is missing, {@link window.activeTextEditor}
@@ -10,7 +10,7 @@ import { BookmarkTreeData } from '../bookmarkTreeProvider';
  */
 export async function addBookmarkAsync(
   manager: BookmarkManager,
-  treeView: TreeView<BookmarkTreeData | undefined>,
+  treeView: TreeView<BookmarkTreeItem | undefined>,
   pathOrUri: string | Uri | undefined,
   parentOrKind: BookmarkContainer | BookmarkKind,
 ): Promise<void> {

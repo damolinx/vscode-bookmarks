@@ -2,14 +2,14 @@ import { TabInputText, TreeView, window } from 'vscode';
 import { BookmarkKind } from '../bookmark';
 import { BookmarkContainer } from '../bookmarkContainer';
 import { BookmarkManager } from '../bookmarkManager';
-import { BookmarkTreeData } from '../bookmarkTreeProvider';
+import { BookmarkTreeItem } from '../bookmarkTreeProvider';
 
 /**
  * Add a bookmark folder.
  */
 export async function addBookmarkFolderAsync(
   manager: BookmarkManager,
-  treeView: TreeView<BookmarkTreeData | undefined>,
+  treeView: TreeView<BookmarkTreeItem | undefined>,
   parentOrKind: BookmarkContainer | BookmarkKind,
   includeAllOpen?: boolean,
 ): Promise<void> {

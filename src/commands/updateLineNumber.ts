@@ -1,11 +1,11 @@
 import { TreeView, window, workspace } from 'vscode';
 import { Bookmark } from '../bookmark';
 import { BookmarkManager } from '../bookmarkManager';
-import { BookmarkTreeData } from '../bookmarkTreeProvider';
+import { BookmarkTreeItem } from '../bookmarkTreeProvider';
 
 export async function updateLineNumberAsync(
   manager: BookmarkManager,
-  treeView: TreeView<BookmarkTreeData | undefined>,
+  treeView: TreeView<BookmarkTreeItem | undefined>,
   bookmark: Bookmark,
 ): Promise<void> {
   const existingLineNumbers = bookmark.container

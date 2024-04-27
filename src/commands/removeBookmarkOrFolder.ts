@@ -1,13 +1,13 @@
 import { TreeView } from 'vscode';
 import { Bookmark } from '../bookmark';
 import { BookmarkManager } from '../bookmarkManager';
-import { BookmarkTreeData } from '../bookmarkTreeProvider';
+import { BookmarkTreeItem } from '../bookmarkTreeProvider';
 import { BookmarkContainer } from '../bookmarkContainer';
 
 export async function removeBookmarkOrFolderAsync(
   manager: BookmarkManager,
-  treeView: TreeView<BookmarkTreeData | undefined>,
-  bookmark?: Bookmark
+  treeView: TreeView<BookmarkTreeItem | undefined>,
+  bookmark?: Bookmark,
 ): Promise<boolean> {
   const bookmarksToRemove: Array<Bookmark | BookmarkContainer> = [];
   if (bookmark) {
