@@ -1,6 +1,6 @@
 # Change Log
 
-## (next)
+## 0.4.5 (next)
 
 ## 0.4.4
 
