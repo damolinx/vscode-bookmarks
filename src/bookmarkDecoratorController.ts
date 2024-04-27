@@ -72,7 +72,7 @@ export class BookmarkDecoratorController implements vscode.Disposable {
 
     function refreshDecorations(manager: BookmarkManager, bookmarks?: Bookmark[]) {
       let affectedEditors: ReadonlyArray<vscode.TextEditor>;
-      if (bookmarks) {
+      if (bookmarks?.length) {
         const visibleEditors = new Set<vscode.TextEditor>();
         bookmarks.forEach((bookmark) => {
           const visibleEditor = vscode.window.visibleTextEditors.find((editor) =>

@@ -7,6 +7,7 @@
 - `Update Line Number` validates line number is not greater than target document's current line count.
 - Fix: All bookmark markers would fail to render if any would point to a line number that is out of range.
 - Fix: Only bookmark markers for bookmarks not within a folder would be rendered.
+- Fix: Bookmark markers would not be removed when a folder containing them was removed.
 - Fix: `Update Line Number` checks for line number conflicts globally rather than per folder.
 
 ## 0.4.3
