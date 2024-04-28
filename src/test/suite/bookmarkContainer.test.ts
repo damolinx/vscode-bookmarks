@@ -26,12 +26,12 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     const addedBookmarks = await container.addAsync(
       ...expectedUris.map((uri) => ({
         uri,
-      }))
+      })),
     );
 
     assert.deepStrictEqual(
       addedBookmarks.map((b) => b.uri),
-      expectedUris
+      expectedUris,
     );
   });
 
@@ -41,17 +41,17 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     const container = new BookmarkContainer(
       'Global',
       'global',
-      createMockDatastore(...expectedUris)
+      createMockDatastore(...expectedUris),
     );
     const addedBookmarks = await container.addAsync(
       ...expectedUris.map((uri) => ({
         uri: vscode.Uri.parse(uri, true),
-      }))
+      })),
     );
 
     assert.deepStrictEqual(
       addedBookmarks.map((b) => b.uri),
-      []
+      [],
     );
   });
 
@@ -59,7 +59,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     const expectedName = 'container';
     assert.strictEqual(
       BookmarkContainer.createUriForName(expectedName).toString(),
-      `${CONTAINER_SCHEME}:${expectedName}`
+      `${CONTAINER_SCHEME}:${expectedName}`,
     );
 
     const expectedGrandparentName = 'grandParent';
@@ -67,11 +67,11 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     const parent = new BookmarkContainer(
       expectedParentName,
       new BookmarkContainer(expectedGrandparentName, 'global', createMockDatastore()),
-      createMockDatastore()
+      createMockDatastore(),
     );
     assert.strictEqual(
       BookmarkContainer.createUriForName(expectedName, parent).toString(),
-      `${CONTAINER_SCHEME}:${expectedGrandparentName}/${expectedParentName}/${expectedName}`
+      `${CONTAINER_SCHEME}:${expectedGrandparentName}/${expectedParentName}/${expectedName}`,
     );
   });
 
@@ -80,7 +80,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     const container = new BookmarkContainer(
       'Global',
       'global',
-      createMockDatastore(...expectedUris)
+      createMockDatastore(...expectedUris),
     );
     assert.strictEqual(container.count, expectedUris.length);
   });
@@ -90,11 +90,11 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     const container = new BookmarkContainer(
       'Global',
       'global',
-      createMockDatastore(...expectedUris)
+      createMockDatastore(...expectedUris),
     );
     assert.deepStrictEqual(
       container.getItem(vscode.Uri.parse(expectedUris[1], true))?.uri.toString(),
-      expectedUris[1]
+      expectedUris[1],
     );
   });
 
@@ -103,11 +103,11 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     const container = new BookmarkContainer(
       'Global',
       'global',
-      createMockDatastore(...expectedUris)
+      createMockDatastore(...expectedUris),
     );
     assert.deepStrictEqual(
       container.getItems().map((b) => b.uri.toString()),
-      expectedUris
+      expectedUris,
     );
   });
 
@@ -116,8 +116,43 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     const container = new BookmarkContainer(
       'Global',
       'global',
-      createMockDatastore('file://global/file1')
+      createMockDatastore('file://global/file1'),
     );
     assert.strictEqual(container.kind, expectedKind);
+  });
+
+  test('moveAsync: bookmark success', async () => {
+    const expectedUris = ['file://global/file1#L11'];
+    const container1 = new BookmarkContainer(
+      'Global',
+      'global',
+      createMockDatastore(...expectedUris),
+    );
+    const container2 = new BookmarkContainer('Folder', container1, createMockDatastore());
+
+    const movedItem = await container1.moveAsync(container1.getItems()[0], container2);
+    assert.ok(movedItem);
+    assert.strictEqual(container1.count, 0);
+    assert.strictEqual(container2.count, 1);
+    assert.strictEqual(container2.getItems()[0]?.uri.toString(), expectedUris[0]);
+  });
+
+  test('moveAsync: bookmark already exists', async () => {
+    const expectedUris = ['file://global/file1#L11'];
+    const container1 = new BookmarkContainer(
+      'Global',
+      'global',
+      createMockDatastore(...expectedUris),
+    );
+    const container2 = new BookmarkContainer(
+      'Folder',
+      container1,
+      createMockDatastore(...expectedUris),
+    );
+
+    const movedItem = await container1.moveAsync(container1.getItems()[0], container2);
+    assert.ok(!movedItem);
+    assert.strictEqual(container1.count, 1);
+    assert.strictEqual(container2.count, 1);
   });
 });

@@ -18,8 +18,13 @@ export class BookmarkTreeDragAndDropController
     this.dropMimeTypes = ['application/vnd.code.tree.bookmarks', 'text/uri-list'];
   }
 
-  private getDefaultKind() {
-    return vscode.workspace.workspaceFolders?.length ? 'workspace' : 'global';
+  private getTargetContainer(target: BookmarkTreeItem | undefined) {
+    return target instanceof BookmarkContainer
+      ? target
+      : target?.container ??
+          this.bookmarkManager.getRootContainer(
+            vscode.workspace.workspaceFolders?.length ? 'workspace' : 'global',
+          );
   }
 
   public async handleDrag(
@@ -60,30 +65,16 @@ export class BookmarkTreeDragAndDropController
   private async handleBookmarkDrop(
     bookmarks: Bookmark[],
     target: BookmarkTreeItem | undefined,
-  ): Promise<BookmarkTreeItem[]> {
-    const addedItems = await this.handleUriDrop(
-      bookmarks.map((b) => ({ uri: b.uri, metadata: b.metadata })),
-      target,
-    );
-
-    // Remove Bookmarks that were dragged.
-    if (addedItems?.length) {
-      const movedBookmarks = bookmarks.filter((db) =>
-        addedItems!.some((ad) => ad.matchesUri(db.uri)),
-      );
-      await this.bookmarkManager.removeBookmarksAsync(...movedBookmarks);
-    }
-
-    return addedItems;
+  ): Promise<void> {
+    const targetContainer = this.getTargetContainer(target);
+    await this.bookmarkManager.moveAsync(bookmarks, targetContainer);
   }
 
   private async handleUriDrop(
     uris: { uri: vscode.Uri; metadata?: RawMetadata }[],
     target: BookmarkTreeItem | undefined,
-  ): Promise<BookmarkTreeItem[]> {
-    const targetOrKind =
-      target instanceof BookmarkContainer ? target : this.getDefaultKind();
-    const addedItems = await this.bookmarkManager.addAsync(targetOrKind, ...uris);
-    return addedItems;
+  ): Promise<void> {
+    const targetContainer = this.getTargetContainer(target);
+    await this.bookmarkManager.addAsync(targetContainer, ...uris);
   }
 }

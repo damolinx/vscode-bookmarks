@@ -14,7 +14,7 @@ export class BookmarkContainer {
   constructor(
     name: string,
     kindOrParent: BookmarkKind | BookmarkContainer,
-    datastore: Datastore
+    datastore: Datastore,
   ) {
     this.datastore = datastore;
     this.displayName = name;
@@ -28,7 +28,7 @@ export class BookmarkContainer {
   }
 
   /**
-   * Create a {@link vscode.Uri} instance appropriate for a container
+   * Create a {@link vscode.Uri} instance appropriate for a container.
    */
   public static createUriForName(name: string, parent?: BookmarkContainer): vscode.Uri {
     return parent
@@ -62,7 +62,7 @@ export class BookmarkContainer {
       return new BookmarkContainer(
         basename(uri.fsPath), //TODO:
         this,
-        new MetadataDatastore(uri, metadata || {}, this.datastore)
+        new MetadataDatastore(uri, metadata || {}, this.datastore),
       );
     } else {
       return new Bookmark(this, uri, metadata);
@@ -82,7 +82,7 @@ export class BookmarkContainer {
   public getItems(): Array<Bookmark | BookmarkContainer> {
     const rawItems = this.datastore.getAll();
     return Object.entries(rawItems).map(([uriStr, metadata]) =>
-      this.createItem(vscode.Uri.parse(uriStr, true), metadata)
+      this.createItem(vscode.Uri.parse(uriStr, true), metadata),
     );
   }
 
@@ -100,6 +100,28 @@ export class BookmarkContainer {
    */
   public matchesUri(uri: vscode.Uri): boolean {
     return uri.authority === this.uri.authority && uri.path === this.uri.path;
+  }
+
+  /**
+   * Move an item under a new parent container.
+   * @param item Item to move.
+   * @param parent New parent.
+   * @returns Item under new location, or `undefined` if item could not be moved.
+   */
+  public async moveAsync<TItem extends Bookmark | BookmarkContainer>(
+    item: TItem,
+    parent: BookmarkContainer,
+  ): Promise<TItem | undefined> {
+    let result: TItem | undefined;
+    if (item instanceof Bookmark) {
+      const [added] = await parent.addAsync({ uri: item.uri, metadata: item.metadata });
+      if (added) {
+        await item.container.removeAsync(item);
+        result = <TItem>added;
+      }
+    }
+
+    return result;
   }
 
   /**
@@ -130,7 +152,7 @@ export class BookmarkContainer {
   public async upsertAsync(...items: Array<Bookmark>): Promise<Array<Bookmark>> {
     const upserted = await this.datastore.addAsync(
       items.map((b) => ({ uri: b.uri, metadata: b.metadata })),
-      true /* override */
+      true /* override */,
     );
     const upsertedBookmarks = items.filter((b) => upserted.includes(b.uri));
     return upsertedBookmarks;

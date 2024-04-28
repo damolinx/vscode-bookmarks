@@ -33,7 +33,7 @@ export class BookmarkManager implements vscode.Disposable {
   private readonly onDidRemoveBookmarkEmitter: vscode.EventEmitter<
     ReadonlyArray<Bookmark | BookmarkContainer> | undefined
   >;
-  public readonly rootContainers: ReadonlyArray<BookmarkContainer>;
+  private readonly rootContainers: ReadonlyArray<BookmarkContainer>;
 
   /**
    * Constructor.
@@ -118,7 +118,7 @@ export class BookmarkManager implements vscode.Disposable {
     }
 
     while (containers.length) {
-      const container = containers.pop();
+      const container = containers.shift();
       container!.getItems().forEach((item) => {
         if (item instanceof BookmarkContainer) {
           containers.push(item);
@@ -167,6 +167,27 @@ export class BookmarkManager implements vscode.Disposable {
     ReadonlyArray<Bookmark | BookmarkContainer> | undefined
   > {
     return this.onDidRemoveBookmarkEmitter.event;
+  }
+
+  /**
+   * Move an item under a new parent container.
+   * @param items Items to move.
+   * @param parent New parent.
+   * @returns Item under new location, or `undefined` if item could not be moved.
+   */
+  public async moveAsync<TItem extends Bookmark | BookmarkContainer>(
+    items: TItem[],
+    parent: BookmarkContainer,
+  ): Promise<TItem[]> {
+    const movedItems = await Promise.all(
+      items.map(async (item) => item.container!.moveAsync(item, parent)),
+    );
+    const removedItems = items.filter((_, index) => !!movedItems[index]);
+    if (removedItems.length) {
+      this.onDidRemoveBookmarkEmitter.fire(removedItems);
+      this.onDidAddBookmarkEmitter.fire(<TItem[]>movedItems.filter((i) => !!i));
+    }
+    return [];
   }
 
   /**

@@ -22,7 +22,7 @@ class MetadataRawDatastore implements RawDatastore {
   constructor(
     uri: vscode.Uri,
     metadata: RawMetadata,
-    metadataKey: keyof RawData = CONTAINER_METADATA_KEY
+    metadataKey: keyof RawData = CONTAINER_METADATA_KEY,
   ) {
     if (uri.scheme !== CONTAINER_SCHEME) {
       throw new Error(`Scheme must be '${CONTAINER_SCHEME}' but is '${uri.scheme}'`);
@@ -78,13 +78,13 @@ export class MetadataDatastore extends Datastore<MetadataRawDatastore> {
    */
   public async addAsync(
     entries: Array<{ uri: vscode.Uri; metadata?: RawMetadata }>,
-    override: boolean = false
+    override: boolean = false,
   ): Promise<vscode.Uri[]> {
     const addedUris = await super.addAsync(entries, override);
     if (addedUris.length) {
       await this.parent.addAsync(
         [{ uri: this.rawStore.uri, metadata: this.rawStore.metadata }],
-        true
+        true,
       );
     }
     return addedUris;
@@ -100,7 +100,7 @@ export class MetadataDatastore extends Datastore<MetadataRawDatastore> {
     if (removedUris) {
       await this.parent.addAsync(
         [{ uri: this.rawStore.uri, metadata: this.rawStore.metadata }],
-        true
+        true,
       );
     }
     return removedUris;
@@ -113,7 +113,7 @@ export class MetadataDatastore extends Datastore<MetadataRawDatastore> {
     await this.rawStore.setAsync(undefined);
     await this.parent.addAsync(
       [{ uri: this.rawStore.uri, metadata: this.rawStore.metadata }],
-      true
+      true,
     );
   }
 
@@ -126,13 +126,13 @@ export class MetadataDatastore extends Datastore<MetadataRawDatastore> {
    */
   public async replaceAsync(
     uri: vscode.Uri,
-    newUri: vscode.Uri
+    newUri: vscode.Uri,
   ): Promise<RawMetadata | undefined> {
     const replacedMetadata = await super.replaceAsync(uri, newUri);
     if (replacedMetadata) {
       await this.parent.addAsync(
         [{ uri: this.rawStore.uri, metadata: this.rawStore.metadata }],
-        true
+        true,
       );
     }
 
