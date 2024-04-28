@@ -33,6 +33,9 @@ export class Bookmark {
   private _lineNumber: number;
   private _uri: vscode.Uri;
 
+  /**
+   * Parent container.
+   */
   public readonly container: BookmarkContainer;
   /**
    * Metadata.

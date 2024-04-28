@@ -38,6 +38,10 @@ export type V1StoreType = RawData;
 class MementoRawDatastore implements RawDatastore {
   public readonly memento: vscode.Memento;
 
+  /**
+   * Constructor.
+   * @param memento Backing store.
+   */
   constructor(memento: vscode.Memento) {
     this.memento = memento;
   }
@@ -62,8 +66,7 @@ class MementoRawDatastore implements RawDatastore {
 }
 
 /**
- * This class uses a {@link vscode.Memento} as backing store for
- * bookmark data.
+ * This class uses a {@link vscode.Memento} as backing store for extension data.
  */
 export class MementoDatastore extends Datastore<MementoRawDatastore> {
   /**

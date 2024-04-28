@@ -30,7 +30,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
           Object.fromEntries([
             [expectedUri1, expectedMetadata1],
             [expectedUri2, expectedMetadata2],
-          ])
+          ]),
         );
       },
     };
@@ -68,7 +68,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
       setAsync: (state) => {
         assert.deepStrictEqual(
           state,
-          Object.fromEntries([[expectedExistingUri, expectedMetadata]])
+          Object.fromEntries([[expectedExistingUri, expectedMetadata]]),
         );
       },
     };
@@ -158,7 +158,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     };
     const datastore = new Datastore(rawDatastore);
 
-    assert.deepStrictEqual(datastore.get(expectedUri), expectedMetadata);
+    assert.deepStrictEqual(datastore.getMetadata(expectedUri), expectedMetadata);
   });
 
   test('get: non-existing', () => {
@@ -173,7 +173,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     };
     const datastore = new Datastore(rawDatastore);
 
-    assert.strictEqual(datastore.get(expectedUri), undefined);
+    assert.strictEqual(datastore.getMetadata(expectedUri), undefined);
   });
 
   test('getAll: empty', () => {
@@ -224,7 +224,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
       setAsync: (state) => {
         assert.deepStrictEqual(
           state,
-          Object.fromEntries([[expectedUri2, expectedMetadata2]])
+          Object.fromEntries([[expectedUri2, expectedMetadata2]]),
         );
       },
     };
@@ -298,7 +298,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
       setAsync: (state) => {
         assert.deepStrictEqual(
           state,
-          Object.fromEntries([[expectedNewUri, expectedMetadata]])
+          Object.fromEntries([[expectedNewUri, expectedMetadata]]),
         );
       },
     };
@@ -306,7 +306,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
 
     assert.deepStrictEqual(
       await datastore.replaceAsync(expectedUri, expectedNewUri),
-      expectedMetadata
+      expectedMetadata,
     );
   });
 
@@ -323,9 +323,9 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     assert.strictEqual(
       await datastore.replaceAsync(
         vscode.Uri.file('/global/file2'),
-        vscode.Uri.file('/global/file3')
+        vscode.Uri.file('/global/file3'),
       ),
-      undefined
+      undefined,
     );
   });
 

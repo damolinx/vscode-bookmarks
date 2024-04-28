@@ -13,12 +13,19 @@ export const CONTAINER_METADATA_KEY = 'container';
 
 /**
  * This class virtualizes a {@link RawData}'s entry as a datastore for {@link RawData}.
+ * This is currently only supported for {@link CONTAINER_SCHEME} URIs.
  */
 class MetadataRawDatastore implements RawDatastore {
   public readonly uri: vscode.Uri;
   public readonly metadata: RawMetadata;
   private readonly metadataKey: keyof RawData;
 
+  /**
+   * Constructor.
+   * @param uri Metadata Id.
+   * @param metadata Metadata.
+   * @param metadataKey Metadata-key being virtualized.
+   */
   constructor(
     uri: vscode.Uri,
     metadata: RawMetadata,
@@ -54,16 +61,17 @@ class MetadataRawDatastore implements RawDatastore {
 }
 
 /**
- * This class uses a {@link vscode.Memento} as backing store for
- * bookmark data.
+ * This class uses a {@link vscode.Memento} as backing store extension data.
  */
 export class MetadataDatastore extends Datastore<MetadataRawDatastore> {
   private readonly parent: Datastore;
 
   /**
    * Constructor.
+   * @param uri Metadata Id.
    * @param metadata Metadata datastore
-   * @param parent Parent data store.
+   * @param parent Parent datastore. This is needed because {@link MetadataDatastore}
+   * virtualizes a metadata entry so this store is unable to persist data on its own.
    */
   constructor(uri: vscode.Uri, metadata: RawMetadata, parent: Datastore) {
     super(new MetadataRawDatastore(uri, metadata));
@@ -71,10 +79,10 @@ export class MetadataDatastore extends Datastore<MetadataRawDatastore> {
   }
 
   /**
-   * Add bookmarks.
-   * @param entries Bookmarks to add.
-   * @param override Allow overriding a matching bookmark definition, otherwise ignore.
-   * @returns List of added URIs, no duplicates.
+   * Add new entries.
+   * @param entries Entries to add.
+   * @param override Allow overriding a matching entry, otherwise ignore.
+   * @returns List of added URIs (no duplicates).
    */
   public async addAsync(
     entries: Array<{ uri: vscode.Uri; metadata?: RawMetadata }>,
@@ -91,9 +99,9 @@ export class MetadataDatastore extends Datastore<MetadataRawDatastore> {
   }
 
   /**
-   * Remove bookmarks.
-   * @param uris URIs to search for (line data is significant).
-   * @returns List of removed bookmarks, no duplicates.
+   * Remove all data associated with `uris`.
+   * @param uris URIs to remove (line data is significant).
+   * @returns List of removed URIs (no duplicates).
    */
   public async removeAsync(uris: vscode.Uri | Iterable<vscode.Uri>): Promise<vscode.Uri[]> {
     const removedUris = await super.removeAsync(uris);
@@ -107,7 +115,7 @@ export class MetadataDatastore extends Datastore<MetadataRawDatastore> {
   }
 
   /**
-   * Remove all bookmarks.
+   * Remove all data.
    */
   public async removeAllAsync(): Promise<void> {
     await this.rawStore.setAsync(undefined);

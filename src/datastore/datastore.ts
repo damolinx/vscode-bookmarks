@@ -6,18 +6,18 @@ import * as vscode from 'vscode';
 export const CONTAINER_SCHEME = 'container';
 
 /**
- * Bookmark metadata format (used from v0.3.0).
+ * Metadata format (used from v0.3.0).
  * - {@link RawData} was added after v0.3.3 to support nesting.
  */
 export type RawMetadata = { [key: string]: string | RawData | undefined };
 
 /**
- * Bookmark data format (used from v0.3.1).
+ * Data format (used from v0.3.1).
  */
-export type RawData = { [uri: string]: RawMetadata };
+export type RawData = { [uri: string]: RawMetadata | undefined };
 
 /**
- * Basic Datastore for {@link RawData} data.
+ * Basic datastore for {@link RawData} data.
  */
 export interface RawDatastore {
   /**
@@ -33,79 +33,77 @@ export interface RawDatastore {
 }
 
 /**
- * This class represents a datastore with appropriate restrictions and semantics to handle
- * extension data. This contrasts with the {@link RawDatastore} which can be anything but
- * is forced to expose operations that get and set {@link RawData} data. This allows
- * to use a {@link vscode.Memento} to store data or virtualize individual metadata entries
- * as their own data stores while keeping common data semantics in all cases.
+ * This class represents a datastore with appropriate semantics to handle extension data,
+ * which contrasts with {@link RawDatastore} which does not enforce any particular rules.
+ * The abstraction allows use any arbitrary datastore while enforcing necessary rules.
  */
-export class Datastore<TSTORE extends RawDatastore = RawDatastore> {
-  public readonly rawStore: TSTORE;
+export class Datastore<TStore extends RawDatastore = RawDatastore> {
+  public readonly rawStore: TStore;
 
   /**
    * Constructor.
    * @param rawStore Raw datastore.
    */
-  constructor(rawStore: TSTORE) {
+  constructor(rawStore: TStore) {
     this.rawStore = rawStore;
   }
 
   /**
-   * Add bookmarks.
-   * @param entries Bookmarks to add.
-   * @param override Allow overriding a matching bookmark definition, otherwise ignore.
-   * @returns List of added URIs, no duplicates.
+   * Add new entries.
+   * @param entries Entries to add.
+   * @param override Allow overriding a matching entry, otherwise ignore.
+   * @returns List of added URIs (no duplicates).
    */
   public async addAsync(
     entries: Array<{ uri: vscode.Uri; metadata?: RawMetadata }>,
     override: boolean = false,
   ): Promise<vscode.Uri[]> {
     const addedUris: vscode.Uri[] = [];
-    const bookmarks = this.getAll();
+    const existingEntries = this.getAll();
 
     for (const { uri, metadata } of entries) {
       const uriStr = uri.toString();
-      if (override || !(uriStr in bookmarks)) {
-        bookmarks[uriStr] = metadata || {};
+      if (override || !(uriStr in existingEntries)) {
+        existingEntries[uriStr] = metadata || {};
         addedUris.push(uri);
       }
     }
 
     if (addedUris.length) {
-      await this.rawStore.setAsync(bookmarks);
+      await this.rawStore.setAsync(existingEntries);
     }
     return addedUris;
   }
 
   /**
-   * Checks if `uri` is bookmarked.
+   * Checks if `uri` exists in the datastore.
    * @param uri URI to test (line data is significant).
    */
   public contains(uri: vscode.Uri): boolean {
-    const bookmarks = this.getAll();
-    return uri.toString() in bookmarks;
+    const existingEntries = this.getAll();
+    return uri.toString() in existingEntries;
   }
 
   /**
-   * Number of bookmarks in the store.
+   * Number of entries in the datastore.
    */
   public get count(): number {
-    const bookmarks = this.getAll();
-    return Object.keys(bookmarks).length;
+    const existingEntries = this.getAll();
+    return Object.keys(existingEntries).length;
   }
 
   /**
-   * Get bookmark metadata associated with `uri`.
+   * Get metadata associated with `uri`.
    * @param uri URI to search for (line data is significant).
    * @return Metadata, if found.
    */
-  public get(uri: vscode.Uri): RawMetadata | undefined {
-    const bookmarks = this.getAll();
-    return bookmarks[uri.toString()];
+  public getMetadata(uri: vscode.Uri): RawMetadata | undefined {
+    const existingEntries = this.getAll();
+    return existingEntries[uri.toString()];
   }
 
   /**
-   * Return all bookmark data.
+   * Get all data.
    * @return Stored data.
    */
   public getAll(): RawData {
@@ -113,31 +111,31 @@ export class Datastore<TSTORE extends RawDatastore = RawDatastore> {
   }
 
   /**
-   * Remove bookmarks.
-   * @param uris URIs to search for (line data is significant).
-   * @returns List of removed bookmarks, no duplicates.
+   * Remove all data associated with `uris`.
+   * @param uris URIs to remove (line data is significant).
+   * @returns List of removed URIs (no duplicates).
    */
   public async removeAsync(uris: vscode.Uri | Iterable<vscode.Uri>): Promise<vscode.Uri[]> {
     const removedUris: vscode.Uri[] = [];
-    const bookmarks = this.getAll();
+    const existingEntries = this.getAll();
 
     const iterableUris = uris instanceof vscode.Uri ? [uris] : uris;
     for (const uri of iterableUris) {
       const uriStr = uri.toString();
-      if (uriStr in bookmarks) {
-        delete bookmarks[uriStr];
+      if (uriStr in existingEntries) {
+        delete existingEntries[uriStr];
         removedUris.push(uri);
       }
     }
 
     if (removedUris.length) {
-      await this.rawStore.setAsync(bookmarks);
+      await this.rawStore.setAsync(existingEntries);
     }
     return removedUris;
   }
 
   /**
-   * Remove all bookmarks.
+   * Remove all data.
    */
   public async removeAllAsync(): Promise<void> {
     await this.rawStore.setAsync(undefined);
@@ -154,14 +152,14 @@ export class Datastore<TSTORE extends RawDatastore = RawDatastore> {
     uri: vscode.Uri,
     newUri: vscode.Uri,
   ): Promise<RawMetadata | undefined> {
-    const bookmarks = this.getAll();
+    const existingEntries = this.getAll();
     const uriStr = uri.toString();
+    const metadata = existingEntries[uriStr];
 
-    const metadata: RawMetadata | undefined = bookmarks[uriStr];
     if (metadata) {
-      bookmarks[newUri.toString()] = metadata;
-      delete bookmarks[uriStr];
-      await this.rawStore.setAsync(bookmarks);
+      existingEntries[newUri.toString()] = metadata;
+      delete existingEntries[uriStr];
+      await this.rawStore.setAsync(existingEntries);
     }
 
     return metadata;
