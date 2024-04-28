@@ -119,7 +119,7 @@ export class MetadataDatastore extends Datastore<MetadataRawDatastore> {
 
   /**
    * Replace `uri` with `replaceUri` in a single operation. If `uri` is not found,
-   * no chnages are made.
+   * no changes are made.
    * @param uri Source URI.
    * @param newUri Target URI.
    * @returns Metadata that was associated with `replaceUri`, if `uri` was found.

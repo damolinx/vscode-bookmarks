@@ -2,6 +2,8 @@
 
 ## 0.4.5 (next)
 
+- Support drag-and-drop for folders.
+
 ## 0.4.4
 
 - `Update Line Number` validates line number is not greater than target document's current line count.

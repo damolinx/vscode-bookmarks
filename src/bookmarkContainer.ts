@@ -1,7 +1,7 @@
 import * as vscode from 'vscode';
 import { basename } from 'path';
 import { Bookmark, BookmarkKind } from './bookmark';
-import { CONTAINER_SCHEME, Datastore, RawMetadata } from './datastore/datastore';
+import { CONTAINER_SCHEME, Datastore, RawData, RawMetadata } from './datastore/datastore';
 import { MetadataDatastore } from './datastore/metadataDatastore';
 
 export class BookmarkContainer {
@@ -42,7 +42,7 @@ export class BookmarkContainer {
     const addedUris = await this.datastore.addAsync(entries);
     const addedItems = addedUris.map((uri) => {
       const entry = entries.find((entry) => entry.uri === uri);
-      return this.createItem(uri, entry?.metadata || {}); //TODO: return metadata
+      return this.createItem(uri, entry?.metadata || {});
     });
 
     return addedItems;
@@ -114,14 +114,40 @@ export class BookmarkContainer {
   ): Promise<TItem | undefined> {
     let result: TItem | undefined;
     if (item instanceof Bookmark) {
-      const [added] = await parent.addAsync({ uri: item.uri, metadata: item.metadata });
-      if (added) {
-        await item.container.removeAsync(item);
-        result = <TItem>added;
+      [result] = <Array<TItem | undefined>>await parent.addAsync(item);
+    } else {
+      const uri = BookmarkContainer.createUriForName(item.displayName, parent);
+      const metadata =
+        item.datastore instanceof MetadataDatastore ? item.datastore.rawStore.metadata : {};
+      [result] = <Array<TItem | undefined>>await parent.addAsync({ uri, metadata });
+      if (result) {
+        const state = item.datastore.rawStore.get();
+        if (state) {
+          updateContainerState(state, uri);
+          await (<BookmarkContainer>result).datastore.rawStore.setAsync(state);
+        }
       }
     }
 
+    if (result) {
+      await item.container?.removeAsync(item);
+    }
+
     return result;
+
+    function updateContainerState(state: RawData, parentUri: vscode.Uri) {
+      for (var [key, value] of Object.entries(state)) {
+        if (key.startsWith(CONTAINER_SCHEME + ':')) {
+          delete state[key];
+
+          const newUri = parentUri.with({
+            path: [parentUri.path, basename(key)].join('/'),
+          });
+          updateContainerState(<RawData>value, newUri);
+          state[newUri.toString()] = value;
+        }
+      }
+    }
   }
 
   /**

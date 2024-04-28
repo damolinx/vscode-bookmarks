@@ -7,7 +7,7 @@ export const CONTAINER_SCHEME = 'container';
 
 /**
  * Bookmark metadata format (used from v0.3.0).
- * - {@link RawData} was added as after v0.3.3 to support nesting.
+ * - {@link RawData} was added after v0.3.3 to support nesting.
  */
 export type RawMetadata = { [key: string]: string | RawData | undefined };
 
@@ -58,7 +58,7 @@ export class Datastore<TSTORE extends RawDatastore = RawDatastore> {
    */
   public async addAsync(
     entries: Array<{ uri: vscode.Uri; metadata?: RawMetadata }>,
-    override: boolean = false
+    override: boolean = false,
   ): Promise<vscode.Uri[]> {
     const addedUris: vscode.Uri[] = [];
     const bookmarks = this.getAll();
@@ -145,14 +145,14 @@ export class Datastore<TSTORE extends RawDatastore = RawDatastore> {
 
   /**
    * Replace `uri` with `replaceUri` in a single operation. If `uri` is not found,
-   * no chnages are made.
+   * no changes are made.
    * @param uri Source URI.
    * @param newUri Target URI.
    * @returns Metadata that was associated with `replaceUri`, if `uri` was found.
    */
   public async replaceAsync(
     uri: vscode.Uri,
-    newUri: vscode.Uri
+    newUri: vscode.Uri,
   ): Promise<RawMetadata | undefined> {
     const bookmarks = this.getAll();
     const uriStr = uri.toString();

@@ -171,23 +171,27 @@ export class BookmarkManager implements vscode.Disposable {
 
   /**
    * Move an item under a new parent container.
-   * @param items Items to move.
    * @param parent New parent.
-   * @returns Item under new location, or `undefined` if item could not be moved.
+   * @param items Items to move.
+   * @returns Item under new parent, or `undefined` if no item could not be moved.
    */
   public async moveAsync<TItem extends Bookmark | BookmarkContainer>(
-    items: TItem[],
     parent: BookmarkContainer,
+    ...items: TItem[]
   ): Promise<TItem[]> {
-    const movedItems = await Promise.all(
+    let movedItems: TItem[];
+    const moveResults = await Promise.all(
       items.map(async (item) => item.container!.moveAsync(item, parent)),
     );
-    const removedItems = items.filter((_, index) => !!movedItems[index]);
+    const removedItems = items.filter((_, index) => !!moveResults[index]);
     if (removedItems.length) {
+      movedItems = <TItem[]>moveResults.filter((i) => !!i);
       this.onDidRemoveBookmarkEmitter.fire(removedItems);
-      this.onDidAddBookmarkEmitter.fire(<TItem[]>movedItems.filter((i) => !!i));
+      this.onDidAddBookmarkEmitter.fire(movedItems);
+    } else {
+      movedItems = [];
     }
-    return [];
+    return movedItems;
   }
 
   /**

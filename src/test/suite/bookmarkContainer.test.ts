@@ -155,4 +155,27 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     assert.strictEqual(container1.count, 1);
     assert.strictEqual(container2.count, 1);
   });
+
+  test('moveAsync: folder success', async () => {
+    const expectedUris = ['file://global/file1#L11'];
+    const containerRoot = new BookmarkContainer('Global', 'global', createMockDatastore());
+    const containerA = new BookmarkContainer(
+      'FolderA',
+      containerRoot,
+      createMockDatastore(...expectedUris),
+    );
+    const containerB = new BookmarkContainer(
+      'FolderB',
+      containerRoot,
+      createMockDatastore(),
+    );
+
+    const movedItem = await containerRoot.moveAsync(containerA, containerB);
+    assert.ok(movedItem);
+    assert.strictEqual(movedItem.uri.toString(), 'container:Global/FolderB/FolderA');
+    assert.deepStrictEqual(
+      movedItem.getItems().map((i) => i.uri.toString()),
+      expectedUris,
+    );
+  });
 });

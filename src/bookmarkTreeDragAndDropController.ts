@@ -2,7 +2,6 @@ import * as vscode from 'vscode';
 import { Bookmark } from './bookmark';
 import { BookmarkManager } from './bookmarkManager';
 import { BookmarkTreeItem } from './bookmarkTreeProvider';
-import { RawMetadata } from './datastore/datastore';
 import { BookmarkContainer } from './bookmarkContainer';
 
 export class BookmarkTreeDragAndDropController
@@ -32,11 +31,11 @@ export class BookmarkTreeDragAndDropController
     treeDataTransfer: vscode.DataTransfer,
     _token: vscode.CancellationToken,
   ): Promise<void> {
-    const bookmarksOnly = source.filter((s) => s instanceof Bookmark);
-    if (bookmarksOnly.length) {
+    const items = source.filter((s) => s instanceof Bookmark || !s.isRoot);
+    if (items.length) {
       treeDataTransfer.set(
         'application/vnd.code.tree.bookmarks',
-        new vscode.DataTransferItem(bookmarksOnly),
+        new vscode.DataTransferItem(items),
       );
     }
   }
@@ -46,35 +45,20 @@ export class BookmarkTreeDragAndDropController
     dataTransfer: vscode.DataTransfer,
     _token: vscode.CancellationToken,
   ): Promise<void> {
+    const targetContainer = this.getTargetContainer(target);
     dataTransfer.forEach(async (item, mimeType) => {
       switch (mimeType) {
         case 'application/vnd.code.tree.bookmarks':
-          const bookmarks = <Bookmark[]>item.value;
-          await this.handleBookmarkDrop(bookmarks, target);
+          const items: Array<Bookmark | BookmarkContainer> = item.value;
+          await this.bookmarkManager.moveAsync(targetContainer, ...items);
           break;
         case 'text/uri-list':
           const uris = (await item.asString())
             .split('n')
             .map((uriStr) => ({ uri: vscode.Uri.parse(uriStr + '#L1', true) }));
-          await this.handleUriDrop(uris, target);
+          await this.bookmarkManager.addAsync(targetContainer, ...uris);
           break;
       }
     });
-  }
-
-  private async handleBookmarkDrop(
-    bookmarks: Bookmark[],
-    target: BookmarkTreeItem | undefined,
-  ): Promise<void> {
-    const targetContainer = this.getTargetContainer(target);
-    await this.bookmarkManager.moveAsync(bookmarks, targetContainer);
-  }
-
-  private async handleUriDrop(
-    uris: { uri: vscode.Uri; metadata?: RawMetadata }[],
-    target: BookmarkTreeItem | undefined,
-  ): Promise<void> {
-    const targetContainer = this.getTargetContainer(target);
-    await this.bookmarkManager.addAsync(targetContainer, ...uris);
   }
 }
