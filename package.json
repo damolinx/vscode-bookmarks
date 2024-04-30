@@ -35,20 +35,20 @@
         "title": "Bookmark Editor (Global)",
         "category": "Bookmarks",
         "icon": "$(add)",
-        "enablement": "editorIsOpen"
+        "enablement": "bookmarks.editorSupported"
       },
       {
         "command": "bookmarks.addBookmark.tree",
         "title": "Bookmark Current Editor Line",
         "icon": "$(add)",
-        "enablement": "editorIsOpen"
+        "enablement": "bookmarks.editorSupported"
       },
       {
         "command": "bookmarks.addBookmark.workspace",
         "title": "Bookmark Editor (Workspace)",
         "category": "Bookmarks",
         "icon": "$(add)",
-        "enablement": "editorIsOpen && workbenchState != empty"
+        "enablement": "bookmarks.editorSupported && workbenchState != empty"
       },
       {
         "command": "bookmarks.addBookmarkFolder.tree",
@@ -60,20 +60,20 @@
         "title": "Bookmark Open Editors (Global)",
         "category": "Bookmarks",
         "icon": "$(new-folder)",
-        "enablement": "editorIsOpen"
+        "enablement": "bookmarks.editorSupported"
       },
       {
         "command": "bookmarks.addBookmarkFolder.allOpen.tree",
         "title": "New Folder with Open Editors…",
         "icon": "$(new-folder)",
-        "enablement": "editorIsOpen"
+        "enablement": "bookmarks.editorSupported"
       },
       {
         "command": "bookmarks.addBookmarkFolder.allOpen.workspace",
         "title": "Bookmark Open Editors (Workspace)",
         "category": "Bookmarks",
         "icon": "$(new-folder)",
-        "enablement": "editorIsOpen && workbenchState != empty"
+        "enablement": "bookmarks.editorSupported && workbenchState != empty"
       },
       {
         "command": "bookmarks.copy.path.tree",
@@ -136,14 +136,14 @@
         "title": "Go to Next in Current Editor",
         "category": "Bookmarks",
         "icon": "$(arrow-down)",
-        "enablement": "editorIsOpen"
+        "enablement": "bookmarks.editorSupported"
       },
       {
         "command": "bookmarks.navigate.previous.editor",
         "title": "Go to Previous in Current Editor",
         "category": "Bookmarks",
         "icon": "$(arrow-up)",
-        "enablement": "editorIsOpen"
+        "enablement": "bookmarks.editorSupported"
       },
       {
         "command": "bookmarks.openFolder.tree",
@@ -300,10 +300,6 @@
         {
           "command": "bookmarks.decorators.show",
           "when": "false"
-        },
-        {
-          "command": "bookmarks.decorators.toggle",
-          "when": "editorIsOpen"
         },
         {
           "command": "bookmarks.editBookmark.displayName.remove.tree",

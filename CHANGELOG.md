@@ -1,6 +1,11 @@
 # Change Log
 
-## 0.4.5 (next)
+## 0.4.6
+
+- Fix: `Toggle In-Editor Markers` should not be bound to current editor.
+- Fix: Disable `+` button on unsupported editors.
+
+## 0.4.5
 
 - Support drag-and-drop for folders.
 

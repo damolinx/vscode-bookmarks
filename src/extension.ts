@@ -14,6 +14,9 @@ import { updateDisplayNameAsync } from './commands/updateDisplayName';
 import { updateLineNumberAsync } from './commands/updateLineNumber';
 import { updateNotesAsync } from './commands/updateNotes';
 
+const EDITOR_SUPPORTED_CONTEXT_KEY = 'bookmarks.editorSupported';
+const UNSUPPORTED_SCHEMES: ReadonlyArray<string> = ['search-editor', 'untitled'];
+
 /**
  * Extension startup.
  * @param context Context.
@@ -178,6 +181,14 @@ export async function activate(context: vscode.ExtensionContext) {
     ),
   );
 
+  // Track current editor
+  context.subscriptions.push(
+    vscode.window.onDidChangeActiveTextEditor((editor) => {
+      updateStateForEditor(editor);
+    }),
+  );
+  updateStateForEditor(vscode.window.activeTextEditor);
+
   // Upgrade datastore, best effort
   await manager
     .upgradeDatastores()
@@ -185,6 +196,16 @@ export async function activate(context: vscode.ExtensionContext) {
 
   if (vscode.workspace.getConfiguration().get('bookmarks.marker.showByDefault', false)) {
     vscode.commands.executeCommand('bookmarks.decorators.toggle');
+  }
+
+  function updateStateForEditor(editor: vscode.TextEditor | undefined) {
+    const editorSupported =
+      !!editor && !UNSUPPORTED_SCHEMES.includes(editor.document.uri.scheme);
+    vscode.commands.executeCommand(
+      'setContext',
+      EDITOR_SUPPORTED_CONTEXT_KEY,
+      editorSupported,
+    );
   }
 }
 
