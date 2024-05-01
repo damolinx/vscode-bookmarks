@@ -15,7 +15,11 @@ import { updateLineNumberAsync } from './commands/updateLineNumber';
 import { updateNotesAsync } from './commands/updateNotes';
 
 const EDITOR_SUPPORTED_CONTEXT_KEY = 'bookmarks.editorSupported';
-const UNSUPPORTED_SCHEMES: ReadonlyArray<string> = ['search-editor', 'untitled'];
+const UNSUPPORTED_SCHEMES: ReadonlyArray<string> = [
+  'search-editor',
+  'untitled',
+  'vscode-settings',
+];
 
 /**
  * Extension startup.
