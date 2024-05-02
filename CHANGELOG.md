@@ -2,6 +2,7 @@
 
 ## 0.4.6
 
+- Track file-rename events and update bookmarks as needed.
 - Fix: `Toggle In-Editor Markers` should not be bound to current editor.
 - Fix: Disable `+` button on unsupported editors.
 - Fix: Drag-and-drop of files and editors fails.

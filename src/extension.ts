@@ -193,6 +193,13 @@ export async function activate(context: vscode.ExtensionContext) {
   );
   updateStateForEditor(vscode.window.activeTextEditor);
 
+  // Track Renames
+  context.subscriptions.push(
+    vscode.workspace.onDidRenameFiles((renames) =>
+      manager.renameBookmarks(...renames.files),
+    ),
+  );
+
   // Upgrade datastore, best effort
   await manager
     .upgradeDatastores()

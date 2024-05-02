@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { Bookmark, BookmarkKind, BOOKMARK_CHANGE } from './bookmark';
+import { Bookmark, BookmarkKind, BookmarkUpdate } from './bookmark';
 import { BookmarkContainer } from './bookmarkContainer';
 import { RawMetadata } from './datastore/datastore';
 import { MementoDatastore } from './datastore/mementoDatastore';
@@ -254,15 +254,40 @@ export class BookmarkManager implements vscode.Disposable {
   }
 
   /**
+   * Rename bookmarks (due to a FS event). To update data, use {@link updateBookmarkAsync} which
+   * can also be a rename when changing line number.
+   */
+  public async renameBookmarks(...entries: { oldUri: vscode.Uri; newUri: vscode.Uri }[]) {
+    const updates = entries.flatMap(({ oldUri, newUri }) => {
+      const oldBookmarks = this.getBookmarks({ uri: oldUri, ignoreLineNumber: true });
+      // TODO: Push this to datastore so a rename is a single operation. Right now, this could
+      // end up updating/saving the same datastore for as many bookmarks as matched.
+      return oldBookmarks.map((oldBookmark) => {
+        const newBookmarkUri = newUri.with({ fragment: `L${oldBookmark.lineNumber}` });
+        return oldBookmark.container.datastore.replaceAsync(
+          oldBookmark.uri,
+          newBookmarkUri,
+        );
+      });
+    });
+
+    if (updates) {
+      await Promise.all(updates.filter((p): p is Promise<RawMetadata | undefined> => !!p));
+      this.onDidChangeBookmarkEmitter.fire(undefined);
+    }
+  }
+
+  /**
    * Update a bookmark.
    * @param bookmark Bookmark to rename.
-   * @param change Bookmark change.
+   * @param change Bookmark change. {@link Bookmark.kind} is not updatable because
+   * it means changing datastores.
    * @returns Updated {@link Bookmark} instance if any changes were applied,
    * `bookmark` otherwise.
    */
   public async updateBookmarkAsync(
     bookmark: Bookmark,
-    change: Omit<BOOKMARK_CHANGE, 'kind'>,
+    change: Omit<BookmarkUpdate, 'kind'>,
   ): Promise<Bookmark> {
     const newBookmark = bookmark.with(change);
     if (bookmark === newBookmark) {

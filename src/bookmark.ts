@@ -18,8 +18,8 @@ export const DEFAULT_LINE_NUMBER = 1;
 /**
  * Bookmark change.
  */
-export type BOOKMARK_CHANGE = {
-  displayName?: string | null;
+export type BookmarkUpdate = {
+  displayName?: string;
   kind?: BookmarkKind;
   lineNumber?: number;
   notes?: string;
@@ -197,7 +197,7 @@ export class Bookmark {
    * @return A {@link Bookmark} that reflects the given change. Returns
    * `this` if there are no effective changes.
    */
-  public with(change: BOOKMARK_CHANGE): Bookmark {
+  public with(change: BookmarkUpdate): Bookmark {
     let { displayName, kind, lineNumber, notes } = change;
     if (displayName === undefined) {
       if (this.hasDisplayName) {
