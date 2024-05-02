@@ -1,8 +1,10 @@
 import * as vscode from 'vscode';
 import { Bookmark } from './bookmark';
+import { BookmarkContainer } from './bookmarkContainer';
 import { BookmarkManager } from './bookmarkManager';
 import { BookmarkTreeItem } from './bookmarkTreeProvider';
-import { BookmarkContainer } from './bookmarkContainer';
+import { existsSync, statSync } from 'fs';
+import { EOL } from 'os';
 
 export class BookmarkTreeDragAndDropController
   implements vscode.TreeDragAndDropController<BookmarkTreeItem>
@@ -57,8 +59,17 @@ export class BookmarkTreeDragAndDropController
         case 'text/uri-list':
           {
             const uris = (await item.asString())
-              .split('n')
-              .map((uriStr) => ({ uri: vscode.Uri.parse(uriStr + '#L1', true) }));
+              .split(EOL)
+              .map((uriStr) => vscode.Uri.parse(uriStr, true))
+              .filter(
+                (uri) =>
+                  uri.scheme !== 'file' ||
+                  !existsSync(uri.fsPath) ||
+                  statSync(uri.fsPath).isFile(),
+              )
+              .map((uri) => ({
+                uri: uri.with({ fragment: 'L1' }),
+              }));
             await this.bookmarkManager.addAsync(targetContainer, ...uris);
           }
           break;

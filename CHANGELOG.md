@@ -4,6 +4,7 @@
 
 - Fix: `Toggle In-Editor Markers` should not be bound to current editor.
 - Fix: Disable `+` button on unsupported editors.
+- Fix: Drag-and-drop of files and editors fails.
 
 ## 0.4.5
 
