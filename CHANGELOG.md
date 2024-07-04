@@ -1,5 +1,11 @@
 # Change Log
 
+## 0.4.7
+
+- Fix: `New Folder with Open Editors`:
+  - Command not enabled when current editor is not supported.
+  - Unsupported editors should not be added. 
+
 ## 0.4.6
 
 - Track file-rename events and update bookmarks as needed.

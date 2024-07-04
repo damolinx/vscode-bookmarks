@@ -21,5 +21,5 @@ export async function removeBookmarkOrFolderAsync(
   }
 
   const removed = await manager.removeBookmarksAsync(...bookmarksToRemove);
-  return !!removed.length;
+  return removed.length > 0;
 }

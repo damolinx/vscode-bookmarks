@@ -13,13 +13,7 @@ import { resetRootContainersAsync } from './commands/resetRootContainer';
 import { updateDisplayNameAsync } from './commands/updateDisplayName';
 import { updateLineNumberAsync } from './commands/updateLineNumber';
 import { updateNotesAsync } from './commands/updateNotes';
-
-const EDITOR_SUPPORTED_CONTEXT_KEY = 'bookmarks.editorSupported';
-const UNSUPPORTED_SCHEMES: ReadonlyArray<string> = [
-  'search-editor',
-  'untitled',
-  'vscode-settings',
-];
+import { EDITOR_SUPPORTED_CONTEXT_KEY, UNSUPPORTED_SCHEMES } from './constants';
 
 /**
  * Extension startup.

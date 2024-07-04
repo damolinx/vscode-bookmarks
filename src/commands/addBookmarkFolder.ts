@@ -3,6 +3,7 @@ import { BookmarkKind } from '../bookmark';
 import { BookmarkContainer } from '../bookmarkContainer';
 import { BookmarkManager } from '../bookmarkManager';
 import { BookmarkTreeItem } from '../bookmarkTreeProvider';
+import { UNSUPPORTED_SCHEMES } from '../constants';
 
 /**
  * Add a bookmark folder.
@@ -69,7 +70,8 @@ async function addOpenEditors(
 ): Promise<void> {
   const tabUris = window.tabGroups.activeTabGroup.tabs
     .filter((t) => t.input instanceof TabInputText)
-    .map((t) => (<TabInputText>t.input).uri);
+    .map((t) => (<TabInputText>t.input).uri)
+    .filter((uri) => !UNSUPPORTED_SCHEMES.includes(uri.scheme));
 
   await manager.addAsync(
     folder,
