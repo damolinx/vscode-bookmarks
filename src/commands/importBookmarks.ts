@@ -28,7 +28,7 @@ export async function importBookmarks(manager: BookmarkManager, kind: BookmarkKi
     return;
   }
 
-  await importItems(exportData.data, importContainer)
+  await importItems(exportData.data, importContainer);
   manager.refresh(importContainer);
 
   return importContainer;

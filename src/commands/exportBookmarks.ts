@@ -47,7 +47,7 @@ function exportItems(items: Array<Bookmark | BookmarkContainer>, container: any)
       container[`${CONTAINER_SCHEME}:${item.displayName}`] = folder;
       exportItems(item.getItems(), folder);
     } else {
-      container[item.uri.toString()] = item.metadata
+      container[item.uri.toString()] = item.metadata;
     }
   }
 }

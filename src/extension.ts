@@ -119,7 +119,7 @@ export async function activate(context: vscode.ExtensionContext) {
         const importContainer = await importBookmarks(manager, container.kind);
         if (importContainer) {
           await treeView.reveal(importContainer.container, { expand: true });
-          await treeView.reveal(importContainer, { select: true })
+          await treeView.reveal(importContainer, { select: true });
         }
       },
     ),
