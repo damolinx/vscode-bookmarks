@@ -132,6 +132,18 @@
         "enablement": "focusedView == bookmarks"
       },
       {
+        "command": "bookmarks.export.tree",
+        "title": "Export Data",
+        "category": "Bookmarks",
+        "enablement": "focusedView == bookmarks && viewItem =~ /bookmarkContainer/"
+      },
+      {
+        "command": "bookmarks.import.tree",
+        "title": "Import Data…",
+        "category": "Bookmarks",
+        "enablement": "focusedView == bookmarks && viewItem =~ /bookmarkContainer/"
+      },
+      {
         "command": "bookmarks.navigate.next.editor",
         "title": "Go to Next in Current Editor",
         "category": "Bookmarks",
@@ -318,6 +330,14 @@
           "when": "false"
         },
         {
+          "command": "bookmarks.export.tree",
+          "when": "false"
+        },
+        {
+          "command": "bookmarks.import.tree",
+          "when": "false"
+        },
+        {
           "command": "bookmarks.editBookmark.notes.update.tree",
           "when": "false"
         },
@@ -374,6 +394,16 @@
           "group": "1_main@1"
         },
         {
+          "command": "bookmarks.export.tree",
+          "when": "view == bookmarks && viewItem =~ /bookmarkContainer/ && viewItem =~ /root/",
+          "group": "2_other"
+        },
+        {
+          "command": "bookmarks.import.tree",
+          "when": "view == bookmarks && viewItem =~ /bookmarkContainer/ && viewItem =~ /root/",
+          "group": "2_other"
+        },
+        {
           "command": "bookmarks.openFolder.tree",
           "when": "view == bookmarks && viewItem =~ /bookmarkContainer/ && !(viewItem =~ /root/)",
           "group": "1_main@3"
@@ -386,7 +416,7 @@
         {
           "command": "bookmarks.removeBookmark.tree",
           "when": "view == bookmarks && viewItem == bookmark",
-          "group": "3_other@1"
+          "group": "3_other@10"
         },
         {
           "command": "bookmarks.removeBookmark.tree",

@@ -2,6 +2,8 @@
 
 ## 0.4.7
 
+- Add `Export Data` and `Import Data` context menu actions.
+
 - Fix: `New Folder with Open Editors`:
   - Command not enabled when current editor is not supported.
   - Unsupported editors should not be added. 

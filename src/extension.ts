@@ -7,6 +7,8 @@ import { BookmarkTreeDragAndDropController } from './bookmarkTreeDragAndDropCont
 import { BookmarkTreeProvider } from './bookmarkTreeProvider';
 import { addBookmarkAsync } from './commands/addBookmark';
 import { addBookmarkFolderAsync } from './commands/addBookmarkFolder';
+import { exportBookmarks } from './commands/exportBookmarks';
+import { importBookmarks } from './commands/importBookmarks';
 import { openFolderBookmarks } from './commands/openFolderBookmarks';
 import { removeBookmarkOrFolderAsync } from './commands/removeBookmarkOrFolder';
 import { resetRootContainersAsync } from './commands/resetRootContainer';
@@ -30,9 +32,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
   context.subscriptions.push(decoratorController, manager, treeProvider, treeView);
 
-  // Register even handlers
+  // Register event handlers
   context.subscriptions.push(
-    // Refrest three so node names reflect current workspace.
+    // Refres tree so node names reflect current workspace.
     vscode.workspace.onDidChangeWorkspaceFolders(() => treeProvider.refresh()),
     // Reveal a node when added.
     manager.onDidAddBookmark(
@@ -105,6 +107,21 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(
       'bookmarks.editBookmark.notes.update.tree',
       (bookmark: Bookmark): Thenable<void> => updateNotesAsync(manager, treeView, bookmark),
+    ),
+    vscode.commands.registerCommand(
+      'bookmarks.export.tree',
+      (container: BookmarkContainer): Thenable<void> =>
+        exportBookmarks(manager, container.kind),
+    ),
+    vscode.commands.registerCommand(
+      'bookmarks.import.tree',
+      async (container: BookmarkContainer): Promise<void> => {
+        const importContainer = await importBookmarks(manager, container.kind);
+        if (importContainer) {
+          await treeView.reveal(importContainer.container, { expand: true });
+          await treeView.reveal(importContainer, { select: true })
+        }
+      },
     ),
     vscode.commands.registerCommand(
       'bookmarks.navigate.next.editor',

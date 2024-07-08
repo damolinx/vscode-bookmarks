@@ -195,6 +195,14 @@ export class BookmarkManager implements vscode.Disposable {
   }
 
   /**
+   * Force refresh. Manager does not really cache any data, so event listeners
+   * are just notified they need to reload.
+   */
+  public refresh(...items: Array<Bookmark | BookmarkContainer>) {
+    this.onDidChangeBookmarkEmitter.fire(items.length ? items : undefined);
+  }
+
+  /**
    * Remove bookmarks.
    * @param pathOrUriOrBookmark Bookmark to remove.
    * @param kind Kind of bookmark to remove.  Only applies for `string` or {@link Uri}.
