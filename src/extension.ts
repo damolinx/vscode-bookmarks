@@ -12,6 +12,7 @@ import { importBookmarks } from './commands/importBookmarks';
 import { openFolderBookmarks } from './commands/openFolderBookmarks';
 import { removeBookmarkOrFolderAsync } from './commands/removeBookmarkOrFolder';
 import { resetRootContainersAsync } from './commands/resetRootContainer';
+import { search } from './commands/search';
 import { updateDisplayNameAsync } from './commands/updateDisplayName';
 import { updateLineNumberAsync } from './commands/updateLineNumber';
 import { updateNotesAsync } from './commands/updateNotes';
@@ -34,11 +35,11 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // Register event handlers
   context.subscriptions.push(
-    // Refres tree so node names reflect current workspace.
+    // Refresh tree so node names reflect current workspace.
     vscode.workspace.onDidChangeWorkspaceFolders(() => treeProvider.refresh()),
     // Reveal a node when added.
     manager.onDidAddBookmark(
-      async (bookmarks) => bookmarks && (await treeView.reveal(bookmarks[0])),
+      async (bookmarks) => bookmarks?.length && (await treeView.reveal(bookmarks[0])),
     ),
   );
 
@@ -173,6 +174,10 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(
       'bookmarks.removeBookmarks.workspace',
       (): Thenable<void> => resetRootContainersAsync(manager, 'workspace'),
+    ),
+    vscode.commands.registerCommand(
+      'bookmarks.search',
+      (): Thenable<void> => search(treeProvider, treeView),
     ),
     vscode.commands.registerCommand(
       'bookmarks.decorators.hide',

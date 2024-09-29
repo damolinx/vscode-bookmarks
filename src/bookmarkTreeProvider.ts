@@ -79,9 +79,7 @@ export class BookmarkTreeProvider
    * @param element The element from which the provider gets children. Can be `undefined`.
    * @return Children of `element` or root if no element is passed.
    */
-  public getChildren(
-    element?: BookmarkContainer,
-  ): vscode.ProviderResult<Array<BookmarkTreeItem>> {
+  public getChildren(element?: BookmarkContainer): Array<BookmarkTreeItem> {
     let children: Array<BookmarkTreeItem>;
     if (element) {
       children = this.treeItemProvider.provider.sort(element.getItems());
@@ -110,7 +108,7 @@ export class BookmarkTreeProvider
   }
 
   /**
-   * Set current view kind.  If mode is change, tree will be refreshed.
+   * Set current view kind. If mode is changed, tree will be refreshed.
    */
   public async setViewKind(kind: TreeViewKind): Promise<void> {
     if (this.treeItemProvider.kind !== kind) {

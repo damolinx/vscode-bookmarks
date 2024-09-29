@@ -203,6 +203,12 @@
         "enablement": "workbenchState != empty"
       },
       {
+        "command": "bookmarks.search",
+        "title": "Search…",
+        "category": "Bookmarks",
+        "icon": "$(search)"
+      },
+      {
         "command": "bookmarks.views.name",
         "title": "Name",
         "category": "Bookmarks",
@@ -459,6 +465,11 @@
           "command": "bookmarks.decorators.show",
           "when": "view == bookmarks && !bookmarks.decorators.visible",
           "group": "1_commands"
+        },
+        {
+          "command": "bookmarks.search",
+          "when": "view == bookmarks",
+          "group": "0_search"
         },
         {
           "submenu": "bookmarks.views",

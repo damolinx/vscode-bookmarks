@@ -1,12 +1,16 @@
 # Change Log
 
+## 0.4.8
+
+- Add `Search…` command to search for bookmarks.
+
 ## 0.4.7
 
 - Add `Export Data` and `Import Data` context menu actions.
 
 - Fix: `New Folder with Open Editors`:
   - Command not enabled when current editor is not supported.
-  - Unsupported editors should not be added. 
+  - Unsupported editors should not be added.
 
 ## 0.4.6
 
