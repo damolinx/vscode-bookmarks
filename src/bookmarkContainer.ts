@@ -24,16 +24,17 @@ export class BookmarkContainer {
     } else {
       this.kind = kindOrParent;
     }
-    this.uri = BookmarkContainer.createUriForName(this.displayName, this.container);
+    this.uri = BookmarkContainer.createUriForName(name, this.container);
   }
 
   /**
    * Create a {@link vscode.Uri} instance appropriate for a container.
    */
   public static createUriForName(name: string, parent?: BookmarkContainer): vscode.Uri {
+    const safeName = encodeURIComponent(name);
     return parent
-      ? parent.uri.with({ path: [parent.uri.path, name].join('/') })
-      : vscode.Uri.from({ scheme: CONTAINER_SCHEME, path: name });
+      ? parent.uri.with({ path: [parent.uri.path, safeName].join('/') })
+      : vscode.Uri.from({ scheme: CONTAINER_SCHEME, path: safeName });
   }
 
   /**
@@ -65,7 +66,7 @@ export class BookmarkContainer {
     let item: Bookmark | BookmarkContainer;
     if (uri.scheme === CONTAINER_SCHEME) {
       item = new BookmarkContainer(
-        basename(uri.fsPath),
+        decodeURIComponent(basename(uri.fsPath)),
         this,
         new MetadataDatastore(uri, metadata, this.datastore),
       );
@@ -159,7 +160,7 @@ export class BookmarkContainer {
             path: [parentUri.path, basename(key)].join('/'),
           });
           updateContainerState(<RawData>value, newUri);
-          state[newUri.toString()] = value;
+          state[newUri.toString(true)] = value;
         }
       }
     }

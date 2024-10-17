@@ -56,10 +56,32 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   });
 
   test('createUriForName', () => {
-    const expectedName = 'container';
+    const expectedGrandparentName = 'grandParent';
+    const expectedParentName = 'parent';
+    const grandParent = new BookmarkContainer(expectedGrandparentName, 'global', createMockDatastore());
+    const parent = new BookmarkContainer(
+      expectedParentName,
+      grandParent,
+      createMockDatastore(),
+    );
+    ['container', 'container/*', 'container/unsafe', 'container/unsafer/%2A'].forEach((expectedName) => {
+      assert.strictEqual(
+        BookmarkContainer.createUriForName(expectedName).toString(true),
+        `${CONTAINER_SCHEME}:${encodeURIComponent(expectedName)}`,
+      );
+      assert.strictEqual(
+        BookmarkContainer.createUriForName(expectedName, parent).toString(true),
+        `${CONTAINER_SCHEME}:${expectedGrandparentName}/${expectedParentName}/${encodeURIComponent(expectedName)}`,
+      );
+    });
+  });
+
+  test('createUriForName: unsafe', () => {
+    const expectedName = 'container/unsafe';
+    const expectedSafeName = encodeURIComponent(expectedName);
     assert.strictEqual(
-      BookmarkContainer.createUriForName(expectedName).toString(),
-      `${CONTAINER_SCHEME}:${expectedName}`,
+      BookmarkContainer.createUriForName(expectedName).toString(true),
+      `${CONTAINER_SCHEME}:${expectedSafeName}`,
     );
 
     const expectedGrandparentName = 'grandParent';
@@ -70,8 +92,8 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
       createMockDatastore(),
     );
     assert.strictEqual(
-      BookmarkContainer.createUriForName(expectedName, parent).toString(),
-      `${CONTAINER_SCHEME}:${expectedGrandparentName}/${expectedParentName}/${expectedName}`,
+      BookmarkContainer.createUriForName(expectedName, parent).toString(true),
+      `${CONTAINER_SCHEME}:${expectedGrandparentName}/${expectedParentName}/${expectedSafeName}`,
     );
   });
 
@@ -83,6 +105,18 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
       createMockDatastore(...expectedUris),
     );
     assert.strictEqual(container.count, expectedUris.length);
+  });
+
+  test('displayName', () => {
+    const datastore = createMockDatastore();
+    ['container', 'container/*', 'container/unsafe', 'container/unsafer/%2A'].forEach((expectedName) => {
+      const container = new BookmarkContainer(
+        expectedName,
+        'global',
+        datastore,
+      );
+      assert.strictEqual(container.displayName, expectedName);
+    })
   });
 
   test('getItem', () => {

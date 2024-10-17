@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.4.9
+
+- Support folder names with URI-invalid characters (not retroactive).
+
 ## 0.4.8
 
 - Add `Search…` command to search for bookmarks.
