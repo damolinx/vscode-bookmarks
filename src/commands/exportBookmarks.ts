@@ -19,7 +19,7 @@ export interface Export {
 export async function exportBookmarks(manager: BookmarkManager, kind: BookmarkKind) {
   const items = manager.getRootContainer(kind).getItems();
   if (items.length === 0) {
-    window.showWarningMessage(`No bookmarks to export.`);
+    window.showWarningMessage(`No '${kind}' bookmarks to export.`);
     return;
   }
 

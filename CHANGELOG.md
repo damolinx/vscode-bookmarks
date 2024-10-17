@@ -7,6 +7,7 @@
 ## 0.4.8
 
 - Add `Search…` command to search for bookmarks.
+- Offer to `Export` when removing all bookmarks.
 
 ## 0.4.7
 
