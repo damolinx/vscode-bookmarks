@@ -510,7 +510,7 @@
   "scripts": {
     "vscode:prepublish": "npm run compile",
     "compile": "tsc -p ./",
-    "lint": "eslint \"src/**/*.ts\"",
+    "lint": "eslint \"src/**/*.ts\" --fix",
     "watch": "tsc -w -p ./",
     "pretest": "npm run compile",
     "test": "node ./out/test/runTest.js"

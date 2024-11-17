@@ -116,7 +116,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
         datastore,
       );
       assert.strictEqual(container.displayName, expectedName);
-    })
+    });
   });
 
   test('getItem', () => {
