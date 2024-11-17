@@ -69,7 +69,7 @@ export class BookmarkManager implements vscode.Disposable {
   }
 
   /**
-   * Add bookmarks or bookmark coontainers.
+   * Add bookmarks or bookmark containers.
    */
   public async addAsync(
     parentOrKind: BookmarkContainer | BookmarkKind,
@@ -90,6 +90,31 @@ export class BookmarkManager implements vscode.Disposable {
       }
     }
     return addedItems;
+  }
+
+  /**
+   * Add a bookmark folder. If folder already exists, it will be returned instead.  
+   * If logic needs to know whether folder exists, use {@link addAsync}.
+   */
+  public async addFolderAsync(parentOrKind: BookmarkContainer | BookmarkKind, name: string): Promise<BookmarkContainer> {
+    const parent =
+      parentOrKind instanceof BookmarkContainer
+        ? parentOrKind
+        : this.getRootContainer(parentOrKind);
+    const targetUri = BookmarkContainer.createUriForName(name, parent);
+
+    const addedItems = await this.addAsync(parent, {
+      uri: targetUri,
+    });
+
+    let folder: BookmarkContainer;
+    if (addedItems.length) {
+      folder = <BookmarkContainer>addedItems[0];
+    } else {
+      folder = <BookmarkContainer>parent.getItem(targetUri);
+    }
+
+    return folder;
   }
 
   /**
