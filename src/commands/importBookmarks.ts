@@ -22,7 +22,7 @@ export async function importBookmarks(manager: BookmarkManager, kind: BookmarkKi
   }
 
   // For safety, always import under a folder
-  const importContainer = await getImportTargetContainer(manager.getRootContainer(kind));
+  const importContainer = await getImportTargetContainer(manager, manager.getRootContainer(kind));
   if (!importContainer) {
     window.showErrorMessage("[BUG] Failed to create target folder to import data into.");
     return;
@@ -35,17 +35,16 @@ export async function importBookmarks(manager: BookmarkManager, kind: BookmarkKi
 
 }
 
-async function getImportTargetContainer(parent: BookmarkContainer): Promise<BookmarkContainer | undefined> {
+async function getImportTargetContainer(manager: BookmarkManager, parent: BookmarkContainer): Promise<BookmarkContainer | undefined> {
   const existingNames = parent.getItems()
     .filter((i) => i instanceof BookmarkContainer)
     .map((i) => i.displayName);
 
   let container: BookmarkContainer | undefined;
   for (let i = 0; i <= existingNames.length; i++) {
-    const testName = `Import_${i + 1}`;
-    if (!existingNames.includes(testName)) {
-      const containerUri = BookmarkContainer.createUriForName(testName, parent);
-      container = <BookmarkContainer>(await parent.addAsync({ uri: containerUri }))[0];
+    const candidateFolderName = `Import_${i + 1}`;
+    if (!existingNames.includes(candidateFolderName)) {
+      container = await manager.addFolderAsync(parent, candidateFolderName);
       break;
     }
   }

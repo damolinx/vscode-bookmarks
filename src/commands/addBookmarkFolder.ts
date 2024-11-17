@@ -38,29 +38,16 @@ export async function addBookmarkFolderAsync(
     },
   });
   if (folderName) {
-    const targetUri = BookmarkContainer.createUriForName(folderName, parent);
-    const addedItems = await manager.addAsync(parent, {
-      uri: targetUri,
-    });
-
-    let folder: BookmarkContainer | undefined;
-    if (addedItems.length) {
-      folder = <BookmarkContainer>addedItems[0];
-    } else {
-      folder = <BookmarkContainer | undefined>parent.getItem(targetUri);
+    const folder = await manager.addFolderAsync(parent, folderName);
+    if (includeAllOpen) {
+      await addOpenEditors(manager, folder);
     }
 
-    if (folder) {
-      if (includeAllOpen) {
-        await addOpenEditors(manager, folder);
-      }
-
-      // Max. recursive expansion is 3, and with current structure any second-level
-      // subfolder hits this limit, so it is required to expand the parent (which
-      // must be visible as this is only invoked via context menu today).
-      await treeView.reveal(folder.container, { expand: true });
-      await treeView.reveal(folder, { expand: true, select: true });
-    }
+    // Max. recursive expansion is 3, and with current structure any second-level
+    // subfolder hits this limit, so it is required to expand the parent (which
+    // must be visible as this is only invoked via context menu today).
+    await treeView.reveal(folder.container, { expand: true });
+    await treeView.reveal(folder, { expand: true, select: true });
   }
 }
 
