@@ -7,11 +7,11 @@ import { BookmarkContainer } from '../bookmarkContainer';
 export async function removeBookmarkOrFolderAsync(
   manager: BookmarkManager,
   treeView: TreeView<BookmarkTreeItem | undefined>,
-  bookmark?: Bookmark,
+  bookmarkOrContainer?: Bookmark | BookmarkContainer,
 ): Promise<boolean> {
   const bookmarksToRemove: Array<Bookmark | BookmarkContainer> = [];
-  if (bookmark) {
-    bookmarksToRemove.push(bookmark);
+  if (bookmarkOrContainer) {
+    bookmarksToRemove.push(bookmarkOrContainer);
   } else {
     treeView.selection.forEach((element) => {
       if (element && (element instanceof Bookmark || !element.isRoot)) {

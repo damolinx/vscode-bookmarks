@@ -17,6 +17,7 @@ import { updateDisplayNameAsync } from './commands/updateDisplayName';
 import { updateLineNumberAsync } from './commands/updateLineNumber';
 import { updateNotesAsync } from './commands/updateNotes';
 import { EDITOR_SUPPORTED_CONTEXT_KEY, UNSUPPORTED_SCHEMES } from './constants';
+import { renameBookmarkFolderAsync } from './commands/renameBookmarkFolder';
 
 /**
  * Extension startup.
@@ -87,12 +88,12 @@ export async function activate(context: vscode.ExtensionContext) {
     ),
     vscode.commands.registerCommand(
       'bookmarks.editBookmark.displayName.remove.tree',
-      (bookmark?: Bookmark): Thenable<void> =>
+      (bookmark: Bookmark): Thenable<void> =>
         updateDisplayNameAsync(manager, treeView, bookmark, ''),
     ),
     vscode.commands.registerCommand(
       'bookmarks.editBookmark.displayName.update.tree',
-      (bookmark?: Bookmark): Thenable<void> =>
+      (bookmark: Bookmark): Thenable<void> =>
         updateDisplayNameAsync(manager, treeView, bookmark),
     ),
     vscode.commands.registerCommand(
@@ -143,24 +144,19 @@ export async function activate(context: vscode.ExtensionContext) {
       (container?: BookmarkContainer): void => treeProvider.refresh(container),
     ),
     vscode.commands.registerCommand(
+      'bookmarks.remove.tree',
+      (bookmarkOrContainer?: Bookmark | BookmarkContainer): Thenable<boolean> =>
+        removeBookmarkOrFolderAsync(manager, treeView, bookmarkOrContainer)
+    ),
+    vscode.commands.registerCommand(
       'bookmarks.removeBookmark.global',
       (pathOrUri: string | vscode.Uri): Thenable<boolean> =>
         manager.removeBookmarkAsync(pathOrUri, 'global'),
     ),
     vscode.commands.registerCommand(
-      'bookmarks.removeBookmark.tree',
-      (bookmark?: Bookmark): Thenable<boolean> =>
-        removeBookmarkOrFolderAsync(manager, treeView, bookmark),
-    ),
-    vscode.commands.registerCommand(
       'bookmarks.removeBookmark.workspace',
       (pathOrUri: string | vscode.Uri): Thenable<boolean> =>
         manager.removeBookmarkAsync(pathOrUri, 'workspace'),
-    ),
-    vscode.commands.registerCommand(
-      'bookmarks.removeBookmarkFolder.tree',
-      (folder?: Bookmark): Thenable<boolean> =>
-        removeBookmarkOrFolderAsync(manager, treeView, folder),
     ),
     vscode.commands.registerCommand(
       'bookmarks.removeBookmarks.global',
@@ -174,6 +170,18 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(
       'bookmarks.removeBookmarks.workspace',
       (): Thenable<void> => resetRootContainersAsync(manager, 'workspace'),
+    ),
+    vscode.commands.registerCommand(
+      'bookmarks.rename.tree',
+      async (bookmarkOrContainer?: Bookmark | BookmarkContainer): Promise<void> => {
+        // Keybinding carries no target.
+        const target = bookmarkOrContainer ?? treeView.selection[0];
+        if (target instanceof Bookmark) {
+          await updateDisplayNameAsync(manager, treeView, target);
+        } else if (target instanceof BookmarkContainer) {
+          await renameBookmarkFolderAsync(manager, treeView, target);
+        }
+      }
     ),
     vscode.commands.registerCommand(
       'bookmarks.search',

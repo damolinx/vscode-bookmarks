@@ -311,6 +311,18 @@ export class BookmarkManager implements vscode.Disposable {
   }
 
   /**
+   * Rename a bookmark folder.
+   */
+  public async renameBookmarkFolder(folder: BookmarkContainer, name: string): Promise<BookmarkContainer | undefined> {
+    const newFolder = await folder.renameAsync(name);
+    if (newFolder) {
+      this.onDidRemoveBookmarkEmitter.fire([folder]);
+      this.onDidAddBookmarkEmitter.fire([newFolder]);
+    }
+    return newFolder;
+  }
+
+  /**
    * Update a bookmark.
    * @param bookmark Bookmark to rename.
    * @param change Bookmark change. {@link Bookmark.kind} is not updatable because

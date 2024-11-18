@@ -169,15 +169,8 @@
         "icon": "$(refresh)"
       },
       {
-        "command": "bookmarks.removeBookmark.tree",
+        "command": "bookmarks.remove.tree",
         "title": "Remove",
-        "category": "Bookmarks",
-        "icon": "$(remove-close)",
-        "enablement": "view == bookmarks"
-      },
-      {
-        "command": "bookmarks.removeBookmarkFolder.tree",
-        "title": "Remove Folder",
         "category": "Bookmarks",
         "icon": "$(remove-close)",
         "enablement": "focusedView == bookmarks"
@@ -201,6 +194,12 @@
         "category": "Bookmarks",
         "icon": "$(close-all)",
         "enablement": "workbenchState != empty"
+      },
+      {
+        "command": "bookmarks.rename.tree",
+        "title": "Rename…",
+        "category": "Bookmarks",
+        "enablement": "focusedView == bookmarks"
       },
       {
         "command": "bookmarks.search",
@@ -242,21 +241,15 @@
     ],
     "keybindings": [
       {
-        "command": "bookmarks.editBookmark.displayName.update.tree",
+        "command": "bookmarks.remove.tree",
+        "key": "Delete",
+        "mac": "Cmd+Backspace",
+        "when": "focusedView == bookmarks && !inputFocus"
+      },
+      {
+        "command": "bookmarks.rename.tree",
         "key": "F2",
         "mac": "Enter",
-        "when": "focusedView == bookmarks && !inputFocus"
-      },
-      {
-        "command": "bookmarks.removeBookmark.tree",
-        "key": "Delete",
-        "mac": "Cmd+Backspace",
-        "when": "focusedView == bookmarks && !inputFocus"
-      },
-      {
-        "command": "bookmarks.removeBookmarkFolder.tree",
-        "key": "Delete",
-        "mac": "Cmd+Backspace",
         "when": "focusedView == bookmarks && !inputFocus"
       }
     ],
@@ -352,11 +345,11 @@
           "when": "false"
         },
         {
-          "command": "bookmarks.removeBookmarkFolder.tree",
+          "command": "bookmarks.remove.tree",
           "when": "false"
         },
         {
-          "command": "bookmarks.removeBookmarks.tree",
+          "command": "bookmarks.rename.tree",
           "when": "false"
         },
         {
@@ -400,6 +393,11 @@
           "group": "1_main@1"
         },
         {
+          "command": "bookmarks.rename.tree",
+          "when": "view == bookmarks && !(viewItem =~ /root/)",
+          "group": "3_other@1"
+        },
+        {
           "command": "bookmarks.export.tree",
           "when": "view == bookmarks && viewItem =~ /bookmarkContainer/ && viewItem =~ /root/",
           "group": "2_other"
@@ -420,19 +418,14 @@
           "group": "3_refresh@1"
         },
         {
-          "command": "bookmarks.removeBookmark.tree",
-          "when": "view == bookmarks && viewItem == bookmark",
+          "command": "bookmarks.remove.tree",
+          "when": "view == bookmarks && !(viewItem =~ /root/)",
           "group": "3_other@10"
         },
         {
-          "command": "bookmarks.removeBookmark.tree",
+          "command": "bookmarks.remove.tree",
           "when": "view == bookmarks && viewItem == bookmark",
           "group": "inline"
-        },
-        {
-          "command": "bookmarks.removeBookmarkFolder.tree",
-          "when": "view == bookmarks && viewItem =~ /bookmarkContainer/ && !(viewItem =~ /root/)",
-          "group": "3_other@1"
         },
         {
           "command": "bookmarks.removeBookmarks.tree",

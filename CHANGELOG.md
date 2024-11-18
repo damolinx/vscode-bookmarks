@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.4.10
+
+- Support folder renames.
+- `Rename…` and `Remove` becomes general actions on context menus.
+
 ## 0.4.9
 
 - Support folder names with URI-invalid characters (not retroactive).

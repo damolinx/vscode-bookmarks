@@ -135,11 +135,11 @@ export class BookmarkContainer {
       const uri = BookmarkContainer.createUriForName(item.displayName, parent);
       const metadata =
         item.datastore instanceof MetadataDatastore ? item.datastore.rawStore.metadata : {};
-      [result] = <Array<TItem | undefined>>await parent.addAsync({ uri, metadata });
+      [result] = <Array<TItem>>await parent.addAsync({ uri, metadata });
       if (result) {
         const state = item.datastore.rawStore.get();
         if (state) {
-          updateContainerState(state, uri);
+          this.updateContainerState(state, uri);
           await (<BookmarkContainer>result).datastore.rawStore.setAsync(state);
         }
       }
@@ -150,20 +150,6 @@ export class BookmarkContainer {
     }
 
     return result;
-
-    function updateContainerState(state: RawData, parentUri: vscode.Uri) {
-      for (const [key, value] of Object.entries(state)) {
-        if (key.startsWith(CONTAINER_SCHEME + ':')) {
-          delete state[key];
-
-          const newUri = parentUri.with({
-            path: [parentUri.path, basename(key)].join('/'),
-          });
-          updateContainerState(<RawData>value, newUri);
-          state[newUri.toString(true)] = value;
-        }
-      }
-    }
   }
 
   /**
@@ -184,6 +170,50 @@ export class BookmarkContainer {
     const removed = await this.datastore.removeAsync(items.map((b) => b.uri));
     const removedBookmarks = items.filter((b) => removed.includes(b.uri));
     return removedBookmarks;
+  }
+
+  /**
+ * Rename container.
+ * @param name New name.
+ * @returns Updated {@link BookmarkContainer} instance. If this is {@link isRoot} or `name`
+ * is same the same as {@link displayName}, returns `undefined`.
+ */
+  public async renameAsync(name: string): Promise<BookmarkContainer | undefined> {
+    if (this.isRoot || this.displayName === name) {
+      return;
+    }
+    const parent = this.container!; // !isRoot
+    const newUri = BookmarkContainer.createUriForName(name, parent);
+    const rawStore = (<MetadataDatastore>this.datastore).rawStore;
+    const metadata = rawStore.metadata;
+    const [newItem] = <Array<BookmarkContainer>>await parent.addAsync({ uri: newUri, metadata });
+    if (newItem) {
+      const state = rawStore.get();
+      if (state) {
+        this.updateContainerState(state, newUri);
+        await newItem.datastore.rawStore.setAsync(state);
+      }
+      await parent.removeAsync(this);
+    }
+
+    return newItem;
+  }
+
+  /**
+   * Update state to target a new URI (move, rename).
+   */
+  private updateContainerState(state: RawData, parentUri: vscode.Uri) {
+    for (const [key, value] of Object.entries(state)) {
+      if (key.startsWith(CONTAINER_SCHEME + ':')) {
+        delete state[key];
+
+        const newUri = parentUri.with({
+          path: [parentUri.path, basename(key)].join('/'),
+        });
+        this.updateContainerState(<RawData>value, newUri);
+        state[newUri.toString(true)] = value;
+      }
+    }
   }
 
   /**
