@@ -7,8 +7,8 @@
 
 ## 0.4.9
 
-- Support folder names with URI-invalid characters (not retroactive).
-- Offer to `Export` when removing all bookmarks.
+- Support folder names with URI-invalid characters.
+- Offer to export bookmakrs when removing all bookmarks.
 
 ## 0.4.8
 
