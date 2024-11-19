@@ -3,7 +3,7 @@
 ## 0.4.10
 
 - Support folder renames.
-- `Rename…` and `Remove` becomes general actions on context menus.
+- `Rename…` and `Remove` become general actions on context menus.
 
 ## 0.4.9
 
