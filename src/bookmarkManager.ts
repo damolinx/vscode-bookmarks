@@ -4,7 +4,7 @@ import { BookmarkContainer } from './bookmarkContainer';
 import { RawMetadata } from './datastore/datastore';
 import { MementoDatastore } from './datastore/mementoDatastore';
 
-export type BookmarkFilter = {
+export interface BookmarkFilter {
   /**
    * Ignore line number when matching URIs.
    */
@@ -17,7 +17,7 @@ export type BookmarkFilter = {
    * Use URI as filter.
    */
   uri?: vscode.Uri;
-};
+}
 
 /**
  * Bookmark manager.
@@ -25,15 +25,15 @@ export type BookmarkFilter = {
 export class BookmarkManager implements vscode.Disposable {
   private readonly disposable: vscode.Disposable;
   private readonly onDidAddBookmarkEmitter: vscode.EventEmitter<
-    ReadonlyArray<Bookmark | BookmarkContainer> | undefined
+    readonly (Bookmark | BookmarkContainer)[] | undefined
   >;
   private readonly onDidChangeBookmarkEmitter: vscode.EventEmitter<
-    ReadonlyArray<Bookmark | BookmarkContainer> | undefined
+    readonly (Bookmark | BookmarkContainer)[] | undefined
   >;
   private readonly onDidRemoveBookmarkEmitter: vscode.EventEmitter<
-    ReadonlyArray<Bookmark | BookmarkContainer> | undefined
+    readonly (Bookmark | BookmarkContainer)[] | undefined
   >;
-  private readonly rootContainers: ReadonlyArray<BookmarkContainer>;
+  private readonly rootContainers: readonly BookmarkContainer[];
 
   /**
    * Constructor.
@@ -50,13 +50,13 @@ export class BookmarkManager implements vscode.Disposable {
     ];
     this.disposable = vscode.Disposable.from(
       (this.onDidAddBookmarkEmitter = new vscode.EventEmitter<
-        ReadonlyArray<Bookmark | BookmarkContainer> | undefined
+        readonly (Bookmark | BookmarkContainer)[] | undefined
       >()),
       (this.onDidChangeBookmarkEmitter = new vscode.EventEmitter<
-        ReadonlyArray<Bookmark | BookmarkContainer> | undefined
+        readonly (Bookmark | BookmarkContainer)[] | undefined
       >()),
       (this.onDidRemoveBookmarkEmitter = new vscode.EventEmitter<
-        ReadonlyArray<Bookmark | BookmarkContainer> | undefined
+        readonly (Bookmark | BookmarkContainer)[] | undefined
       >()),
     );
   }
@@ -73,9 +73,9 @@ export class BookmarkManager implements vscode.Disposable {
    */
   public async addAsync(
     parentOrKind: BookmarkContainer | BookmarkKind,
-    ...entries: Array<{ uri: vscode.Uri; metadata?: RawMetadata }>
-  ): Promise<Array<Bookmark | BookmarkContainer>> {
-    let addedItems: Array<Bookmark | BookmarkContainer>;
+    ...entries: { uri: vscode.Uri; metadata?: RawMetadata }[]
+  ): Promise<(Bookmark | BookmarkContainer)[]> {
+    let addedItems: (Bookmark | BookmarkContainer)[];
     if (entries.length === 0) {
       addedItems = []; // nothing to add.
     } else {
@@ -109,9 +109,9 @@ export class BookmarkManager implements vscode.Disposable {
 
     let folder: BookmarkContainer;
     if (addedItems.length) {
-      folder = <BookmarkContainer>addedItems[0];
+      folder = addedItems[0] as BookmarkContainer;
     } else {
-      folder = <BookmarkContainer>parent.getItem(targetUri);
+      folder = parent.getItem(targetUri) as BookmarkContainer;
     }
 
     return folder;
@@ -171,7 +171,7 @@ export class BookmarkManager implements vscode.Disposable {
    * Event raised when bookmarks are added.
    */
   public get onDidAddBookmark(): vscode.Event<
-    ReadonlyArray<Bookmark | BookmarkContainer> | undefined
+    readonly (Bookmark | BookmarkContainer)[] | undefined
   > {
     return this.onDidAddBookmarkEmitter.event;
   }
@@ -180,7 +180,7 @@ export class BookmarkManager implements vscode.Disposable {
    * Event raised when bookmarks are changed.
    */
   public get onDidChangeBookmark(): vscode.Event<
-    ReadonlyArray<Bookmark | BookmarkContainer> | undefined
+    readonly (Bookmark | BookmarkContainer)[] | undefined
   > {
     return this.onDidChangeBookmarkEmitter.event;
   }
@@ -189,7 +189,7 @@ export class BookmarkManager implements vscode.Disposable {
    * Event raised when bookmarks are removed.
    */
   public get onDidRemoveBookmark(): vscode.Event<
-    ReadonlyArray<Bookmark | BookmarkContainer> | undefined
+    readonly (Bookmark | BookmarkContainer)[] | undefined
   > {
     return this.onDidRemoveBookmarkEmitter.event;
   }
@@ -210,7 +210,7 @@ export class BookmarkManager implements vscode.Disposable {
     );
     const removedItems = items.filter((_, index) => !!moveResults[index]);
     if (removedItems.length) {
-      movedItems = <TItem[]>moveResults.filter((i) => !!i);
+      movedItems = moveResults.filter((i) => !!i) as TItem[];
       this.onDidRemoveBookmarkEmitter.fire(removedItems);
       this.onDidAddBookmarkEmitter.fire(movedItems);
     } else {
@@ -223,7 +223,7 @@ export class BookmarkManager implements vscode.Disposable {
    * Force refresh. Manager does not really cache any data, so event listeners
    * are just notified they need to reload.
    */
-  public refresh(...items: Array<Bookmark | BookmarkContainer>) {
+  public refresh(...items: (Bookmark | BookmarkContainer)[]) {
     this.onDidChangeBookmarkEmitter.fire(items.length ? items : undefined);
   }
 
@@ -257,9 +257,9 @@ export class BookmarkManager implements vscode.Disposable {
    * @param items Bookmarks to remove.
    */
   public async removeBookmarksAsync(
-    ...items: Array<Bookmark | BookmarkContainer>
-  ): Promise<Array<Bookmark | BookmarkContainer>> {
-    const removedBookmarks: Array<Bookmark | BookmarkContainer> = [];
+    ...items: (Bookmark | BookmarkContainer)[]
+  ): Promise<(Bookmark | BookmarkContainer)[]> {
+    const removedBookmarks: (Bookmark | BookmarkContainer)[] = [];
     for (const item of items) {
       // TODO: better API, this might lead to multiple saves
       const removedGroupBookmarks = await item.container?.removeAsync(item);

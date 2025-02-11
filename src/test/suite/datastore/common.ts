@@ -7,7 +7,7 @@ export function createMockDatastore(...uris: string[]): Datastore {
 
 export function createMockRawDatastore(...uris: string[]): RawDatastore {
   let store = uris.length
-    ? <RawData>Object.fromEntries(uris.map((uri) => [uri, {}]))
+    ? Object.fromEntries(uris.map((uri) => [uri, {}])) as RawData
     : undefined;
   return {
     get: () => store,

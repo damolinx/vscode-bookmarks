@@ -20,7 +20,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   teardown(() => restorables.forEach((r) => r.restore()));
 
   test('upgradeAsync (no upgrade)', async () => {
-    const memento: vscode.Memento = <any>{
+    const memento: vscode.Memento = {
       get<T>(key: string, defaultValue: T) {
         switch (key) {
           case V0_MEMENTO_KEY_NAME:
@@ -34,7 +34,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
         }
         return defaultValue;
       },
-    };
+    } as any;
     const datastore = new MementoDatastore(memento);
     assert.strictEqual(await datastore.upgradeAsync(), false);
   });
@@ -46,7 +46,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     expectedV1[`${expectedUri1}#L1`] = {};
     expectedV1[expectedUri2] = {};
 
-    const memento: vscode.Memento = <any>{
+    const memento: vscode.Memento = {
       get<T>(key: string, defaultValue: T) {
         switch (key) {
           case V0_MEMENTO_KEY_NAME:
@@ -71,7 +71,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
             assert.fail(`Unexpected key: ${key}`);
         }
       },
-    };
+    } as any;
 
     const datastore = new MementoDatastore(memento);
     assert.strictEqual(await datastore.upgradeAsync(), true);
@@ -93,7 +93,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     expectedV1[expectedUri2] = existingV1[expectedUri2];
     expectedV1[existingContainerUri] = existingV1[existingContainerUri];
 
-    const memento: vscode.Memento = <any>{
+    const memento: vscode.Memento = {
       get<T>(key: string, defaultValue: T) {
         switch (key) {
           case V0_MEMENTO_KEY_NAME:
@@ -118,7 +118,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
             assert.fail(`Unexpected key: ${key}`);
         }
       },
-    };
+    } as any;
 
     const datastore = new MementoDatastore(memento);
     assert.strictEqual(await datastore.upgradeAsync(), true);

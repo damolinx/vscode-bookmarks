@@ -57,13 +57,13 @@ export class BookmarkDecoratorController implements vscode.Disposable {
       this.manager.onDidAddBookmark((items) =>
         refreshDecorations(
           this.manager,
-          <Bookmark[]>items?.filter((i) => i instanceof Bookmark),
+          (items?.filter((i) => i instanceof Bookmark) as Bookmark[]),
         ),
       ),
       this.manager.onDidRemoveBookmark((items) =>
         refreshDecorations(
           this.manager,
-          <Bookmark[]>items?.filter((i) => i instanceof Bookmark),
+          (items?.filter((i) => i instanceof Bookmark) as Bookmark[]),
         ),
       ),
     );
@@ -71,7 +71,7 @@ export class BookmarkDecoratorController implements vscode.Disposable {
     return;
 
     function refreshDecorations(manager: BookmarkManager, bookmarks?: Bookmark[]) {
-      let affectedEditors: ReadonlyArray<vscode.TextEditor>;
+      let affectedEditors: readonly vscode.TextEditor[];
       if (bookmarks?.length) {
         const visibleEditors = new Set<vscode.TextEditor>();
         bookmarks.forEach((bookmark) => {
@@ -94,7 +94,7 @@ export class BookmarkDecoratorController implements vscode.Disposable {
 
     function showDecorations(
       manager: BookmarkManager,
-      editors: ReadonlyArray<vscode.TextEditor>,
+      editors: readonly vscode.TextEditor[],
     ): void {
       editors.forEach((editor) => {
         const options: vscode.DecorationOptions[] = manager

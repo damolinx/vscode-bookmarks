@@ -43,7 +43,7 @@ class MetadataRawDatastore implements RawDatastore {
    * Gets the store state. `undefined` means there is no saved state.
    */
   get(): RawData | undefined {
-    const container = <RawData | undefined>this.metadata[this.metadataKey];
+    const container = this.metadata[this.metadataKey] as RawData | undefined;
     return container;
   }
 
@@ -85,8 +85,8 @@ export class MetadataDatastore extends Datastore<MetadataRawDatastore> {
    * @returns List of added URIs (no duplicates).
    */
   public async addAsync(
-    entries: Array<{ uri: vscode.Uri; metadata?: RawMetadata }>,
-    override: boolean = false,
+    entries: { uri: vscode.Uri; metadata?: RawMetadata }[],
+    override = false,
   ): Promise<vscode.Uri[]> {
     const addedUris = await super.addAsync(entries, override);
     if (addedUris.length) {

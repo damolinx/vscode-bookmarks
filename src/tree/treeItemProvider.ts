@@ -85,8 +85,8 @@ export abstract class TreeItemProvider {
   }
 
   public sort(
-    elements: Array<Bookmark | BookmarkContainer>,
-  ): Array<Bookmark | BookmarkContainer> {
+    elements: (Bookmark | BookmarkContainer)[],
+  ): (Bookmark | BookmarkContainer)[] {
     return elements.sort((a, b) => {
       const aIsContainer = a instanceof BookmarkContainer;
       const bIsContainer = b instanceof BookmarkContainer;

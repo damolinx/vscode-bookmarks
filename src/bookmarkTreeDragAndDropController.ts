@@ -9,8 +9,8 @@ import { EOL } from 'os';
 export class BookmarkTreeDragAndDropController
   implements vscode.TreeDragAndDropController<BookmarkTreeItem> {
   private readonly bookmarkManager: BookmarkManager;
-  public readonly dropMimeTypes: ReadonlyArray<string>;
-  public readonly dragMimeTypes: ReadonlyArray<string>;
+  public readonly dropMimeTypes: readonly string[];
+  public readonly dragMimeTypes: readonly string[];
 
   constructor(bookmarkManager: BookmarkManager) {
     this.bookmarkManager = bookmarkManager;
@@ -53,10 +53,16 @@ export class BookmarkTreeDragAndDropController
     // former is intended only for editor drops. 
 
     let item: vscode.DataTransferItem | undefined;
-    if (item = dataTransfer.get('application/vnd.code.tree.bookmarks')) {
-      const items: Array<Bookmark | BookmarkContainer> = item.value;
+
+    item = dataTransfer.get('application/vnd.code.tree.bookmarks');
+    if (item) {
+      const items: (Bookmark | BookmarkContainer)[] = item.value;
       await this.bookmarkManager.moveAsync(targetContainer, ...items);
-    } else if (item = dataTransfer.get('text/uri-list')) {
+      return;
+    }
+
+    item = dataTransfer.get('text/uri-list');
+    if (item) {
       const uris = (await item.asString())
         .split(EOL)
         .map((uriStr) => vscode.Uri.parse(uriStr, true))

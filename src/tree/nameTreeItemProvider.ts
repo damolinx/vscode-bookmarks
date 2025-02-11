@@ -6,7 +6,7 @@ import { TreeItemOverrides, TreeItemProvider } from './treeItemProvider';
 export class NameTreeItemProvider extends TreeItemProvider {
   protected getBookmarkOverrides(bookmark: Bookmark): TreeItemOverrides {
     const bookmarkPath = bookmark.uri.fsPath;
-    const displayName = <string | undefined>bookmark.metadata[BOOKMARK_DISPLAY_NAME_KEY];
+    const displayName = bookmark.metadata[BOOKMARK_DISPLAY_NAME_KEY] as string | undefined;
 
     let treeItemOverrides: Partial<vscode.TreeItem>;
     if (displayName) {
@@ -29,11 +29,11 @@ export class NameTreeItemProvider extends TreeItemProvider {
 
   protected compareBookmarks(a: Bookmark, b: Bookmark): number {
     const a1 =
-      <string | undefined>a.metadata[BOOKMARK_DISPLAY_NAME_KEY] ||
+      a.metadata[BOOKMARK_DISPLAY_NAME_KEY] as string | undefined ||
       path.basename(a.uri.fsPath);
     const a2 = a1 || a.uri.fsPath;
     const b1 =
-      <string | undefined>b.metadata[BOOKMARK_DISPLAY_NAME_KEY] ||
+      b.metadata[BOOKMARK_DISPLAY_NAME_KEY] as string | undefined ||
       path.basename(b.uri.fsPath);
     const b2 = b1 || b.uri.fsPath;
 

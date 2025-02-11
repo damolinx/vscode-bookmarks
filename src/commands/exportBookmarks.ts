@@ -6,7 +6,7 @@ import { CONTAINER_SCHEME } from '../datastore/datastore';
 
 export const EXPORT_VERSION = "0.1";
 
-export type NestedHash = {
+export interface NestedHash {
   [key: string]: string | NestedHash;
 }
 
@@ -39,7 +39,7 @@ export async function exportBookmarks(manager: BookmarkManager, kind: BookmarkKi
   await commands.executeCommand("editor.action.formatDocument");
 }
 
-function exportItems(items: Array<Bookmark | BookmarkContainer>, container: any): void {
+function exportItems(items: (Bookmark | BookmarkContainer)[], container: any): void {
   for (const item of items) {
     if (item instanceof BookmarkContainer) {
       const folder = {};

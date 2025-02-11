@@ -9,7 +9,7 @@ export async function removeBookmarkOrFolderAsync(
   treeView: TreeView<BookmarkTreeItem | undefined>,
   bookmarkOrContainer?: Bookmark | BookmarkContainer,
 ): Promise<boolean> {
-  const bookmarksToRemove: Array<Bookmark | BookmarkContainer> = [];
+  const bookmarksToRemove: (Bookmark | BookmarkContainer)[] = [];
   if (bookmarkOrContainer) {
     bookmarksToRemove.push(bookmarkOrContainer);
   } else {

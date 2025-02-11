@@ -43,8 +43,8 @@ export class BookmarkContainer {
    * @returns List of added bookmarks or containers (no duplicates).
    */
   public async addAsync(
-    ...entries: Array<{ uri: vscode.Uri; metadata?: RawMetadata }>
-  ): Promise<Array<Bookmark | BookmarkContainer>> {
+    ...entries: { uri: vscode.Uri; metadata?: RawMetadata }[]
+  ): Promise<(Bookmark | BookmarkContainer)[]> {
     const addedUris = await this.datastore.addAsync(entries);
     const addedItems = addedUris.map((uri) => {
       const entry = entries.find((entry) => entry.uri === uri);
@@ -95,7 +95,7 @@ export class BookmarkContainer {
   /**
    * Get all items.
    */
-  public getItems(): Array<Bookmark | BookmarkContainer> {
+  public getItems(): (Bookmark | BookmarkContainer)[] {
     const rawItems = this.datastore.getAll();
     return Object.entries(rawItems).map(([uriStr, metadata]) =>
       this.createItem(vscode.Uri.parse(uriStr, true), metadata || {}),
@@ -130,17 +130,17 @@ export class BookmarkContainer {
   ): Promise<TItem | undefined> {
     let result: TItem | undefined;
     if (item instanceof Bookmark) {
-      [result] = <Array<TItem | undefined>>await parent.addAsync(item);
+      [result] = await parent.addAsync(item) as (TItem | undefined)[];
     } else {
       const uri = BookmarkContainer.createUriForName(item.displayName, parent);
       const metadata =
         item.datastore instanceof MetadataDatastore ? item.datastore.rawStore.metadata : {};
-      [result] = <Array<TItem>>await parent.addAsync({ uri, metadata });
+      [result] = await parent.addAsync({ uri, metadata }) as TItem[];
       if (result) {
         const state = item.datastore.rawStore.get();
         if (state) {
           this.updateContainerState(state, uri);
-          await (<BookmarkContainer>result).datastore.rawStore.setAsync(state);
+          await (result as BookmarkContainer).datastore.rawStore.setAsync(state);
         }
       }
     }
@@ -165,8 +165,8 @@ export class BookmarkContainer {
    * @return Removed items (no duplicates).
    */
   public async removeAsync(
-    ...items: Array<Bookmark | BookmarkContainer>
-  ): Promise<Array<Bookmark | BookmarkContainer>> {
+    ...items: (Bookmark | BookmarkContainer)[]
+  ): Promise<(Bookmark | BookmarkContainer)[]> {
     const removed = await this.datastore.removeAsync(items.map((b) => b.uri));
     const removedBookmarks = items.filter((b) => removed.includes(b.uri));
     return removedBookmarks;
@@ -184,9 +184,9 @@ export class BookmarkContainer {
     }
     const parent = this.container!; // !isRoot
     const newUri = BookmarkContainer.createUriForName(name, parent);
-    const rawStore = (<MetadataDatastore>this.datastore).rawStore;
+    const rawStore = (this.datastore as MetadataDatastore).rawStore;
     const metadata = rawStore.metadata;
-    const [newItem] = <Array<BookmarkContainer>>await parent.addAsync({ uri: newUri, metadata });
+    const [newItem] = await parent.addAsync({ uri: newUri, metadata }) as BookmarkContainer[];
     if (newItem) {
       const state = rawStore.get();
       if (state) {
@@ -210,7 +210,7 @@ export class BookmarkContainer {
         const newUri = parentUri.with({
           path: [parentUri.path, basename(key)].join('/'),
         });
-        this.updateContainerState(<RawData>value, newUri);
+        this.updateContainerState((value as RawData), newUri);
         state[newUri.toString(true)] = value;
       }
     }
@@ -221,7 +221,7 @@ export class BookmarkContainer {
    * @param items Items to upsert.
    * @return Upserted items (no duplicates).
    */
-  public async upsertAsync(...items: Array<Bookmark>): Promise<Array<Bookmark>> {
+  public async upsertAsync(...items: Bookmark[]): Promise<Bookmark[]> {
     const upserted = await this.datastore.addAsync(
       items.map((b) => ({ uri: b.uri, metadata: b.metadata })),
       true /* override */,

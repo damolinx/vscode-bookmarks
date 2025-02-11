@@ -262,9 +262,7 @@ async function getMatchingBookmarksAsync(
     return; // No document to look at.
   }
 
-  const documentBookmarks = <Bookmark[]>(
-    manager.getBookmarks().filter((b) => b.uri.path === uri?.path)
-  );
+  const documentBookmarks = manager.getBookmarks().filter((b) => b.uri.path === uri?.path) as Bookmark[];
   if (documentBookmarks.length === 0) {
     return; // No bookmarks matching document.
   }

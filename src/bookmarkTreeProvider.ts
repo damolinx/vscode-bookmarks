@@ -9,7 +9,7 @@ const VIEW_CONTEXT_KEY = 'bookmarks.tree.view';
 const VIEW_MEMENTO_KEY = 'bookmarks.preferences.view';
 
 export type BookmarkTreeItem = Bookmark | BookmarkContainer;
-export type EventType = undefined | BookmarkTreeItem | Array<BookmarkTreeItem>;
+export type EventType = undefined | BookmarkTreeItem | BookmarkTreeItem[];
 
 export class BookmarkTreeProvider
   implements vscode.Disposable, vscode.TreeDataProvider<BookmarkTreeItem>
@@ -79,8 +79,8 @@ export class BookmarkTreeProvider
    * @param element The element from which the provider gets children. Can be `undefined`.
    * @return Children of `element` or root if no element is passed.
    */
-  public getChildren(element?: BookmarkContainer): Array<BookmarkTreeItem> {
-    let children: Array<BookmarkTreeItem>;
+  public getChildren(element?: BookmarkContainer): BookmarkTreeItem[] {
+    let children: BookmarkTreeItem[];
     if (element) {
       children = this.treeItemProvider.provider.sort(element.getItems());
     } else {
@@ -96,7 +96,7 @@ export class BookmarkTreeProvider
    * Refresh tree.
    * @param data Bookmark(s) to refresh. If `undefined`, it means refresh from the root.
    */
-  public refresh(data?: BookmarkTreeItem | Array<BookmarkTreeItem>) {
+  public refresh(data?: BookmarkTreeItem | BookmarkTreeItem[]) {
     this.onDidChangeTreeDataEmitter.fire(data);
   }
 

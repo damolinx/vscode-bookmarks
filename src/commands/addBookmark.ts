@@ -1,5 +1,5 @@
 import { TreeView, Uri, window } from 'vscode';
-import { BookmarkKind } from '../bookmark';
+import { Bookmark, BookmarkKind } from '../bookmark';
 import { BookmarkContainer } from '../bookmarkContainer';
 import { BookmarkManager } from '../bookmarkManager';
 import { BookmarkTreeItem } from '../bookmarkTreeProvider';
@@ -31,7 +31,7 @@ export async function addBookmarkAsync(
       uri: targetUri,
     });
 
-    let bookmark: any | undefined;
+    let bookmark: Bookmark | BookmarkContainer | undefined;
     if (addedItems.length) {
       bookmark = addedItems[0];
     } else if (parentOrKind instanceof BookmarkContainer) {

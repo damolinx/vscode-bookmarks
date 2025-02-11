@@ -56,10 +56,10 @@ async function importItems(items: NestedHash, parent: BookmarkContainer): Promis
     const uri = Uri.parse(entry[0], true);
     if (uri.scheme === CONTAINER_SCHEME) {
       const containerUri = BookmarkContainer.createUriForName(uri.path, parent);
-      const container = <BookmarkContainer>(await parent.addAsync({ uri: containerUri }))[0];
-      await importItems(<NestedHash>entry[1], container);
+      const container = (await parent.addAsync({ uri: containerUri }))[0] as BookmarkContainer;
+      await importItems((entry[1] as NestedHash), container);
     } else {
-      await parent.addAsync({ uri, metadata: <RawMetadata>entry[1] });
+      await parent.addAsync({ uri, metadata: entry[1] as RawMetadata });
     }
   }
 }

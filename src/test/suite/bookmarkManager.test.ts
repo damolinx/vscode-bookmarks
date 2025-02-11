@@ -165,15 +165,15 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
 });
 
 function createBookmarkManager(expectedGlobal: string[], expectedWorkspace: string[]) {
-  return new BookmarkManager(<any>{
+  return new BookmarkManager(({
     globalState: createMockMemento(...expectedGlobal),
     workspaceState: createMockMemento(...expectedWorkspace),
-  });
+  } as vscode.ExtensionContext));
 }
 
 export function createMockMemento(...uris: string[]): vscode.Memento {
   let store = Object.fromEntries(uris.map((uri) => [uri, {}]));
-  return <any>{
+  return {
     get<T>(key: string, defaultValue: T) {
       assert.strictEqual(key, V1_MEMENTO_KEY_NAME);
       return store ?? defaultValue;
@@ -183,5 +183,5 @@ export function createMockMemento(...uris: string[]): vscode.Memento {
       store = value;
       return Promise.resolve();
     },
-  };
+  } as any;
 }

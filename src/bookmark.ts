@@ -18,12 +18,12 @@ export const DEFAULT_LINE_NUMBER = 1;
 /**
  * Bookmark change.
  */
-export type BookmarkUpdate = {
+export interface BookmarkUpdate {
   displayName?: string;
   kind?: BookmarkKind;
   lineNumber?: number;
   notes?: string;
-};
+}
 
 /**
  * Bookmark.
@@ -105,7 +105,7 @@ export class Bookmark {
    * Get the bookmark name to use in UI elements.
    */
   public get displayName(): string {
-    return <string | undefined>this.metadata[BOOKMARK_DISPLAY_NAME_KEY] || this.defaultName;
+    return this.metadata[BOOKMARK_DISPLAY_NAME_KEY] as string | undefined || this.defaultName;
   }
 
   /**
@@ -170,7 +170,7 @@ export class Bookmark {
    * Get notes associated with bookmark.
    */
   public get notes(): string | undefined {
-    return <string | undefined>this.metadata[BOOKMARK_NOTES_KEY];
+    return this.metadata[BOOKMARK_NOTES_KEY] as string | undefined;
   }
 
   /**
