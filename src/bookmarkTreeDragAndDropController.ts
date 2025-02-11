@@ -7,8 +7,7 @@ import { existsSync, statSync } from 'fs';
 import { EOL } from 'os';
 
 export class BookmarkTreeDragAndDropController
-  implements vscode.TreeDragAndDropController<BookmarkTreeItem>
-{
+  implements vscode.TreeDragAndDropController<BookmarkTreeItem> {
   private readonly bookmarkManager: BookmarkManager;
   public readonly dropMimeTypes: ReadonlyArray<string>;
   public readonly dragMimeTypes: ReadonlyArray<string>;
@@ -23,9 +22,9 @@ export class BookmarkTreeDragAndDropController
     return target instanceof BookmarkContainer
       ? target
       : target?.container ??
-          this.bookmarkManager.getRootContainer(
-            vscode.workspace.workspaceFolders?.length ? 'workspace' : 'global',
-          );
+      this.bookmarkManager.getRootContainer(
+        vscode.workspace.workspaceFolders?.length ? 'workspace' : 'global',
+      );
   }
 
   public async handleDrag(
@@ -48,32 +47,29 @@ export class BookmarkTreeDragAndDropController
     _token: vscode.CancellationToken,
   ): Promise<void> {
     const targetContainer = this.getTargetContainer(target);
-    dataTransfer.forEach(async (item, mimeType) => {
-      switch (mimeType) {
-        case 'application/vnd.code.tree.bookmarks':
-          {
-            const items: Array<Bookmark | BookmarkContainer> = item.value;
-            await this.bookmarkManager.moveAsync(targetContainer, ...items);
-          }
-          break;
-        case 'text/uri-list':
-          {
-            const uris = (await item.asString())
-              .split(EOL)
-              .map((uriStr) => vscode.Uri.parse(uriStr, true))
-              .filter(
-                (uri) =>
-                  uri.scheme !== 'file' ||
-                  !existsSync(uri.fsPath) ||
-                  statSync(uri.fsPath).isFile(),
-              )
-              .map((uri) => ({
-                uri: uri.with({ fragment: 'L1' }),
-              }));
-            await this.bookmarkManager.addAsync(targetContainer, ...uris);
-          }
-          break;
-      }
-    });
+
+    // DO NOT process all mimeTypes blindly: dragging af tree node automatically
+    // adds 'text/uri-list' on top of 'application/vnd.code.tree.bookmarks'. The
+    // former is intended only for editor drops. 
+
+    let item: vscode.DataTransferItem | undefined;
+    if (item = dataTransfer.get('application/vnd.code.tree.bookmarks')) {
+      const items: Array<Bookmark | BookmarkContainer> = item.value;
+      await this.bookmarkManager.moveAsync(targetContainer, ...items);
+    } else if (item = dataTransfer.get('text/uri-list')) {
+      const uris = (await item.asString())
+        .split(EOL)
+        .map((uriStr) => vscode.Uri.parse(uriStr, true))
+        .filter(
+          (uri) =>
+            uri.scheme !== 'file' ||
+            !existsSync(uri.fsPath) ||
+            statSync(uri.fsPath).isFile(),
+        )
+        .map((uri) => ({
+          uri: uri.with({ fragment: 'L1' }),
+        }));
+      await this.bookmarkManager.addAsync(targetContainer, ...uris);
+    }
   }
 }

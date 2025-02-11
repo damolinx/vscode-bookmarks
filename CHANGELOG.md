@@ -1,5 +1,9 @@
 # Change Log
 
+## 0.4.11
+
+- Fix: Drag-n-drop creates adds an additional entry for line 1 on every file being dragged.
+
 ## 0.4.10
 
 - Support folder renames.
@@ -27,7 +31,7 @@
 - Track file-rename events and update bookmarks as needed.
 - Fix: `Toggle In-Editor Markers` should not be bound to current editor.
 - Fix: Disable `+` button on unsupported editors.
-- Fix: Drag-and-drop of files and editors fails.
+- Fix: Drag-n-drop of files and editors fails.
 
 ## 0.4.5
 
