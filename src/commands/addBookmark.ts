@@ -39,8 +39,11 @@ export async function addBookmarkAsync(
     }
 
     if (bookmark) {
+      if (parentOrKind instanceof BookmarkContainer) {
+        await treeView.reveal(parentOrKind, { expand: true });
+      }
       // DO NOT await, for some reason it ends on error sometimes.
-      treeView.reveal(bookmark, { expand: true });
+      treeView.reveal(bookmark);
     }
   }
 }

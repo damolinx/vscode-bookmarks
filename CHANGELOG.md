@@ -3,6 +3,7 @@
 ## 0.4.11
 
 - Fix: Drag-n-drop creates adds an additional entry for line 1 on every file being dragged.
+- Fix: Expand parents when adding a new node.
 
 ## 0.4.10
 
