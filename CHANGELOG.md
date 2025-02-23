@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.4.12
+- Improve extension package: 
+  - Minifying makes it 21KB.
+  - Exclude dev-only files. 
+
 ## 0.4.11
 
 - Fix: Drag-n-drop creates adds an additional entry for line 1 on every file being dragged.

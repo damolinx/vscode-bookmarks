@@ -13,7 +13,7 @@
     "url": "https://github.com/damolinx/vscode-bookmarks/issues"
   },
   "engines": {
-    "vscode": "^1.60.0"
+    "vscode": "^1.77.0"
   },
   "categories": [
     "Other"
@@ -501,8 +501,9 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
-    "compile": "tsc -p ./",
+    "vscode:prepublish": "node esbuild.js",
+    "compile": "npm run check-types && node esbuild.js",
+    "check-types": "tsc --noEmit",
     "lint": "eslint \"src/**/*.ts\" --fix",
     "watch": "tsc -w -p ./",
     "pretest": "npm run compile",
@@ -517,6 +518,7 @@
     "@typescript-eslint/eslint-plugin": "^8.4.0",
     "@typescript-eslint/parser": "^8.4.0",
     "@vscode/test-electron": "^2.4.1",
+    "esbuild": "^0.25.0",
     "eslint": "^9.6.0",
     "glob": "^10.4.3",
     "mocha": "^10.6.0",
