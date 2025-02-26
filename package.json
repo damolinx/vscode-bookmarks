@@ -501,8 +501,8 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "node esbuild.js",
-    "compile": "npm run check-types && node esbuild.js",
+    "vscode:prepublish": "node esbuild.mjs",
+    "compile": "npm run check-types && node esbuild.mjs",
     "check-types": "tsc --noEmit",
     "lint": "eslint \"src/**/*.ts\" --fix",
     "watch": "tsc -w -p ./",
