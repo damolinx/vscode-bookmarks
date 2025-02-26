@@ -24,9 +24,8 @@ export default tseslint.config(
     },
     rules: {
       'curly': 'warn',
+      '@stylistic/quotes': ['error', 'single'],
       '@stylistic/semi': ['warn', 'always'],
-      '@typescript-eslint/no-empty-function': 'off',
-      '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/naming-convention': [
         'warn',
         {
@@ -34,12 +33,13 @@ export default tseslint.config(
           'format': ['camelCase', 'PascalCase']
         }
       ],
+      '@typescript-eslint/no-empty-function': 'off',
       '@typescript-eslint/no-unused-vars': [
         'error',
         {
           'argsIgnorePattern': '^_'
         }
-      ]
+      ],
     }
   }
 );

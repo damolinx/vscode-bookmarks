@@ -174,14 +174,18 @@ function createBookmarkManager(expectedGlobal: string[], expectedWorkspace: stri
 export function createMockMemento(...uris: string[]): vscode.Memento {
   let store = Object.fromEntries(uris.map((uri) => [uri, {}]));
   return {
-    get<T>(key: string, defaultValue: T) {
+    keys() {
+      assert.fail('Unexpected call');
+    },
+    get<T>(key: string, defaultValue?: T) {
       assert.strictEqual(key, V1_MEMENTO_KEY_NAME);
       return store ?? defaultValue;
     },
+    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
     update(key: string, value: any): Promise<void> {
       assert.strictEqual(key, V1_MEMENTO_KEY_NAME);
       store = value;
       return Promise.resolve();
     },
-  } as any;
+  } as vscode.Memento;
 }

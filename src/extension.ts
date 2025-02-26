@@ -227,7 +227,7 @@ export async function activate(context: vscode.ExtensionContext) {
   // Upgrade datastore, best effort
   await manager
     .upgradeDatastores()
-    .catch((error) => console.error(`Bookmarks: Failed to upgrade datastores.`, error));
+    .catch((error) => console.error('Bookmarks: Failed to upgrade datastores.', error));
 
   if (vscode.workspace.getConfiguration().get('bookmarks.marker.showByDefault', false)) {
     vscode.commands.executeCommand('bookmarks.decorators.toggle');

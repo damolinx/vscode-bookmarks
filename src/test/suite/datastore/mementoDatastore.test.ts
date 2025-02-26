@@ -21,7 +21,10 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
 
   test('upgradeAsync (no upgrade)', async () => {
     const memento: vscode.Memento = {
-      get<T>(key: string, defaultValue: T) {
+      keys() {
+        assert.fail('Unexpected call');
+      },
+      get<T>(key: string, defaultValue?: T) {
         switch (key) {
           case V0_MEMENTO_KEY_NAME:
             assert.strictEqual(defaultValue, undefined);
@@ -34,7 +37,12 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
         }
         return defaultValue;
       },
-    } as any;
+      /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+      update(key: string, _value: any): Promise<void> {
+        assert.fail(`Unexpected call, key: ${key}`);
+        return Promise.reject();
+      },
+    } as vscode.Memento;
     const datastore = new MementoDatastore(memento);
     assert.strictEqual(await datastore.upgradeAsync(), false);
   });
@@ -47,7 +55,10 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     expectedV1[expectedUri2] = {};
 
     const memento: vscode.Memento = {
-      get<T>(key: string, defaultValue: T) {
+      keys() {
+        assert.fail('Unexpected call');
+      },
+      get<T>(key: string, defaultValue?: T) {
         switch (key) {
           case V0_MEMENTO_KEY_NAME:
             assert.strictEqual(defaultValue, undefined);
@@ -59,6 +70,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
             assert.fail(`Unexpected key: ${key}`);
         }
       },
+      /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
       async update(key: string, value: any): Promise<void> {
         switch (key) {
           case V0_MEMENTO_KEY_NAME:
@@ -71,7 +83,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
             assert.fail(`Unexpected key: ${key}`);
         }
       },
-    } as any;
+    } as vscode.Memento;
 
     const datastore = new MementoDatastore(memento);
     assert.strictEqual(await datastore.upgradeAsync(), true);
@@ -94,7 +106,10 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     expectedV1[existingContainerUri] = existingV1[existingContainerUri];
 
     const memento: vscode.Memento = {
-      get<T>(key: string, defaultValue: T) {
+      keys() {
+        assert.fail('Unexpected call');
+      },
+      get<T>(key: string, defaultValue?: T) {
         switch (key) {
           case V0_MEMENTO_KEY_NAME:
             assert.strictEqual(defaultValue, undefined);
@@ -106,6 +121,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
             assert.fail(`Unexpected key: ${key}`);
         }
       },
+      /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
       async update(key: string, value: any): Promise<void> {
         switch (key) {
           case V0_MEMENTO_KEY_NAME:
@@ -118,7 +134,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
             assert.fail(`Unexpected key: ${key}`);
         }
       },
-    } as any;
+    } as vscode.Memento;
 
     const datastore = new MementoDatastore(memento);
     assert.strictEqual(await datastore.upgradeAsync(), true);

@@ -4,7 +4,7 @@ import { BookmarkManager } from '../bookmarkManager';
 import { BookmarkContainer } from '../bookmarkContainer';
 import { CONTAINER_SCHEME } from '../datastore/datastore';
 
-export const EXPORT_VERSION = "0.1";
+export const EXPORT_VERSION = '0.1';
 
 export interface NestedHash {
   [key: string]: string | NestedHash;
@@ -32,14 +32,14 @@ export async function exportBookmarks(manager: BookmarkManager, kind: BookmarkKi
   exportItems(items, exportData.data);
 
   const document = await workspace.openTextDocument({
-    language: "json",
+    language: 'json',
     content: JSON.stringify(exportData),
   });
   await window.showTextDocument(document);
-  await commands.executeCommand("editor.action.formatDocument");
+  await commands.executeCommand('editor.action.formatDocument');
 }
 
-function exportItems(items: (Bookmark | BookmarkContainer)[], container: any): void {
+function exportItems(items: (Bookmark | BookmarkContainer)[], container: NestedHash): void {
   for (const item of items) {
     if (item instanceof BookmarkContainer) {
       const folder = {};
@@ -47,7 +47,7 @@ function exportItems(items: (Bookmark | BookmarkContainer)[], container: any): v
       container[`${CONTAINER_SCHEME}:${item.displayName}`] = folder;
       exportItems(item.getItems(), folder);
     } else {
-      container[item.uri.toString()] = item.metadata;
+      container[item.uri.toString()] = item.metadata as NestedHash;
     }
   }
 }

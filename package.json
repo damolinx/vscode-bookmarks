@@ -522,9 +522,8 @@
     "eslint": "^9.6.0",
     "glob": "^11.0.0",
     "mocha": "^11.0.0",
-    "prettier": "^3.5.2",
     "source-map-support": "^0.5.21",
-    "typescript-eslint": "^8.25.0",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.25.0"
   }
 }

@@ -8,7 +8,7 @@ export async function resetRootContainersAsync(
   kind: BookmarkKind
 ): Promise<void> {
   if (!manager.hasBookmarks(kind)) {
-    window.showWarningMessage(`No ${kind ? `'${kind}' ` : ``}bookmarks to remove.`);
+    window.showWarningMessage(`No ${kind ? `'${kind}' ` : ''}bookmarks to remove.`);
     return; // Nothing to do
   }
 
@@ -17,7 +17,7 @@ export async function resetRootContainersAsync(
   const NO_OPTION = 'No';
 
   const option = await window.showInformationMessage(
-    `Are you sure you want to delete all ${kind ? `'${kind}' ` : ``}bookmarks?`,
+    `Are you sure you want to delete all ${kind ? `'${kind}' ` : ''}bookmarks?`,
     {
       modal: true,
       detail: 'You can export your data before deletion; otherwise, the action is irreversible.',

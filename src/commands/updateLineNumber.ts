@@ -34,7 +34,7 @@ export async function updateLineNumberAsync(
       ) {
         return maxLineNumber
           ? `Line number must be an integer value between 1 and ${maxLineNumber}`
-          : `Line number must be an integer value equal or greater than 1`;
+          : 'Line number must be an integer value equal or greater than 1';
       }
       if (existingLineNumbers.includes(n)) {
         return 'Line number conflicts with an existing bookmark';

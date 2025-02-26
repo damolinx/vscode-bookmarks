@@ -8,8 +8,8 @@ import { CONTAINER_SCHEME, RawMetadata } from '../datastore/datastore';
 export async function importBookmarks(manager: BookmarkManager, kind: BookmarkKind): Promise<BookmarkContainer | undefined> {
   const paths = await window.showOpenDialog({
     canSelectMany: false,
-    filters: { "JSON Data": ["json"] },
-    title: "Select Exported Data"
+    filters: { 'JSON Data': ['json'] },
+    title: 'Select Exported Data'
   });
   if (!paths?.length) {
     return;
@@ -17,14 +17,14 @@ export async function importBookmarks(manager: BookmarkManager, kind: BookmarkKi
 
   const exportData = await loadData(paths[0]);
   if (exportData?.version !== EXPORT_VERSION) {
-    window.showErrorMessage("Unsupported data format or version.");
+    window.showErrorMessage('Unsupported data format or version.');
     return;
   }
 
   // For safety, always import under a folder
   const importContainer = await getImportTargetContainer(manager, manager.getRootContainer(kind));
   if (!importContainer) {
-    window.showErrorMessage("[BUG] Failed to create target folder to import data into.");
+    window.showErrorMessage('[BUG] Failed to create target folder to import data into.');
     return;
   }
 
@@ -70,7 +70,7 @@ async function loadData(path: Uri): Promise<Export | undefined> {
     return JSON.parse(document.getText());
   }
   catch (e) {
-    console.error("Failed to import file", path.fsPath, e);
+    console.error('Failed to import file', path.fsPath, e);
     return undefined;
   }
 }
