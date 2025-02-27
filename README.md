@@ -1,4 +1,4 @@
-# `Bookmarks` extension
+# Bookmarks extension
 
 The `Bookmarks` extension allows you to keep track of files and file locations. This allows you to leave breadcrumbs as you debug or navigate your code, or when saving all opened editors, it helps you to quickly switch between tasks.
 
