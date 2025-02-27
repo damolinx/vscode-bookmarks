@@ -6,7 +6,7 @@ esbuild.build({
   minify: true,
   sourcemap: true,
   platform: 'node',
-  target: 'es2020',
+  target: 'es2022',
   outfile: './out/extension.js',
   external: ['vscode'],
 }).catch(() => {
