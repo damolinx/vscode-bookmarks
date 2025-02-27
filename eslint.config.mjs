@@ -25,7 +25,7 @@ export default tseslint.config(
     rules: {
       'curly': 'warn',
       '@stylistic/quotes': ['error', 'single'],
-      '@stylistic/semi': ['warn', 'always'],
+      '@stylistic/semi': ['error', 'always'],
       '@typescript-eslint/naming-convention': [
         'warn',
         {
