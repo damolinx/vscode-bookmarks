@@ -11,9 +11,7 @@ export class NameTreeItemProvider extends TreeItemProvider {
     let treeItemOverrides: Partial<vscode.TreeItem>;
     if (displayName) {
       treeItemOverrides = {
-        description: `…${path.join(...bookmarkPath.split(path.sep).splice(-3))}:${
-          bookmark.lineNumber
-        }`,
+        description: `…${path.join(...bookmarkPath.split(path.sep).splice(-3))}:${bookmark.lineNumber}`,
         label: displayName,
       };
     } else {

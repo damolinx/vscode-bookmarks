@@ -11,17 +11,15 @@ export class PathTreeItemProvider extends TreeItemProvider {
     let treeItemOverrides: Partial<vscode.TreeItem>;
     if (displayName) {
       treeItemOverrides = {
-        description: `…${path.join(...bookmarkPath.split(path.sep).splice(-3))}:${
-          bookmark.lineNumber
-        }`,
+        description: `…${path.join(...bookmarkPath.split(path.sep).splice(-3))}:${bookmark.lineNumber}`,
         label: displayName,
       };
     } else {
       treeItemOverrides = {
-        description: `line ${bookmark.lineNumber}`,
+        description: `${bookmark.lineMoniker} ${bookmark.lineNumber}`,
         label:
           bookmark.defaultName !== bookmarkPath ||
-          vscode.workspace.workspaceFolders?.length !== 1
+            vscode.workspace.workspaceFolders?.length !== 1
             ? bookmark.defaultName
             : path.relative(vscode.workspace.workspaceFolders[0]!.uri.fsPath, bookmarkPath),
       };

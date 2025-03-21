@@ -41,6 +41,10 @@ export abstract class TreeItemProvider {
     };
 
     treeItem.contextValue = 'bookmark';
+    if (bookmark.lineMoniker !== 'line') {
+      treeItem.contextValue += ';noline';
+    }
+
     treeItem.id = bookmark.id;
     treeItem.resourceUri = bookmark.uri;
 

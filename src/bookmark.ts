@@ -134,8 +134,20 @@ export class Bookmark {
     return this.container.kind;
   }
 
+  public get lineMoniker(): 'cell' | 'line' {
+    // Heuristic
+    switch (this.uri.scheme) {
+      case 'vscode-notebook':
+      case 'vscode-notebook-cell':
+        return 'cell';
+      default:
+        return 'line';
+    }
+  }
+
   /**
-   * Bookmark line number. Lines numbers are 1-based.
+   * Bookmark line number. When the URI represents a notebook cell this value
+   * is 0-based, otherwise lines numbers are 1-based.
    */
   public get lineNumber(): number {
     return this._lineNumber;

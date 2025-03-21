@@ -2,7 +2,7 @@
   "name": "damolinx-bookmarks",
   "displayName": "Bookmarks for VSCode",
   "description": "Bookmarks is a VSCode extension that allows to create global and per-workspace file bookmarks.",
-  "version": "0.4.12",
+  "version": "0.4.13",
   "publisher": "damolinx",
   "icon": "resources/images/icon.png",
   "repository": {
@@ -117,7 +117,7 @@
         "command": "bookmarks.editBookmark.lineNumber.update.tree",
         "title": "Update…",
         "category": "Bookmarks",
-        "enablement": "focusedView == bookmarks"
+        "enablement": "focusedView == bookmarks && !(viewItem =~ /noline/)"
       },
       {
         "command": "bookmarks.editBookmark.notes.remove.tree",
@@ -389,7 +389,7 @@
         },
         {
           "command": "bookmarks.copy.path.tree",
-          "when": "view == bookmarks && viewItem == bookmark",
+          "when": "view == bookmarks && viewItem =~ /bookmark/",
           "group": "1_main@1"
         },
         {
@@ -424,7 +424,7 @@
         },
         {
           "command": "bookmarks.remove.tree",
-          "when": "view == bookmarks && viewItem == bookmark",
+          "when": "view == bookmarks && viewItem =~ /bookmark/",
           "group": "inline"
         },
         {
@@ -434,17 +434,17 @@
         },
         {
           "submenu": "bookmark.editBookmark.displayName",
-          "when": "view == bookmarks && viewItem == bookmark",
+          "when": "view == bookmarks && viewItem =~ /bookmark/",
           "group": "2_properties@1"
         },
         {
           "submenu": "bookmark.editBookmark.lineNumber",
-          "when": "view == bookmarks && viewItem == bookmark",
+          "when": "view == bookmarks && viewItem =~ /bookmark/",
           "group": "2_properties@2"
         },
         {
           "submenu": "bookmark.editBookmark.notes",
-          "when": "view == bookmarks && viewItem == bookmark",
+          "when": "view == bookmarks && viewItem =~ /bookmark/",
           "group": "2_properties@3"
         }
       ],
@@ -522,8 +522,9 @@
     "eslint": "^9.6.0",
     "glob": "^11.0.0",
     "mocha": "^11.0.0",
+    "prettier": "^3.5.2",
     "source-map-support": "^0.5.21",
-    "typescript": "^5.7.2",
-    "typescript-eslint": "^8.25.0"
+    "typescript-eslint": "^8.25.0",
+    "typescript": "^5.7.2"
   }
 }

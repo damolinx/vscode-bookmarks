@@ -1,5 +1,10 @@
 # Change Log
 
+## 0.4.13
+- Fix: Notebook bookmarks fail to open due to incorrect saved URI.
+  - This fix is not retroactive as target cell information was never saved.
+  - Cells use 0-based indexes.
+
 ## 0.4.12
 - Improve extension package: 
   - Minifying makes it 21KB.

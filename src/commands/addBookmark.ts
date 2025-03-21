@@ -19,6 +19,10 @@ export async function addBookmarkAsync(
     targetUri = pathOrUri;
   } else if (pathOrUri) {
     targetUri = Uri.parse(pathOrUri, true);
+  } else if (window.activeNotebookEditor) {
+    // Intentionally using activeTextEditor here. Notebook.uri would be the file
+    // information only, missing the target cell location.
+    targetUri = window.activeTextEditor!.document.uri;
   } else if (window.activeTextEditor) {
     const targetLine = window.activeTextEditor.selection.start.line;
     targetUri = window.activeTextEditor.document.uri.with({
