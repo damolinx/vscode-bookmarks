@@ -50,7 +50,7 @@ export class BookmarkTreeDragAndDropController
 
     // DO NOT process all mimeTypes blindly: dragging af tree node automatically
     // adds 'text/uri-list' on top of 'application/vnd.code.tree.bookmarks'. The
-    // former is intended only for editor drops. 
+    // former is intended only for editor drops.
 
     let item: vscode.DataTransferItem | undefined;
 

@@ -93,7 +93,7 @@ export class BookmarkManager implements vscode.Disposable {
   }
 
   /**
-   * Add a bookmark folder. If folder already exists, it will be returned instead.  
+   * Add a bookmark folder. If folder already exists, it will be returned instead.
    * If logic needs to know whether folder exists, use {@link addAsync}.
    */
   public async addFolderAsync(parentOrKind: BookmarkContainer | BookmarkKind, name: string): Promise<BookmarkContainer> {
