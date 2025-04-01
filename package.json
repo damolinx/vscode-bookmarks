@@ -501,13 +501,14 @@
     }
   },
   "scripts": {
-    "vscode:prepublish": "node esbuild.mjs",
-    "compile": "npm run check-types && node esbuild.mjs",
-    "check-types": "tsc --noEmit",
+    "compile": "npm run compile:check-types && node esbuild.mjs",
+    "compile:check-types": "tsc --noEmit",
     "lint": "eslint \"src/**/*.ts\" --fix",
     "watch": "tsc -w -p ./",
     "pretest": "npm run compile",
-    "test": "node ./out/test/runTest.js"
+    "test": "node ./out/test/runTest.js",
+    "package": "npm run compile:check-types && node esbuild.mjs --production",
+    "vscode:prepublish": "npm run package"
   },
   "devDependencies": {
     "@eslint/js": "^9.13.0",
