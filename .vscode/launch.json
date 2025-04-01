@@ -1,39 +1,39 @@
 {
-	"version": "0.2.0",
-	"configurations": [
-		{
-			"name": "Run Extension",
-			"type": "extensionHost",
-			"request": "launch",
-			"runtimeExecutable": "${execPath}",
-			"args": [
-				"--extensionDevelopmentPath=${workspaceFolder}"
-			],
-			"env": {
-				"VSCODE_EXT_BOOKMARKS_DEBUG": "true"
-			},
-			"outFiles": [],
-			"preLaunchTask": "npm: watch",
-			"resolveSourceMapLocations": [
-				"${workspaceFolder}/**",
-				"!**/node_modules/**"
-			]
-		},
-		{
-			"name": "Test Extension",
-			"type": "extensionHost",
-			"request": "launch",
-			"runtimeExecutable": "${execPath}",
-			"args": [
-				"--extensionDevelopmentPath=${workspaceFolder}",
-				"--extensionTestsPath=${workspaceFolder}/out/test/suite/index"
-			],
-			"outFiles": [],
-			"preLaunchTask": "npm: watch",
-			"resolveSourceMapLocations": [
-				"${workspaceFolder}/**",
-				"!**/node_modules/**"
-			]
-		}
-	]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run Extension",
+      "type": "extensionHost",
+      "request": "launch",
+      "runtimeExecutable": "${execPath}",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}"
+      ],
+      "env": {
+        "VSCODE_EXT_BOOKMARKS_DEBUG": "true"
+      },
+      "outFiles": [],
+      "preLaunchTask": "npm: watch",
+      "resolveSourceMapLocations": [
+        "${workspaceFolder}/out/**",
+        "!**/node_modules/**"
+      ]
+    },
+    {
+      "name": "Test Extension",
+      "type": "extensionHost",
+      "request": "launch",
+      "runtimeExecutable": "${execPath}",
+      "args": [
+        "--extensionDevelopmentPath=${workspaceFolder}",
+        "--extensionTestsPath=${workspaceFolder}/out/test/suite/index"
+      ],
+      "outFiles": [],
+      "preLaunchTask": "npm: watch",
+      "resolveSourceMapLocations": [
+        "${workspaceFolder}/out/**",
+        "!**/node_modules/**"
+      ]
+    }
+  ]
 }
