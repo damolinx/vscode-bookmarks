@@ -9,7 +9,7 @@ import { BookmarkTreeItem } from '../bookmarkTreeProvider';
 export async function renameBookmarkFolderAsync(
   manager: BookmarkManager,
   treeView: TreeView<BookmarkTreeItem | undefined>,
-  folder: BookmarkContainer
+  folder: BookmarkContainer,
 ): Promise<void> {
   const parent = folder.container!;
   const folderName = await window.showInputBox({

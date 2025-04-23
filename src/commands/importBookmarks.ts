@@ -9,7 +9,7 @@ export async function importBookmarks(manager: BookmarkManager, kind: BookmarkKi
   const paths = await window.showOpenDialog({
     canSelectMany: false,
     filters: { 'JSON Data': ['json'] },
-    title: 'Select Exported Data'
+    title: 'Select Exported Data',
   });
   if (!paths?.length) {
     return;

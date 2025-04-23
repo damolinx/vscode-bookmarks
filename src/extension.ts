@@ -146,7 +146,7 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(
       'bookmarks.remove.tree',
       (bookmarkOrContainer?: Bookmark | BookmarkContainer): Thenable<boolean> =>
-        removeBookmarkOrFolderAsync(manager, treeView, bookmarkOrContainer)
+        removeBookmarkOrFolderAsync(manager, treeView, bookmarkOrContainer),
     ),
     vscode.commands.registerCommand(
       'bookmarks.removeBookmark.global',
@@ -181,7 +181,7 @@ export async function activate(context: vscode.ExtensionContext) {
         } else if (target instanceof BookmarkContainer) {
           await renameBookmarkFolderAsync(manager, treeView, target);
         }
-      }
+      },
     ),
     vscode.commands.registerCommand(
       'bookmarks.search',

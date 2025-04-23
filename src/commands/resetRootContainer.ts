@@ -5,7 +5,7 @@ import { exportBookmarks } from './exportBookmarks';
 
 export async function resetRootContainersAsync(
   manager: BookmarkManager,
-  kind: BookmarkKind
+  kind: BookmarkKind,
 ): Promise<void> {
   if (!manager.hasBookmarks(kind)) {
     window.showWarningMessage(`No ${kind ? `'${kind}' ` : ''}bookmarks to remove.`);
@@ -24,7 +24,7 @@ export async function resetRootContainersAsync(
     },
     YES_OPTION,
     EXPORT_FIRST_OPTION,
-    NO_OPTION
+    NO_OPTION,
   );
 
   if (option === NO_OPTION || option === undefined) {

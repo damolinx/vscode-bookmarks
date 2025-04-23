@@ -64,7 +64,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
       [bookmark4, bookmark1, bookmark5, bookmark3, bookmark2]
         .sort((a, b) => a.compare(b))
         .map((b) => b.defaultName),
-      [bookmark1, bookmark2, bookmark3, bookmark4, bookmark5].map((b) => b.defaultName)
+      [bookmark1, bookmark2, bookmark3, bookmark4, bookmark5].map((b) => b.defaultName),
     );
   });
 
@@ -86,7 +86,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
       [bookmark4, bookmark1, bookmark3, bookmark2]
         .sort((a, b) => a.compare(b))
         .map((b) => b.defaultName),
-      [bookmark1, bookmark2, bookmark3, bookmark4].map((b) => b.defaultName)
+      [bookmark1, bookmark2, bookmark3, bookmark4].map((b) => b.defaultName),
     );
   });
 
@@ -100,7 +100,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
       [bookmark4, bookmark1, bookmark3, bookmark2]
         .sort((a, b) => a.compare(b))
         .map((b) => b.defaultName),
-      [bookmark1, bookmark2, bookmark3, bookmark4].map((b) => b.defaultName)
+      [bookmark1, bookmark2, bookmark3, bookmark4].map((b) => b.defaultName),
     );
   });
 

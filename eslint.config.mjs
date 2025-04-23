@@ -25,6 +25,7 @@ export default tseslint.config(
     rules: {
       'curly': 'warn',
       'no-trailing-spaces': 'error',
+      '@stylistic/comma-dangle': ["error", "always-multiline"],
       '@stylistic/quotes': ['error', 'single'],
       '@stylistic/semi': ['error', 'always'],
       '@typescript-eslint/naming-convention': [
