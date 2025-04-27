@@ -1,6 +1,7 @@
 # Change Log
 
 ## 0.4.14
+- Improve rendering of `Notes` in bookmark tooltips.
 - Fix: Bookmark markers do not render multiple times when edits occur.
 
 ## 0.4.13

@@ -57,7 +57,8 @@ export abstract class TreeItemProvider {
     if (overrides.tooltip) {
       treeItem.tooltip = overrides.tooltip;
     } else if (bookmark.notes) {
-      treeItem.tooltip = `${bookmark.uri.fsPath}\n\nNotes\n${bookmark.notes}`;
+      treeItem.tooltip = new vscode.MarkdownString(
+        `${bookmark.uri.fsPath}  \n**Notes:** `).appendText(bookmark.notes);
     }
     return treeItem;
   }
