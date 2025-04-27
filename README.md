@@ -130,3 +130,5 @@ You can also use the `Hide In-Editor Markers` and `Show In-Editor Markers` actio
 <p align="center">
   <img width="448" alt="image" src="https://user-images.githubusercontent.com/38414719/185772569-eebf133d-adfc-4ff2-9c20-9066508a3345.png">
 <p>
+
+You can add breakpoints to covered lines via the gutter's context menu when markers are visible.

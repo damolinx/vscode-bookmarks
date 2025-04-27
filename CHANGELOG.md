@@ -1,16 +1,19 @@
 # Change Log
 
 ## 0.4.14
-- Improve rendering of `Notes` in bookmark tooltips.
-- Fix: Bookmark markers do not render multiple times when edits occur.
+
+- Improve the rendering of `Notes` in bookmark tooltips.
+- Fix: Bookmark markers no longer render multiple times when edits occur.
 
 ## 0.4.13
+
 - Fix: Notebook bookmarks fail to open due to incorrect saved URI.
   - This fix is not retroactive as target cell information was never saved.
   - Cells use 0-based indexes.
 
 ## 0.4.12
-- Improve extension package:
+
+- Improve extension package.
   - Minifying makes it 21KB.
   - Exclude dev-only files.
 
