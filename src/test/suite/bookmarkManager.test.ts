@@ -18,8 +18,8 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   test('hasBookmarks: empty', async () => {
     const manager = createBookmarkManager([], []);
 
-    assert.strictEqual(manager.hasBookmarks('global'), false);
-    assert.strictEqual(manager.hasBookmarks('workspace'), false);
+    assert.strictEqual(manager.hasBookmarks({ kind: 'global' }), false);
+    assert.strictEqual(manager.hasBookmarks({ kind: 'workspace' }), false);
     assert.strictEqual(manager.hasBookmarks(), false);
   });
 
@@ -28,8 +28,8 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     const expectedWorkspace = ['file:///workspace/file1', 'file:///workspace/file2'];
 
     const manager = createBookmarkManager(expectedGlobal, expectedWorkspace);
-    assert.strictEqual(manager.hasBookmarks('global'), true);
-    assert.strictEqual(manager.hasBookmarks('workspace'), true);
+    assert.strictEqual(manager.hasBookmarks({ kind: 'global' }), true);
+    assert.strictEqual(manager.hasBookmarks({ kind: 'workspace' }), true);
     assert.strictEqual(manager.hasBookmarks(), true);
   });
 

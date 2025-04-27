@@ -158,14 +158,18 @@ export class BookmarkManager implements vscode.Disposable {
 
   /**
    * Checks if manager has bookmarks.
-   * @param kind Bookmark kind filter.
+   * @param filter Bookmark filter (always ignores `lineNumber`).
    */
-  public hasBookmarks(kind?: BookmarkKind): boolean {
-    const containers = kind
-      ? this.rootContainers.filter((c) => c.kind === kind)
+  public hasBookmarks(filter: Omit<BookmarkFilter, 'ignoreLineNumber'> = {}): boolean {
+    const containers = filter.kind
+      ? this.rootContainers.filter((c) => c.kind === filter.kind)
       : this.rootContainers;
-    return containers.some((c) => c.count);
+
+    return filter.uri
+      ? containers.some((c) => c.getItems().some((i) => i.matchesUri(filter.uri!, true)))
+      : containers.some((c) => c.count);
   }
+
 
   /**
    * Event raised when bookmarks are added.
