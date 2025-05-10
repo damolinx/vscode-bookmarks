@@ -1,6 +1,6 @@
 # Bookmarks extension
 
-The `Bookmarks` extension allows you to keep track of files and file locations. This allows you to leave breadcrumbs as you debug or navigate your code, or when saving all opened editors, it helps you to quickly switch between tasks.
+This extension helps you efficiently manage and track files or specific file locations within your projects, allowing you to leave breadcrumbs as you debug or navigate your code, or when saving all opened editors, it helps you to quickly switch between tasks.
 
 - Bookmarks can be saved per-workspace or be global.
 - Bookmarks can be organized using folders.
@@ -12,10 +12,9 @@ The `Bookmarks` extension allows you to keep track of files and file locations. 
 
 ## Bookmark
 
-A _bookmark_ is a reference to a document that is saved in the context of the current workspace (`Workspace`), or independent from it (`Global`). Absolute `URI`s are used as location descriptors, so any file system supported by VS Code can be bookmarked.
-The UI, however, will adjust how bookmarks are displayed, e.g., calculating a relative path based on the current workspace.
+A _bookmark_ is a reference to a specific location within a document. Bookmarks are grouped as `Workspace` (tied to the current workspace) or `Global` (independent of any workspace). They use absolute URIs to describe their locations, ensuring compatibility with any file system supported by VS Code. The UI dynamically adjusts how bookmarks are displayed, such as showing relative paths when applicable to the current workspace.
 
-A bookmark's identity is tied to its URL, which always includes a one-based line number fragment (e.g., `file://workspace/file.rb#L1`).
+A bookmark's identity is tied to its URL, which normally includes a one-based line number fragment (e.g., `file://workspace/file.rb#L1`).
 
 ## Bookmark Folders
 
@@ -25,15 +24,15 @@ The only constraint imposed by folders is that a given bookmark must be unique w
 
 ## Bookmarks View
 
-The `Bookmarks` View is the main UI component for this extension. Bookmarks are split into two categories:
+The **Bookmarks** View is the main UI component for this extension. Bookmarks are split into two categories:
 
-- `Global`: shows bookmarks that are always available, regardless of what the current workspace is.
-- `Workspace`: shows bookmarks associated with the currently open workspace, if any.
+- **Global**: shows bookmarks that are always available, regardless of what the current workspace is.
+- **Workspace**: shows bookmarks associated with the currently open workspace, if any.
 
 You can change the display mode of the tree:
 
-- `Name`: shows the file name and target line number. A path hint is shown as description.
-- `Path`: shows the file path relative to the currently open workspace. The associated line number is shown as description.
+- **Name**: shows the file name and target line number. A path hint is shown as description.
+- **Path**: shows the file path relative to the currently open workspace. The associated line number is shown as description.
 
 <p align="center">
   <img width="448" alt="image" src="https://user-images.githubusercontent.com/38414719/224102129-5dede300-3708-4e43-afab-9baf02f47084.png">
@@ -43,7 +42,7 @@ You can change the display mode of the tree:
 
 ### Commands
 
-There are two commands available to add a bookmark: `Bookmarks: Bookmark Editor (Global)` and `Bookmarks: Bookmark Editor (Workspace)`. Both work on the currently active editor and add a bookmark under the appropriate category.
+There are two commands available to add a bookmark: **Bookmarks: Bookmark Editor (Global)** and **Bookmarks: Bookmark Editor (Workspace)**. Both work on the currently active editor and add a bookmark under the appropriate category.
 When a bookmark is created via any of these commands, the current line information is captured.
 
 #### Programmatic access
@@ -54,18 +53,18 @@ Line information can be added by appending a fragment to the URI in the format: 
 
 ### Drag and Drop
 
-Editors can be dragged onto the tree, and they will be bookmarked. Additionally, it is also possible to drag items between categories to **move** them around.
+Editors can be dragged onto the tree, and they will be bookmarked. Additionally, it is also possible to drag items between categories to move them around.
 When a bookmark is created this way, the current line information is not captured.
 
 ### Tree
 
-There is a `+` button available on every category node (`Global`, `Workspace`) that bookmarks the currently active editor.
+There is a `+` button available on every category node (`Global`, `Workspace`) that bookmarks the location in the active editor.
 
 ## Removing One or All Bookmarks
 
 ### Commands
 
-There are two commands available: `Bookmarks: Remove All (Global)` and `Bookmarks: Remove All (Workspace)`.
+There are two commands available: **Bookmarks: Remove All (Global)** and **Bookmarks: Remove All (Workspace)**.
 
 #### Programmatic access
 
@@ -76,20 +75,20 @@ The following commands are available for other extensions to use:
 
 ### Tree
 
-There is an `X` button next to each bookmark, as well as one per category and one on the tree view header, that allow you to remove all bookmarks under the selected parent. Additionally, there is a `Remove All` action in the context menu for each of the category nodes.
+There is an `X` button on each bookmark node, as well as for each category and the tree view header. These buttons allow you to remove individual bookmarks, all bookmarks under a specific category, or all bookmarks in the tree view. Additionally, the context menu for each category node includes a **Remove All** action to clear all bookmarks within that category.
 
 ## Bookmark Properties
 
 ### Display Name
 
-Assigning a custom display name to a bookmark affects how it is presented in the UI. This can be used to provide a meaningful name, such as _Bug Location_.
+Assigning a custom display name to a bookmark affects how it is presented in the UI. This can be used to provide a meaningful name, such as "Bug Location".
 
 #### Context Menu
 
-In the `Display Name` context menu for a given bookmark, use:
+In the **Display Name** context menu for a given bookmark, use:
 
-- `Update…` to update the display name.
-- `Remove` to remove any custom display name.
+- **Update…** to modify the display name of the bookmark.
+- **Remove** to delete the custom display name and revert to the default.
 
 ### Line Number
 
@@ -97,9 +96,9 @@ Updating the line number helps keeping bookmarks in-sync with changes to their t
 
 #### Context Menu
 
-In the `Line Number` context menu for a given bookmark, use:
+In the **Line Number** context menu for a given bookmark, use:
 
-- `Update…` to update the line number.
+- **Update…** to update the line number.
 
 ### Notes
 
@@ -107,16 +106,16 @@ Attach text notes to a bookmark for reference. Text is displayed on the the book
 
 #### Context Menu
 
-In the `Notes` context menu for a given bookmark, use:
+In the **Notes** context menu for a given bookmark, use:
 
-- `Update…` to update the display name.
-- `Remove` to remove any custom display name.
+- **Update…** to update the display name.
+- **Remove** to remove any custom display name.
 
 ## Navigation
 
 ### Commands
 
-There are two commands, `Bookmarks: Go to Next in Current Editor` and `Bookmarks: Go to Previous in Current Editor`, that can be used to jump between bookmarks set in the current editor.
+There are two commands, **Bookmarks: Go to Next in Current Editor** and **Bookmarks: Go to Previous in Current Editor**, that can be used to jump between bookmarks set in the current editor.
 
 #### Programmatic access
 
@@ -124,8 +123,8 @@ The following commands are available for other extensions to use: `bookmarks.nav
 
 ## Visualization
 
-Bookmarks are expected to be rendered as markers on the corresponding editor gutter. This is support via the `Bookmarks: Toggle In-Editor Markers` command but it is disabled by default due to [VSCode #5923](https://github.com/Microsoft/vscode/issues/5923) which causes these markers to cover the breakpoint ones (unacceptable experience).
-You can also use the `Hide In-Editor Markers` and `Show In-Editor Markers` actions in the `Bookmarks` view menu.
+Bookmarks are expected to be rendered as markers on the corresponding editor gutter. This is support via the **Bookmarks: Toggle In-Editor Markers** command but it is disabled by default due to [VSCode #5923](https://github.com/Microsoft/vscode/issues/5923) which causes these markers to cover the breakpoint ones (unacceptable experience).
+You can also use the **Hide In-Editor Markers** and **Show In-Editor Markers** actions in the **Bookmarks** view menu.
 
 <p align="center">
   <img width="448" alt="image" src="https://user-images.githubusercontent.com/38414719/185772569-eebf133d-adfc-4ff2-9c20-9066508a3345.png">
