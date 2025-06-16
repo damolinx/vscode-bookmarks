@@ -1,5 +1,8 @@
 # Change Log
 
+## 0.4.15
+- Upgrade minimum VS Code version to 1.99
+
 ## 0.4.14
 
 - Improve the rendering of `Notes` in bookmark tooltips.

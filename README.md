@@ -1,4 +1,4 @@
-# Bookmarks extension
+# Bookmarks for VS Code
 
 This extension helps you efficiently manage and track files or specific file locations within your projects, allowing you to leave breadcrumbs as you debug or navigate your code, or when saving all opened editors, it helps you to quickly switch between tasks.
 
