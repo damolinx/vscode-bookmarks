@@ -1,7 +1,7 @@
 # Change Log
 
 ## 0.4.15
-- Upgrade minimum VS Code version to 1.99
+- Upgrade minimum VS Code version to 1.96.
 
 ## 0.4.14
 
