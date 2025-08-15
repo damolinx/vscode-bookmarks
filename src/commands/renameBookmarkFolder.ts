@@ -22,8 +22,7 @@ export async function renameBookmarkFolderAsync(
         return 'Name cannot be empty';
       } else if (normalized === folder.displayName) {
         return 'Name cannot be the current name';
-      }
-      else if (
+      } else if (
         parent
           .getItems()
           .some((i) => i instanceof BookmarkContainer && i.displayName === normalized)

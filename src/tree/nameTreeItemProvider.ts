@@ -16,9 +16,7 @@ export class NameTreeItemProvider extends TreeItemProvider {
       };
     } else {
       treeItemOverrides = {
-        description: `…${path.sep}${path.join(
-          ...bookmarkPath.split(path.sep).splice(-3, 2),
-        )}`,
+        description: `…${path.sep}${path.join(...bookmarkPath.split(path.sep).splice(-3, 2))}`,
         label: `${path.basename(bookmarkPath)}:${bookmark.lineNumber}`,
       };
     }
@@ -27,12 +25,10 @@ export class NameTreeItemProvider extends TreeItemProvider {
 
   protected compareBookmarks(a: Bookmark, b: Bookmark): number {
     const a1 =
-      a.metadata[BOOKMARK_DISPLAY_NAME_KEY] as string | undefined ||
-      path.basename(a.uri.fsPath);
+      (a.metadata[BOOKMARK_DISPLAY_NAME_KEY] as string | undefined) || path.basename(a.uri.fsPath);
     const a2 = a1 || a.uri.fsPath;
     const b1 =
-      b.metadata[BOOKMARK_DISPLAY_NAME_KEY] as string | undefined ||
-      path.basename(b.uri.fsPath);
+      (b.metadata[BOOKMARK_DISPLAY_NAME_KEY] as string | undefined) || path.basename(b.uri.fsPath);
     const b2 = b1 || b.uri.fsPath;
 
     return (

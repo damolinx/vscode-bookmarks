@@ -1,13 +1,12 @@
 import * as vscode from 'vscode';
 import * as assert from 'assert';
 import { basename } from 'path';
-
+import { CONTAINER_SCHEME, Datastore, RawDatastore } from '../../../datastore/datastore';
 import {
   CONTAINER_METADATA_KEY,
   MetadataDatastore,
   RawMetadata,
 } from '../../../datastore/metadataDatastore';
-import { CONTAINER_SCHEME, Datastore, RawDatastore } from '../../../datastore/datastore';
 
 suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   let restorables: { restore: () => void }[];

@@ -18,8 +18,7 @@ export class PathTreeItemProvider extends TreeItemProvider {
       treeItemOverrides = {
         description: `${bookmark.lineMoniker} ${bookmark.lineNumber}`,
         label:
-          bookmark.defaultName !== bookmarkPath ||
-            vscode.workspace.workspaceFolders?.length !== 1
+          bookmark.defaultName !== bookmarkPath || vscode.workspace.workspaceFolders?.length !== 1
             ? bookmark.defaultName
             : path.relative(vscode.workspace.workspaceFolders[0]!.uri.fsPath, bookmarkPath),
       };
@@ -28,12 +27,9 @@ export class PathTreeItemProvider extends TreeItemProvider {
   }
 
   protected compareBookmarks(a: Bookmark, b: Bookmark): number {
-    const a1 = a.metadata[BOOKMARK_DISPLAY_NAME_KEY] as string | undefined || a.uri.fsPath;
-    const b1 = b.metadata[BOOKMARK_DISPLAY_NAME_KEY] as string | undefined || b.uri.fsPath;
+    const a1 = (a.metadata[BOOKMARK_DISPLAY_NAME_KEY] as string | undefined) || a.uri.fsPath;
+    const b1 = (b.metadata[BOOKMARK_DISPLAY_NAME_KEY] as string | undefined) || b.uri.fsPath;
 
-    return (
-      a1.localeCompare(b1, undefined, { sensitivity: 'base' }) ||
-      a.lineNumber - b.lineNumber
-    );
+    return a1.localeCompare(b1, undefined, { sensitivity: 'base' }) || a.lineNumber - b.lineNumber;
   }
 }

@@ -1,13 +1,14 @@
 import * as vscode from 'vscode';
+import { existsSync, statSync } from 'fs';
+import { EOL } from 'os';
 import { Bookmark } from './bookmark';
 import { BookmarkContainer } from './bookmarkContainer';
 import { BookmarkManager } from './bookmarkManager';
 import { BookmarkTreeItem } from './bookmarkTreeProvider';
-import { existsSync, statSync } from 'fs';
-import { EOL } from 'os';
 
 export class BookmarkTreeDragAndDropController
-  implements vscode.TreeDragAndDropController<BookmarkTreeItem> {
+  implements vscode.TreeDragAndDropController<BookmarkTreeItem>
+{
   private readonly bookmarkManager: BookmarkManager;
   public readonly dropMimeTypes: readonly string[];
   public readonly dragMimeTypes: readonly string[];
@@ -21,10 +22,10 @@ export class BookmarkTreeDragAndDropController
   private getTargetContainer(target: BookmarkTreeItem | undefined) {
     return target instanceof BookmarkContainer
       ? target
-      : target?.container ??
-      this.bookmarkManager.getRootContainer(
-        vscode.workspace.workspaceFolders?.length ? 'workspace' : 'global',
-      );
+      : (target?.container ??
+          this.bookmarkManager.getRootContainer(
+            vscode.workspace.workspaceFolders?.length ? 'workspace' : 'global',
+          ));
   }
 
   public async handleDrag(
@@ -68,9 +69,7 @@ export class BookmarkTreeDragAndDropController
         .map((uriStr) => vscode.Uri.parse(uriStr, true))
         .filter(
           (uri) =>
-            uri.scheme !== 'file' ||
-            !existsSync(uri.fsPath) ||
-            statSync(uri.fsPath).isFile(),
+            uri.scheme !== 'file' || !existsSync(uri.fsPath) || statSync(uri.fsPath).isFile(),
         )
         .map((uri) => ({
           uri: uri.with({ fragment: 'L1' }),

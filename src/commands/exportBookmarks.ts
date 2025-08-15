@@ -1,7 +1,7 @@
 import { commands, window, workspace } from 'vscode';
 import { Bookmark, BookmarkKind } from '../bookmark';
-import { BookmarkManager } from '../bookmarkManager';
 import { BookmarkContainer } from '../bookmarkContainer';
+import { BookmarkManager } from '../bookmarkManager';
 import { CONTAINER_SCHEME } from '../datastore/datastore';
 
 export const EXPORT_VERSION = '0.1';

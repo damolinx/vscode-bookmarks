@@ -1,8 +1,8 @@
 import { TreeView } from 'vscode';
 import { Bookmark } from '../bookmark';
+import { BookmarkContainer } from '../bookmarkContainer';
 import { BookmarkManager } from '../bookmarkManager';
 import { BookmarkTreeItem } from '../bookmarkTreeProvider';
-import { BookmarkContainer } from '../bookmarkContainer';
 
 export async function removeBookmarkOrFolderAsync(
   manager: BookmarkManager,

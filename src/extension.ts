@@ -11,13 +11,13 @@ import { exportBookmarks } from './commands/exportBookmarks';
 import { importBookmarks } from './commands/importBookmarks';
 import { openFolderBookmarks } from './commands/openFolderBookmarks';
 import { removeBookmarkOrFolderAsync } from './commands/removeBookmarkOrFolder';
+import { renameBookmarkFolderAsync } from './commands/renameBookmarkFolder';
 import { resetRootContainersAsync } from './commands/resetRootContainer';
 import { search } from './commands/search';
 import { updateDisplayNameAsync } from './commands/updateDisplayName';
 import { updateLineNumberAsync } from './commands/updateLineNumber';
 import { updateNotesAsync } from './commands/updateNotes';
 import { EDITOR_SUPPORTED_CONTEXT_KEY, UNSUPPORTED_SCHEMES } from './constants';
-import { renameBookmarkFolderAsync } from './commands/renameBookmarkFolder';
 
 /**
  * Extension startup.
@@ -93,18 +93,15 @@ export async function activate(context: vscode.ExtensionContext) {
     ),
     vscode.commands.registerCommand(
       'bookmarks.editBookmark.displayName.update.tree',
-      (bookmark: Bookmark): Thenable<void> =>
-        updateDisplayNameAsync(manager, treeView, bookmark),
+      (bookmark: Bookmark): Thenable<void> => updateDisplayNameAsync(manager, treeView, bookmark),
     ),
     vscode.commands.registerCommand(
       'bookmarks.editBookmark.lineNumber.update.tree',
-      (bookmark: Bookmark): Thenable<void> =>
-        updateLineNumberAsync(manager, treeView, bookmark),
+      (bookmark: Bookmark): Thenable<void> => updateLineNumberAsync(manager, treeView, bookmark),
     ),
     vscode.commands.registerCommand(
       'bookmarks.editBookmark.notes.remove.tree',
-      (bookmark: Bookmark): Thenable<void> =>
-        updateNotesAsync(manager, treeView, bookmark, ''),
+      (bookmark: Bookmark): Thenable<void> => updateNotesAsync(manager, treeView, bookmark, ''),
     ),
     vscode.commands.registerCommand(
       'bookmarks.editBookmark.notes.update.tree',
@@ -112,8 +109,7 @@ export async function activate(context: vscode.ExtensionContext) {
     ),
     vscode.commands.registerCommand(
       'bookmarks.export.tree',
-      (container: BookmarkContainer): Thenable<void> =>
-        exportBookmarks(manager, container.kind),
+      (container: BookmarkContainer): Thenable<void> => exportBookmarks(manager, container.kind),
     ),
     vscode.commands.registerCommand(
       'bookmarks.import.tree',
@@ -127,13 +123,11 @@ export async function activate(context: vscode.ExtensionContext) {
     ),
     vscode.commands.registerCommand(
       'bookmarks.navigate.next.editor',
-      (pathOrUri?: string | vscode.Uri): Thenable<void> =>
-        navigateAsync(manager, true, pathOrUri),
+      (pathOrUri?: string | vscode.Uri): Thenable<void> => navigateAsync(manager, true, pathOrUri),
     ),
     vscode.commands.registerCommand(
       'bookmarks.navigate.previous.editor',
-      (pathOrUri?: string | vscode.Uri): Thenable<void> =>
-        navigateAsync(manager, false, pathOrUri),
+      (pathOrUri?: string | vscode.Uri): Thenable<void> => navigateAsync(manager, false, pathOrUri),
     ),
     vscode.commands.registerCommand(
       'bookmarks.openFolder.tree',
@@ -219,9 +213,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   // Track Renames
   context.subscriptions.push(
-    vscode.workspace.onDidRenameFiles((renames) =>
-      manager.renameBookmarks(...renames.files),
-    ),
+    vscode.workspace.onDidRenameFiles((renames) => manager.renameBookmarks(...renames.files)),
   );
 
   // Upgrade datastore, best effort
@@ -234,13 +226,8 @@ export async function activate(context: vscode.ExtensionContext) {
   }
 
   function updateStateForEditor(editor: vscode.TextEditor | undefined) {
-    const editorSupported =
-      !!editor && !UNSUPPORTED_SCHEMES.includes(editor.document.uri.scheme);
-    vscode.commands.executeCommand(
-      'setContext',
-      EDITOR_SUPPORTED_CONTEXT_KEY,
-      editorSupported,
-    );
+    const editorSupported = !!editor && !UNSUPPORTED_SCHEMES.includes(editor.document.uri.scheme);
+    vscode.commands.executeCommand('setContext', EDITOR_SUPPORTED_CONTEXT_KEY, editorSupported);
   }
 }
 
@@ -262,7 +249,9 @@ async function getMatchingBookmarksAsync(
     return; // No document to look at.
   }
 
-  const documentBookmarks = manager.getBookmarks().filter((b) => b.uri.path === uri?.path) as Bookmark[];
+  const documentBookmarks = manager
+    .getBookmarks()
+    .filter((b) => b.uri.path === uri?.path) as Bookmark[];
   if (documentBookmarks.length === 0) {
     return; // No bookmarks matching document.
   }
@@ -292,19 +281,14 @@ async function navigateAsync(
     }
   }
 
-  function getFilterPredicate(): (
-    editor: vscode.TextEditor,
-    bookmark: Bookmark,
-  ) => boolean {
+  function getFilterPredicate(): (editor: vscode.TextEditor, bookmark: Bookmark) => boolean {
     return next
       ? (editor, bookmark) => bookmark.lineNumber - 1 > editor.selection.start.line
       : (editor, bookmark) => bookmark.lineNumber - 1 < editor.selection.start.line;
   }
 
   function getSortPredicate(): (a: Bookmark, b: Bookmark) => number {
-    return next
-      ? (a, b) => a.lineNumber - b.lineNumber
-      : (a, b) => b.lineNumber - a.lineNumber;
+    return next ? (a, b) => a.lineNumber - b.lineNumber : (a, b) => b.lineNumber - a.lineNumber;
   }
 
   function selectBookmark(editor: vscode.TextEditor, bookmark: Bookmark) {

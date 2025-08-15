@@ -12,9 +12,7 @@ export abstract class TreeItemProvider {
 
   protected abstract getBookmarkOverrides(bookmark: Bookmark): TreeItemOverrides;
 
-  protected getBookmarkContainerOverrides(
-    _container: BookmarkContainer,
-  ): TreeItemOverrides {
+  protected getBookmarkContainerOverrides(_container: BookmarkContainer): TreeItemOverrides {
     return {};
   }
 
@@ -30,9 +28,7 @@ export abstract class TreeItemProvider {
 
   public getTreeItemForBookmark(bookmark: Bookmark): vscode.TreeItem {
     const overrides = this.getBookmarkOverrides(bookmark);
-    const treeItem: vscode.TreeItem = new vscode.TreeItem(
-      overrides.label || bookmark.defaultName,
-    );
+    const treeItem: vscode.TreeItem = new vscode.TreeItem(overrides.label || bookmark.defaultName);
 
     treeItem.command = {
       title: 'Open',
@@ -58,7 +54,8 @@ export abstract class TreeItemProvider {
       treeItem.tooltip = overrides.tooltip;
     } else if (bookmark.notes) {
       treeItem.tooltip = new vscode.MarkdownString(
-        `${bookmark.uri.fsPath}  \n**Notes:** `).appendText(bookmark.notes);
+        `${bookmark.uri.fsPath}  \n**Notes:** `,
+      ).appendText(bookmark.notes);
     }
     return treeItem;
   }
@@ -89,9 +86,7 @@ export abstract class TreeItemProvider {
     return treeItem;
   }
 
-  public sort(
-    elements: (Bookmark | BookmarkContainer)[],
-  ): (Bookmark | BookmarkContainer)[] {
+  public sort(elements: (Bookmark | BookmarkContainer)[]): (Bookmark | BookmarkContainer)[] {
     return elements.sort((a, b) => {
       const aIsContainer = a instanceof BookmarkContainer;
       const bIsContainer = b instanceof BookmarkContainer;

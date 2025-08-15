@@ -42,11 +42,7 @@ export class BookmarkManager implements vscode.Disposable {
   constructor(context: vscode.ExtensionContext) {
     this.rootContainers = [
       new BookmarkContainer('Global', 'global', new MementoDatastore(context.globalState)),
-      new BookmarkContainer(
-        'Workspace',
-        'workspace',
-        new MementoDatastore(context.workspaceState),
-      ),
+      new BookmarkContainer('Workspace', 'workspace', new MementoDatastore(context.workspaceState)),
     ];
     this.disposable = vscode.Disposable.from(
       (this.onDidAddBookmarkEmitter = new vscode.EventEmitter<
@@ -96,7 +92,10 @@ export class BookmarkManager implements vscode.Disposable {
    * Add a bookmark folder. If folder already exists, it will be returned instead.
    * If logic needs to know whether folder exists, use {@link addAsync}.
    */
-  public async addFolderAsync(parentOrKind: BookmarkContainer | BookmarkKind, name: string): Promise<BookmarkContainer> {
+  public async addFolderAsync(
+    parentOrKind: BookmarkContainer | BookmarkKind,
+    name: string,
+  ): Promise<BookmarkContainer> {
     const parent =
       parentOrKind instanceof BookmarkContainer
         ? parentOrKind
@@ -169,7 +168,6 @@ export class BookmarkManager implements vscode.Disposable {
       ? containers.some((c) => c.getItems().some((i) => i.matchesUri(filter.uri!, true)))
       : containers.some((c) => c.count);
   }
-
 
   /**
    * Event raised when bookmarks are added.
@@ -301,10 +299,7 @@ export class BookmarkManager implements vscode.Disposable {
       // end up updating/saving the same datastore for as many bookmarks as matched.
       return oldBookmarks.map((oldBookmark) => {
         const newBookmarkUri = newUri.with({ fragment: `L${oldBookmark.lineNumber}` });
-        return oldBookmark.container.datastore.replaceAsync(
-          oldBookmark.uri,
-          newBookmarkUri,
-        );
+        return oldBookmark.container.datastore.replaceAsync(oldBookmark.uri, newBookmarkUri);
       });
     });
 
@@ -317,7 +312,10 @@ export class BookmarkManager implements vscode.Disposable {
   /**
    * Rename a bookmark folder.
    */
-  public async renameBookmarkFolder(folder: BookmarkContainer, name: string): Promise<BookmarkContainer | undefined> {
+  public async renameBookmarkFolder(
+    folder: BookmarkContainer,
+    name: string,
+  ): Promise<BookmarkContainer | undefined> {
     const newFolder = await folder.renameAsync(name);
     if (newFolder) {
       this.onDidRemoveBookmarkEmitter.fire([folder]);

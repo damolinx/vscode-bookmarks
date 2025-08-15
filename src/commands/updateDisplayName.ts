@@ -13,10 +13,10 @@ export async function updateDisplayNameAsync(
     name !== undefined
       ? name
       : await window.showInputBox({
-        prompt: 'Provide a new bookmark display name (leave empty to reset)',
-        placeHolder: 'Enter a display name …',
-        value: bookmark.hasDisplayName ? bookmark.displayName : '',
-      });
+          prompt: 'Provide a new bookmark display name (leave empty to reset)',
+          placeHolder: 'Enter a display name …',
+          value: bookmark.hasDisplayName ? bookmark.displayName : '',
+        });
   if (targetName !== undefined) {
     const updatedBookmark = await manager.updateBookmarkAsync(bookmark, {
       displayName: targetName.trim(),

@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
 import * as assert from 'assert';
 import { basename } from 'path';
-
 import { Datastore, RawDatastore } from '../../../datastore/datastore';
 
 suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
@@ -222,10 +221,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
           [expectedUri2, expectedMetadata2],
         ]),
       setAsync: (state) => {
-        assert.deepStrictEqual(
-          state,
-          Object.fromEntries([[expectedUri2, expectedMetadata2]]),
-        );
+        assert.deepStrictEqual(state, Object.fromEntries([[expectedUri2, expectedMetadata2]]));
       },
     };
     const datastore = new Datastore(rawDatastore);
@@ -296,10 +292,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     const rawDatastore: RawDatastore = {
       get: () => Object.fromEntries([[expectedUri, expectedMetadata]]),
       setAsync: (state) => {
-        assert.deepStrictEqual(
-          state,
-          Object.fromEntries([[expectedNewUri, expectedMetadata]]),
-        );
+        assert.deepStrictEqual(state, Object.fromEntries([[expectedNewUri, expectedMetadata]]));
       },
     };
     const datastore = new Datastore(rawDatastore);

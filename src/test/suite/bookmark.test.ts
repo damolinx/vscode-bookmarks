@@ -1,6 +1,6 @@
+import { Uri } from 'vscode';
 import * as assert from 'assert';
 import { basename, normalize } from 'path';
-import { Uri } from 'vscode';
 import { Bookmark, DEFAULT_LINE_NUMBER } from '../../bookmark';
 import { BookmarkContainer } from '../../bookmarkContainer';
 import { createMockDatastore } from './datastore/common';

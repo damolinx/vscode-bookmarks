@@ -1,7 +1,7 @@
 import { commands, QuickPickItem, TreeView, window } from 'vscode';
-import { BookmarkTreeItem, BookmarkTreeProvider } from '../bookmarkTreeProvider';
-import { BookmarkContainer } from '../bookmarkContainer';
 import { Bookmark } from '../bookmark';
+import { BookmarkContainer } from '../bookmarkContainer';
+import { BookmarkTreeItem, BookmarkTreeProvider } from '../bookmarkTreeProvider';
 
 export async function search(
   treeProvider: BookmarkTreeProvider,

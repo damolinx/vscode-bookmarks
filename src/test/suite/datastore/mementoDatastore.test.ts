@@ -1,14 +1,13 @@
 import * as vscode from 'vscode';
 import * as assert from 'assert';
 import { basename } from 'path';
-
+import { CONTAINER_SCHEME } from '../../../datastore/datastore';
 import {
   MementoDatastore,
   V0_MEMENTO_KEY_NAME,
   V1StoreType,
   V1_MEMENTO_KEY_NAME,
 } from '../../../datastore/mementoDatastore';
-import { CONTAINER_SCHEME } from '../../../datastore/datastore';
 
 suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   let restorables: { restore: () => void }[];
@@ -37,7 +36,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
         }
         return defaultValue;
       },
-      /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+
       update(key: string, _value: any): Promise<void> {
         assert.fail(`Unexpected call, key: ${key}`);
         return Promise.reject();
@@ -70,7 +69,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
             assert.fail(`Unexpected key: ${key}`);
         }
       },
-      /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+
       async update(key: string, value: any): Promise<void> {
         switch (key) {
           case V0_MEMENTO_KEY_NAME:
@@ -121,7 +120,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
             assert.fail(`Unexpected key: ${key}`);
         }
       },
-      /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+
       async update(key: string, value: any): Promise<void> {
         switch (key) {
           case V0_MEMENTO_KEY_NAME:

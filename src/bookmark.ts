@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
-import { RawMetadata } from './datastore/datastore';
 import { BookmarkContainer } from './bookmarkContainer';
+import { RawMetadata } from './datastore/datastore';
 
 export const BOOKMARK_DISPLAY_NAME_KEY = 'displayName';
 export const BOOKMARK_NOTES_KEY = 'notes';
@@ -105,7 +105,7 @@ export class Bookmark {
    * Get the bookmark name to use in UI elements.
    */
   public get displayName(): string {
-    return this.metadata[BOOKMARK_DISPLAY_NAME_KEY] as string | undefined || this.defaultName;
+    return (this.metadata[BOOKMARK_DISPLAY_NAME_KEY] as string | undefined) || this.defaultName;
   }
 
   /**

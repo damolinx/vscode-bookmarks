@@ -58,24 +58,16 @@ export class BookmarkDecoratorController implements vscode.Disposable {
       vscode.workspace.onDidChangeTextDocument((event) => {
         // TODO: this can be optimzed to track lines changed, but more
         // importantly would be to add "auto-update" of bookmarks.
-        const editor = vscode.window.visibleTextEditors.find((e) =>
-          event.document === e.document,
-        );
+        const editor = vscode.window.visibleTextEditors.find((e) => event.document === e.document);
         if (editor) {
           showDecorations(this.manager, [editor]);
         }
       }),
       this.manager.onDidAddBookmark((items) =>
-        refreshDecorations(
-          this.manager,
-          (items?.filter((i) => i instanceof Bookmark) as Bookmark[]),
-        ),
+        refreshDecorations(this.manager, items?.filter((i) => i instanceof Bookmark) as Bookmark[]),
       ),
       this.manager.onDidRemoveBookmark((items) =>
-        refreshDecorations(
-          this.manager,
-          (items?.filter((i) => i instanceof Bookmark) as Bookmark[]),
-        ),
+        refreshDecorations(this.manager, items?.filter((i) => i instanceof Bookmark) as Bookmark[]),
       ),
     );
     refreshDecorations(this.manager);

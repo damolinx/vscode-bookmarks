@@ -11,11 +11,7 @@ export class BookmarkContainer {
   public readonly container?: BookmarkContainer;
   public readonly uri: vscode.Uri;
 
-  constructor(
-    name: string,
-    kindOrParent: BookmarkKind | BookmarkContainer,
-    datastore: Datastore,
-  ) {
+  constructor(name: string, kindOrParent: BookmarkKind | BookmarkContainer, datastore: Datastore) {
     this.datastore = datastore;
     this.displayName = name;
     if (kindOrParent instanceof BookmarkContainer) {
@@ -130,12 +126,12 @@ export class BookmarkContainer {
   ): Promise<TItem | undefined> {
     let result: TItem | undefined;
     if (item instanceof Bookmark) {
-      [result] = await parent.addAsync(item) as (TItem | undefined)[];
+      [result] = (await parent.addAsync(item)) as (TItem | undefined)[];
     } else {
       const uri = BookmarkContainer.createUriForName(item.displayName, parent);
       const metadata =
         item.datastore instanceof MetadataDatastore ? item.datastore.rawStore.metadata : {};
-      [result] = await parent.addAsync({ uri, metadata }) as TItem[];
+      [result] = (await parent.addAsync({ uri, metadata })) as TItem[];
       if (result) {
         const state = item.datastore.rawStore.get();
         if (state) {
@@ -173,11 +169,11 @@ export class BookmarkContainer {
   }
 
   /**
- * Rename container.
- * @param name New name.
- * @returns Updated {@link BookmarkContainer} instance. If this is {@link isRoot} or `name`
- * is same the same as {@link displayName}, returns `undefined`.
- */
+   * Rename container.
+   * @param name New name.
+   * @returns Updated {@link BookmarkContainer} instance. If this is {@link isRoot} or `name`
+   * is same the same as {@link displayName}, returns `undefined`.
+   */
   public async renameAsync(name: string): Promise<BookmarkContainer | undefined> {
     if (this.isRoot || this.displayName === name) {
       return;
@@ -186,7 +182,7 @@ export class BookmarkContainer {
     const newUri = BookmarkContainer.createUriForName(name, parent);
     const rawStore = (this.datastore as MetadataDatastore).rawStore;
     const metadata = rawStore.metadata;
-    const [newItem] = await parent.addAsync({ uri: newUri, metadata }) as BookmarkContainer[];
+    const [newItem] = (await parent.addAsync({ uri: newUri, metadata })) as BookmarkContainer[];
     if (newItem) {
       const state = rawStore.get();
       if (state) {
@@ -210,7 +206,7 @@ export class BookmarkContainer {
         const newUri = parentUri.with({
           path: [parentUri.path, basename(key)].join('/'),
         });
-        this.updateContainerState((value as RawData), newUri);
+        this.updateContainerState(value as RawData, newUri);
         state[newUri.toString(true)] = value;
       }
     }

@@ -9,12 +9,16 @@ export const CONTAINER_SCHEME = 'container';
  * Metadata format (used from v0.3.0).
  * - {@link RawData} was added after v0.3.3 to support nesting.
  */
-export interface RawMetadata { [key: string]: string | RawData | undefined }
+export interface RawMetadata {
+  [key: string]: string | RawData | undefined;
+}
 
 /**
  * Data format (used from v0.3.1).
  */
-export interface RawData { [uri: string]: RawMetadata | undefined }
+export interface RawData {
+  [uri: string]: RawMetadata | undefined;
+}
 
 /**
  * Basic datastore for {@link RawData} data.
@@ -148,10 +152,7 @@ export class Datastore<TStore extends RawDatastore = RawDatastore> {
    * @param newUri Target URI.
    * @returns Metadata that was associated with `replaceUri`, if `uri` was found.
    */
-  public async replaceAsync(
-    uri: vscode.Uri,
-    newUri: vscode.Uri,
-  ): Promise<RawMetadata | undefined> {
+  public async replaceAsync(uri: vscode.Uri, newUri: vscode.Uri): Promise<RawMetadata | undefined> {
     const existingEntries = this.getAll();
     const uriStr = uri.toString();
     const metadata = existingEntries[uriStr];

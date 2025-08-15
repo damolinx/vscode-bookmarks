@@ -1,11 +1,10 @@
 import * as vscode from 'vscode';
 import * as assert from 'assert';
 import { basename } from 'path';
-
-import { createMockDatastore } from './datastore/common';
 import { BookmarkKind } from '../../bookmark';
 import { BookmarkContainer } from '../../bookmarkContainer';
 import { CONTAINER_SCHEME } from '../../datastore/datastore';
+import { createMockDatastore } from './datastore/common';
 
 suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   let restorables: { restore: () => void }[];
@@ -58,22 +57,24 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
   test('createUriForName', () => {
     const expectedGrandparentName = 'grandParent';
     const expectedParentName = 'parent';
-    const grandParent = new BookmarkContainer(expectedGrandparentName, 'global', createMockDatastore());
-    const parent = new BookmarkContainer(
-      expectedParentName,
-      grandParent,
+    const grandParent = new BookmarkContainer(
+      expectedGrandparentName,
+      'global',
       createMockDatastore(),
     );
-    ['container', 'container/*', 'container/unsafe', 'container/unsafer/%2A'].forEach((expectedName) => {
-      assert.strictEqual(
-        BookmarkContainer.createUriForName(expectedName).toString(true),
-        `${CONTAINER_SCHEME}:${encodeURIComponent(expectedName)}`,
-      );
-      assert.strictEqual(
-        BookmarkContainer.createUriForName(expectedName, parent).toString(true),
-        `${CONTAINER_SCHEME}:${expectedGrandparentName}/${expectedParentName}/${encodeURIComponent(expectedName)}`,
-      );
-    });
+    const parent = new BookmarkContainer(expectedParentName, grandParent, createMockDatastore());
+    ['container', 'container/*', 'container/unsafe', 'container/unsafer/%2A'].forEach(
+      (expectedName) => {
+        assert.strictEqual(
+          BookmarkContainer.createUriForName(expectedName).toString(true),
+          `${CONTAINER_SCHEME}:${encodeURIComponent(expectedName)}`,
+        );
+        assert.strictEqual(
+          BookmarkContainer.createUriForName(expectedName, parent).toString(true),
+          `${CONTAINER_SCHEME}:${expectedGrandparentName}/${expectedParentName}/${encodeURIComponent(expectedName)}`,
+        );
+      },
+    );
   });
 
   test('createUriForName: unsafe', () => {
@@ -109,14 +110,12 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
 
   test('displayName', () => {
     const datastore = createMockDatastore();
-    ['container', 'container/*', 'container/unsafe', 'container/unsafer/%2A'].forEach((expectedName) => {
-      const container = new BookmarkContainer(
-        expectedName,
-        'global',
-        datastore,
-      );
-      assert.strictEqual(container.displayName, expectedName);
-    });
+    ['container', 'container/*', 'container/unsafe', 'container/unsafer/%2A'].forEach(
+      (expectedName) => {
+        const container = new BookmarkContainer(expectedName, 'global', datastore);
+        assert.strictEqual(container.displayName, expectedName);
+      },
+    );
   });
 
   test('getItem', () => {
@@ -198,11 +197,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
       containerRoot,
       createMockDatastore(...expectedUris),
     );
-    const containerB = new BookmarkContainer(
-      'FolderB',
-      containerRoot,
-      createMockDatastore(),
-    );
+    const containerB = new BookmarkContainer('FolderB', containerRoot, createMockDatastore());
 
     const movedItem = await containerRoot.moveAsync(containerA, containerB);
     assert.ok(movedItem);

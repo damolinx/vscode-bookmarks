@@ -1,12 +1,6 @@
 import * as vscode from 'vscode';
 import * as process from 'process';
-import {
-  CONTAINER_SCHEME,
-  Datastore,
-  RawMetadata,
-  RawDatastore,
-  RawData,
-} from './datastore';
+import { CONTAINER_SCHEME, Datastore, RawMetadata, RawDatastore, RawData } from './datastore';
 
 export { RawMetadata } from './datastore';
 

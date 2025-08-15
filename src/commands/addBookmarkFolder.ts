@@ -51,10 +51,7 @@ export async function addBookmarkFolderAsync(
   }
 }
 
-async function addOpenEditors(
-  manager: BookmarkManager,
-  folder: BookmarkContainer,
-): Promise<void> {
+async function addOpenEditors(manager: BookmarkManager, folder: BookmarkContainer): Promise<void> {
   const tabUris = window.tabGroups.activeTabGroup.tabs
     .filter((t) => t.input instanceof TabInputText)
     .map((t) => (t.input as TabInputText).uri)

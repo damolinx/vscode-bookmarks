@@ -1,7 +1,6 @@
 import * as vscode from 'vscode';
 import * as assert from 'assert';
 import { basename } from 'path';
-
 import { Bookmark } from '../../bookmark';
 import { BookmarkManager } from '../../bookmarkManager';
 import { V1_MEMENTO_KEY_NAME } from '../../datastore/mementoDatastore';
@@ -48,21 +47,13 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     const globalContainer = manager.getRootContainer('global');
     const workspaceContainer = manager.getRootContainer('workspace');
 
-    const expectedGlobalBookmarks = expectedGlobal.map(
-      (s) => new Bookmark(globalContainer, s),
-    );
+    const expectedGlobalBookmarks = expectedGlobal.map((s) => new Bookmark(globalContainer, s));
     const expectedWorkspaceBookmarks = expectedWorkspace.map(
       (s) => new Bookmark(workspaceContainer, s),
     );
 
-    assert.deepStrictEqual(
-      manager.getBookmarks({ kind: 'global' }),
-      expectedGlobalBookmarks,
-    );
-    assert.deepStrictEqual(
-      manager.getBookmarks({ kind: 'workspace' }),
-      expectedWorkspaceBookmarks,
-    );
+    assert.deepStrictEqual(manager.getBookmarks({ kind: 'global' }), expectedGlobalBookmarks);
+    assert.deepStrictEqual(manager.getBookmarks({ kind: 'workspace' }), expectedWorkspaceBookmarks);
     assert.deepStrictEqual(
       manager.getBookmarks(),
       expectedGlobalBookmarks.concat(expectedWorkspaceBookmarks),
@@ -77,9 +68,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     const globalContainer = manager.getRootContainer('global');
     const workspaceContainer = manager.getRootContainer('workspace');
 
-    const expectedGlobalBookmarks = expectedGlobal.map(
-      (s) => new Bookmark(globalContainer, s),
-    );
+    const expectedGlobalBookmarks = expectedGlobal.map((s) => new Bookmark(globalContainer, s));
     const expectedWorkspaceBookmarks = expectedWorkspace.map(
       (s) => new Bookmark(workspaceContainer, s),
     );
@@ -87,10 +76,9 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     assert.deepStrictEqual(manager.getBookmarks({ uri: expectedGlobalBookmarks[0].uri }), [
       expectedGlobalBookmarks[0],
     ]);
-    assert.deepStrictEqual(
-      manager.getBookmarks({ uri: expectedWorkspaceBookmarks[1].uri }),
-      [expectedWorkspaceBookmarks[1]],
-    );
+    assert.deepStrictEqual(manager.getBookmarks({ uri: expectedWorkspaceBookmarks[1].uri }), [
+      expectedWorkspaceBookmarks[1],
+    ]);
     assert.deepStrictEqual(manager.getBookmarks({ uri: expectedGlobalBookmarks[1].uri }), [
       expectedGlobalBookmarks[1],
       expectedWorkspaceBookmarks[0],
@@ -105,9 +93,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     const globalContainer = manager.getRootContainer('global');
     const workspaceContainer = manager.getRootContainer('workspace');
 
-    const expectedGlobalBookmarks = expectedGlobal.map(
-      (s) => new Bookmark(globalContainer, s),
-    );
+    const expectedGlobalBookmarks = expectedGlobal.map((s) => new Bookmark(globalContainer, s));
     const expectedWorkspaceBookmarks = expectedWorkspace.map(
       (s) => new Bookmark(workspaceContainer, s),
     );
@@ -136,9 +122,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     const manager = createBookmarkManager(expectedGlobal, expectedWorkspace);
     const globalContainer = manager.getRootContainer('global');
     const workspaceContainer = manager.getRootContainer('workspace');
-    const expectedGlobalBookmarks = expectedGlobal.map(
-      (s) => new Bookmark(globalContainer, s),
-    );
+    const expectedGlobalBookmarks = expectedGlobal.map((s) => new Bookmark(globalContainer, s));
     const expectedWorkspaceBookmarks = expectedWorkspace.map(
       (s) => new Bookmark(workspaceContainer, s),
     );
@@ -165,10 +149,10 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
 });
 
 function createBookmarkManager(expectedGlobal: string[], expectedWorkspace: string[]) {
-  return new BookmarkManager(({
+  return new BookmarkManager({
     globalState: createMockMemento(...expectedGlobal),
     workspaceState: createMockMemento(...expectedWorkspace),
-  } as vscode.ExtensionContext));
+  } as vscode.ExtensionContext);
 }
 
 export function createMockMemento(...uris: string[]): vscode.Memento {
@@ -181,7 +165,7 @@ export function createMockMemento(...uris: string[]): vscode.Memento {
       assert.strictEqual(key, V1_MEMENTO_KEY_NAME);
       return store ?? defaultValue;
     },
-    /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+
     update(key: string, value: any): Promise<void> {
       assert.strictEqual(key, V1_MEMENTO_KEY_NAME);
       store = value;

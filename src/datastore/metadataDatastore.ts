@@ -1,11 +1,5 @@
 import * as vscode from 'vscode';
-import {
-  CONTAINER_SCHEME,
-  Datastore,
-  RawMetadata,
-  RawDatastore,
-  RawData,
-} from './datastore';
+import { CONTAINER_SCHEME, Datastore, RawMetadata, RawDatastore, RawData } from './datastore';
 
 export { RawMetadata } from './datastore';
 
@@ -132,10 +126,7 @@ export class MetadataDatastore extends Datastore<MetadataRawDatastore> {
    * @param newUri Target URI.
    * @returns Metadata that was associated with `replaceUri`, if `uri` was found.
    */
-  public async replaceAsync(
-    uri: vscode.Uri,
-    newUri: vscode.Uri,
-  ): Promise<RawMetadata | undefined> {
+  public async replaceAsync(uri: vscode.Uri, newUri: vscode.Uri): Promise<RawMetadata | undefined> {
     const replacedMetadata = await super.replaceAsync(uri, newUri);
     if (replacedMetadata) {
       await this.parent.addAsync(

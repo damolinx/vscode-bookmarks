@@ -27,11 +27,7 @@ export async function updateLineNumberAsync(
     value: bookmark.lineNumber.toString(),
     validateInput: (value) => {
       const n = Number(value);
-      if (
-        !Number.isInteger(n) ||
-        n < 1 ||
-        (maxLineNumber !== undefined && n > maxLineNumber)
-      ) {
+      if (!Number.isInteger(n) || n < 1 || (maxLineNumber !== undefined && n > maxLineNumber)) {
         return maxLineNumber
           ? `Line number must be an integer value between 1 and ${maxLineNumber}`
           : 'Line number must be an integer value equal or greater than 1';
