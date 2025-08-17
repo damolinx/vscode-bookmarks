@@ -6,7 +6,8 @@ import { BookmarkManager } from './bookmarkManager';
 import { BookmarkTreeItem } from './bookmarkTreeProvider';
 
 export class BookmarkTreeDragAndDropController
-  implements vscode.TreeDragAndDropController<BookmarkTreeItem> {
+  implements vscode.TreeDragAndDropController<BookmarkTreeItem>
+{
   private readonly bookmarkManager: BookmarkManager;
   public readonly dropMimeTypes: readonly string[];
   public readonly dragMimeTypes: readonly string[];
@@ -21,9 +22,9 @@ export class BookmarkTreeDragAndDropController
     return target instanceof BookmarkContainer
       ? target
       : (target?.container ??
-        this.bookmarkManager.getRootContainer(
-          vscode.workspace.workspaceFolders?.length ? 'workspace' : 'global',
-        ));
+          this.bookmarkManager.getRootContainer(
+            vscode.workspace.workspaceFolders?.length ? 'workspace' : 'global',
+          ));
   }
 
   public async handleDrag(
