@@ -1,14 +1,12 @@
 import * as vscode from 'vscode';
 import { existsSync, statSync } from 'fs';
-import { EOL } from 'os';
 import { Bookmark } from './bookmark';
 import { BookmarkContainer } from './bookmarkContainer';
 import { BookmarkManager } from './bookmarkManager';
 import { BookmarkTreeItem } from './bookmarkTreeProvider';
 
 export class BookmarkTreeDragAndDropController
-  implements vscode.TreeDragAndDropController<BookmarkTreeItem>
-{
+  implements vscode.TreeDragAndDropController<BookmarkTreeItem> {
   private readonly bookmarkManager: BookmarkManager;
   public readonly dropMimeTypes: readonly string[];
   public readonly dragMimeTypes: readonly string[];
@@ -23,9 +21,9 @@ export class BookmarkTreeDragAndDropController
     return target instanceof BookmarkContainer
       ? target
       : (target?.container ??
-          this.bookmarkManager.getRootContainer(
-            vscode.workspace.workspaceFolders?.length ? 'workspace' : 'global',
-          ));
+        this.bookmarkManager.getRootContainer(
+          vscode.workspace.workspaceFolders?.length ? 'workspace' : 'global',
+        ));
   }
 
   public async handleDrag(
@@ -65,7 +63,7 @@ export class BookmarkTreeDragAndDropController
     item = dataTransfer.get('text/uri-list');
     if (item) {
       const uris = (await item.asString())
-        .split(EOL)
+        .split('\r\n')
         .map((uriStr) => vscode.Uri.parse(uriStr, true))
         .filter(
           (uri) =>
