@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { BookmarkContainer } from './bookmarkContainer';
 import { RawMetadata } from './datastore/datastore';
+import { NaturalComparer } from './tree/treeUtils';
 
 export const BOOKMARK_DISPLAY_NAME_KEY = 'displayName';
 export const BOOKMARK_NOTES_KEY = 'notes';
@@ -74,7 +75,7 @@ export class Bookmark {
    */
   public compare(that: Bookmark) {
     if (this.kind !== that.kind) {
-      return this.kind.localeCompare(that.kind);
+      return NaturalComparer.compare(this.kind, that.kind);
     }
 
     const thisA = this.displayName;
@@ -84,8 +85,8 @@ export class Bookmark {
     const thatB = '';
 
     return (
-      thisA.localeCompare(thatA, undefined) ||
-      thisB.localeCompare(thatB, undefined, { sensitivity: 'base' }) ||
+      NaturalComparer.compare(thisA, thatA) ||
+      NaturalComparer.compare(thisB, thatB) ||
       this.lineNumber - that.lineNumber
     );
   }

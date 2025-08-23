@@ -4,6 +4,8 @@ import { TreeItemProvider } from './treeItemProvider';
 
 export type TreeViewKind = 'name' | 'path';
 
+export const NaturalComparer = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
+
 export function createTreeProvider(kind: TreeViewKind): TreeItemProvider {
   switch (kind) {
     case 'name':

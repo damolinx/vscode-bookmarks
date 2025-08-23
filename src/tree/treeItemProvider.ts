@@ -1,6 +1,7 @@
 import * as vscode from 'vscode';
 import { Bookmark } from '../bookmark';
 import { BookmarkContainer } from '../bookmarkContainer';
+import { NaturalComparer } from './treeUtils';
 
 export type TreeItemOverrides = Pick<
   vscode.TreeItem,
@@ -92,9 +93,7 @@ export abstract class TreeItemProvider {
       const bIsContainer = b instanceof BookmarkContainer;
       let order: number;
       if (aIsContainer && bIsContainer) {
-        return a.displayName.localeCompare(b.displayName, undefined, {
-          sensitivity: 'base',
-        });
+        return NaturalComparer.compare(a.displayName, b.displayName);
       } else if (aIsContainer) {
         order = -1;
       } else if (bIsContainer) {
