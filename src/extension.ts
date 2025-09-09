@@ -29,6 +29,7 @@ export async function activate(context: vscode.ExtensionContext) {
   const treeProvider = new BookmarkTreeProvider(context, manager);
   const treeView = vscode.window.createTreeView('bookmarks', {
     dragAndDropController: new BookmarkTreeDragAndDropController(manager),
+    showCollapseAll: true,
     treeDataProvider: treeProvider,
   });
 
