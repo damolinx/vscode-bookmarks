@@ -2,6 +2,7 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import { Bookmark, BOOKMARK_DISPLAY_NAME_KEY } from '../bookmark';
 import { TreeItemOverrides, TreeItemProvider } from './treeItemProvider';
+import { NaturalComparer } from './treeUtils';
 
 export class NameTreeItemProvider extends TreeItemProvider {
   protected getBookmarkOverrides(bookmark: Bookmark): TreeItemOverrides {
@@ -32,8 +33,8 @@ export class NameTreeItemProvider extends TreeItemProvider {
     const b2 = b1 || b.uri.fsPath;
 
     return (
-      a1.localeCompare(b1, undefined, { sensitivity: 'base' }) ||
-      a2.localeCompare(b2, undefined, { sensitivity: 'base' }) ||
+      NaturalComparer.compare(a1, b1) ||
+      NaturalComparer.compare(a2, b2) ||
       a.lineNumber - b.lineNumber
     );
   }
