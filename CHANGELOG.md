@@ -2,6 +2,7 @@
 
 ## 0.4.16
 
+- New icon.
 - Upgrade minimum VS Code version to 1.99.
 - **Bookmarks** view
   - Move **Search…** action to title bar. 
