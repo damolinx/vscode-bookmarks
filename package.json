@@ -2,7 +2,7 @@
   "name": "damolinx-bookmarks",
   "displayName": "Bookmarks for VS Code",
   "description": "Create annotated file bookmarks, scoped globally or to individual workspaces — perfect for keeping track of key file locations across your projects.",
-  "version": "0.4.16",
+  "version": "0.4.17",
   "publisher": "damolinx",
   "icon": "resources/images/icon.png",
   "repository": {
