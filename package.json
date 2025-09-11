@@ -1,7 +1,7 @@
 {
   "name": "damolinx-bookmarks",
   "displayName": "Bookmarks for VS Code",
-  "description": "Bookmarks is a VS Code extension that allows to create global and per-workspace file bookmarks.",
+  "description": "Create annotated file bookmarks, scoped globally or to individual workspaces — perfect for keeping track of key file locations across your projects.",
   "version": "0.4.16",
   "publisher": "damolinx",
   "icon": "resources/images/icon.png",
@@ -20,7 +20,10 @@
   ],
   "keywords": [
     "bookmark",
-    "bookmarks"
+    "bookmarks",
+    "file navigation",
+    "workspace",
+    "annotations"
   ],
   "extensionKind": [
     "ui",
@@ -40,6 +43,7 @@
       {
         "command": "bookmarks.addBookmark.tree",
         "title": "Bookmark Current Editor Line",
+        "category": "Bookmarks",
         "icon": "$(add)",
         "enablement": "bookmarks.editorSupported"
       },
@@ -53,6 +57,7 @@
       {
         "command": "bookmarks.addBookmarkFolder.tree",
         "title": "New Folder…",
+        "category": "Bookmarks",
         "icon": "$(new-folder)"
       },
       {
@@ -65,6 +70,7 @@
       {
         "command": "bookmarks.addBookmarkFolder.allOpen.tree",
         "title": "New Folder with Open Editors…",
+        "category": "Bookmarks",
         "icon": "$(new-folder)",
         "enablement": "editorIsOpen"
       },
@@ -224,16 +230,10 @@
       {
         "title": "Bookmarks",
         "properties": {
-          "bookmarks.showByDefault": {
-            "type": "boolean",
-            "default": false,
-            "description": "Controls whether bookmark markers are rendered by default at startup.",
-            "scope": "application"
-          },
           "bookmarks.marker.showByDefault": {
             "type": "boolean",
             "default": false,
-            "description": "Controls whether bookmark markers are rendered by default at startup.",
+            "description": "Render bookmark markers are displayed in editors.",
             "scope": "application"
           }
         }
