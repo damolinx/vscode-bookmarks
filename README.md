@@ -1,10 +1,10 @@
 # Bookmarks for VS Code
 
-This extension helps you efficiently manage and track files or specific file locations within your projects, allowing you to leave breadcrumbs as you debug or navigate your code, or when saving all opened editors, it helps you to quickly switch between tasks.
+This extension helps you efficiently manage and track files or specific locations within your projects. Use it to leave breadcrumbs while debugging, navigate your code more easily, or quickly switch between tasks by bookmarking all currently open editors.
 
-- Bookmarks can be saved per-workspace or be global.
-- Bookmarks can be organized using folders.
-- Bookmarks can be managed via commands, and UI controls and gestures (e.g. drag-and-drop).
+- Save bookmarks globally or per workspace.
+- Organize bookmarks into folders.
+- Manage bookmarks via commands, UI controls, and gestures (e.g. drag-and-drop).
 
 <p align="center">
   <img width="520" alt="image" src="https://user-images.githubusercontent.com/38414719/168446287-e57f5fb4-fdf8-4fd7-bf00-6707743c0f3d.png">
@@ -102,14 +102,14 @@ In the **Line Number** context menu for a given bookmark, use:
 
 ### Notes
 
-Attach text notes to a bookmark for reference. Text is displayed on the the bookmark's tooltip.
+Attach text notes to a bookmark for reference. Notes appear in the bookmark’s tooltip.
 
 #### Context Menu
 
 In the **Notes** context menu for a given bookmark, use:
 
-- **Update…** to update the display name.
-- **Remove** to remove any custom display name.
+- **Update…** to modify the note text.
+- **Remove** to delete the note.
 
 ## Navigation
 
@@ -123,7 +123,7 @@ The following commands are available for other extensions to use: `bookmarks.nav
 
 ## Visualization
 
-Bookmarks are expected to be rendered as markers on the corresponding editor gutter. This is support via the **Bookmarks: Toggle In-Editor Markers** command but it is disabled by default due to [VSCode #5923](https://github.com/Microsoft/vscode/issues/5923) which causes these markers to cover the breakpoint ones (unacceptable experience).
+Bookmarks are expected to be rendered as markers on the corresponding editor gutter. This is supported via the **Bookmarks: Toggle In-Editor Markers** command but it is disabled by default due to [VSCode #5923](https://github.com/Microsoft/vscode/issues/5923) which causes these markers to cover the breakpoint ones (unacceptable experience).
 You can also use the **Hide In-Editor Markers** and **Show In-Editor Markers** actions in the **Bookmarks** view menu.
 
 <p align="center">
