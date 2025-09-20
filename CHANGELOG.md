@@ -2,6 +2,7 @@
 
 ## 0.4.20
 
+- **Export Data** prints formatted JSON.
 - Fix: Use a WOFF instead of a SVG so selected nodes shows the right "add-bookmark" button color.
 
 ## 0.4.19

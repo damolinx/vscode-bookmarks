@@ -28,12 +28,11 @@ export async function exportBookmarks(manager: BookmarkManager, kind: BookmarkKi
     timestamp: Date.now(),
     data: {},
   };
-
   exportItems(items, exportData.data);
 
   const document = await workspace.openTextDocument({
     language: 'json',
-    content: JSON.stringify(exportData),
+    content: jsonStringify(exportData),
   });
   await window.showTextDocument(document);
   await commands.executeCommand('editor.action.formatDocument');
@@ -50,4 +49,13 @@ function exportItems(items: (Bookmark | BookmarkContainer)[], container: NestedH
       container[item.uri.toString()] = item.metadata as NestedHash;
     }
   }
+}
+
+function jsonStringify(exportData: Export): string {
+  const configuration = workspace.getConfiguration('editor');
+  const spaces = configuration.get<boolean>('insertSpaces', true)
+    ? configuration.get<number>('tabSize', 2)
+    : '\t';
+  const content = JSON.stringify(exportData, undefined, spaces);
+  return content;
 }
