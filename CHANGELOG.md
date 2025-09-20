@@ -18,9 +18,9 @@
 
 - New icon.
 - Upgrade minimum VS Code version to 1.99.
-- **Bookmarks** view
-  - Move **Search…** action to title bar. 
-  - Add **Collapse All** action to title bar. 
+- **Bookmarks** view:
+  - Move **Search…** action to title bar.
+  - Add **Collapse All** action to title bar.
 
 ## 0.4.15
 
