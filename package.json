@@ -176,7 +176,7 @@
       },
       {
         "command": "bookmarks.remove.tree",
-        "title": "Remove",
+        "title": "Delete",
         "category": "Bookmarks",
         "icon": "$(remove-close)",
         "enablement": "focusedView == bookmarks"
@@ -189,7 +189,7 @@
       },
       {
         "command": "bookmarks.removeBookmarks.tree",
-        "title": "Remove All",
+        "title": "Delete All",
         "category": "Bookmarks",
         "icon": "$(close-all)",
         "enablement": "focusedView == bookmarks && viewItem =~ /bookmarkContainer/"
@@ -421,11 +421,6 @@
           "command": "bookmarks.remove.tree",
           "when": "view == bookmarks && !(viewItem =~ /root/)",
           "group": "3_other@10"
-        },
-        {
-          "command": "bookmarks.remove.tree",
-          "when": "view == bookmarks && viewItem =~ /bookmark/",
-          "group": "inline"
         },
         {
           "command": "bookmarks.removeBookmarks.tree",

@@ -1,5 +1,14 @@
 # Change Log
 
+## 0.4.19
+
+- Renamed **Remove** action to **Delete** to clarify permanent removal of bookmarks / bookmark-folders.
+- Fix: **Delete** action should not be available for root folders.
+
+## 0.4.18
+
+- Clean-up.
+
 ## 0.4.17
 
 - Clean-up.
