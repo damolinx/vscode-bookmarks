@@ -12,13 +12,13 @@ export class NameTreeItemProvider extends TreeItemProvider {
     let treeItemOverrides: Partial<vscode.TreeItem>;
     if (displayName) {
       treeItemOverrides = {
-        description: `…${path.join(...bookmarkPath.split(path.sep).splice(-3))}:${bookmark.lineNumber}`,
+        description: `…${path.join(...bookmarkPath.split(path.sep).splice(-3))}:${bookmark.start}${bookmark.end ? `-${bookmark.end}` : ''}`,
         label: displayName,
       };
     } else {
       treeItemOverrides = {
         description: `…${path.sep}${path.join(...bookmarkPath.split(path.sep).splice(-3, 2))}`,
-        label: `${path.basename(bookmarkPath)}:${bookmark.lineNumber}`,
+        label: `${path.basename(bookmarkPath)}:${bookmark.start}${bookmark.end ? `-${bookmark.end}` : ''}`,
       };
     }
     return treeItemOverrides;
@@ -35,7 +35,8 @@ export class NameTreeItemProvider extends TreeItemProvider {
     return (
       NaturalComparer.compare(a1, b1) ||
       NaturalComparer.compare(a2, b2) ||
-      a.lineNumber - b.lineNumber
+      a.start - b.start ||
+      (a.end ?? 0) - (b.end ?? 0)
     );
   }
 }

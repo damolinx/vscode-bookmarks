@@ -284,17 +284,20 @@ async function navigateAsync(
 
   function getFilterPredicate(): (editor: vscode.TextEditor, bookmark: Bookmark) => boolean {
     return next
-      ? (editor, bookmark) => bookmark.lineNumber - 1 > editor.selection.start.line
-      : (editor, bookmark) => bookmark.lineNumber - 1 < editor.selection.start.line;
+      ? (editor, bookmark) => bookmark.start - 1 > editor.selection.start.line
+      : (editor, bookmark) => bookmark.start - 1 < editor.selection.start.line;
   }
 
   function getSortPredicate(): (a: Bookmark, b: Bookmark) => number {
-    return next ? (a, b) => a.lineNumber - b.lineNumber : (a, b) => b.lineNumber - a.lineNumber;
+    return next
+      ? (a, b) => a.start - b.start || (a.end ?? 0) - (b.end ?? 0)
+      : (a, b) => b.start - a.start || (b.end ?? 0) - (a.end ?? 0);
   }
 
   function selectBookmark(editor: vscode.TextEditor, bookmark: Bookmark) {
-    const position = new vscode.Position(bookmark.lineNumber - 1, 0);
-    editor.selection = new vscode.Selection(position, position);
-    editor.revealRange(new vscode.Range(position, position));
+    const start = new vscode.Position(bookmark.start - 1, 0);
+    const end = bookmark.end ? new vscode.Position(bookmark.end - 1, 0) : start;
+    editor.selection = new vscode.Selection(start, end);
+    editor.revealRange(editor.selection);
   }
 }

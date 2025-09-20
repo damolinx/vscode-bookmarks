@@ -8,11 +8,14 @@ export async function updateLineNumberAsync(
   treeView: TreeView<BookmarkTreeItem | undefined>,
   bookmark: Bookmark,
 ): Promise<void> {
-  const existingLineNumbers = bookmark.container
+  const existingSelections = bookmark.container
     .getItems()
-    .filter((b): b is Bookmark => b instanceof Bookmark)
-    .filter((b) => b.matchesUri(bookmark.uri, true) && b.lineNumber !== bookmark.lineNumber)
-    .map((b) => b.lineNumber);
+    .filter((b) => b instanceof Bookmark)
+    .filter(
+      (b) =>
+        b.matchesUri(bookmark.uri, true) && (b.start !== bookmark.start || b.end !== bookmark.end),
+    )
+    .map((b) => ({ start: b.start, end: b.end }));
 
   const maxLineNumber = (
     await workspace.openTextDocument(bookmark.uri).then(
@@ -21,27 +24,46 @@ export async function updateLineNumberAsync(
     )
   )?.lineCount;
 
-  const lineNumber = await window.showInputBox({
-    prompt: 'Update bookmark line number',
-    placeHolder: 'Provide a line number',
-    value: bookmark.lineNumber.toString(),
+  const result = await window.showInputBox({
+    prompt: 'Update bookmark line or range',
+    placeHolder: 'Provide a line or start-end line range (e.g. 42 or 10-20)',
+    value: `${bookmark.start}${bookmark.end ? `-${bookmark.end}` : ''}`,
     validateInput: (value) => {
-      const n = Number(value);
-      if (!Number.isInteger(n) || n < 1 || (maxLineNumber !== undefined && n > maxLineNumber)) {
+      const [start, end] = parseValue(value);
+      if (
+        start === undefined ||
+        Number.isNaN(start) ||
+        (end !== undefined && Number.isNaN(end)) ||
+        (maxLineNumber !== undefined &&
+          (start > maxLineNumber || (end !== undefined && end > maxLineNumber)))
+      ) {
         return maxLineNumber
-          ? `Line number must be an integer value between 1 and ${maxLineNumber}`
-          : 'Line number must be an integer value equal or greater than 1';
+          ? `Line values must be between 1 and ${maxLineNumber}`
+          : 'Line values must be equal or greater than 1';
       }
-      if (existingLineNumbers.includes(n)) {
-        return 'Line number conflicts with an existing bookmark';
+      if (end <= start) {
+        return 'End line must be greater than start line';
+      }
+
+      if (existingSelections.some((s) => start === s.start && end === s.end)) {
+        return `Value conflicts with an existing bookmark in '${bookmark.container.displayName}' folder`;
       }
       return undefined;
     },
   });
-  if (lineNumber !== undefined) {
+
+  if (result !== undefined) {
+    const [start, end] = parseValue(result);
     const updatedBookmark = await manager.updateBookmarkAsync(bookmark, {
-      lineNumber: Number(lineNumber),
+      selection: {
+        start,
+        end,
+      },
     });
     await treeView.reveal(updatedBookmark, { focus: true });
+  }
+
+  function parseValue(value: string): number[] {
+    return value.trim().split('-').filter(Boolean).map(Number);
   }
 }

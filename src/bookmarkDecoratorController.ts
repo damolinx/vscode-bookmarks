@@ -94,9 +94,11 @@ export class BookmarkDecoratorController implements vscode.Disposable {
       editors.forEach((editor) => {
         const options: vscode.DecorationOptions[] = manager
           .getBookmarks({ ignoreLineNumber: true, uri: editor.document.uri })
-          .filter((b) => b.lineNumber <= editor.document.lineCount)
+          .filter((b) => b.start <= editor.document.lineCount)
           .map((bookmark) => ({
-            range: editor.document.lineAt(bookmark.lineNumber - 1).range,
+            range: editor.document.validateRange(
+              new vscode.Range(bookmark.start - 1, 0, bookmark.start - 1, 0),
+            ),
           }));
         editor.setDecorations(decorationType, options);
       });

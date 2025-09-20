@@ -2,7 +2,6 @@ import * as vscode from 'vscode';
 import * as path from 'path';
 import { Bookmark, BOOKMARK_DISPLAY_NAME_KEY } from '../bookmark';
 import { TreeItemOverrides, TreeItemProvider } from './treeItemProvider';
-import { NaturalComparer } from './treeUtils';
 
 export class PathTreeItemProvider extends TreeItemProvider {
   protected getBookmarkOverrides(bookmark: Bookmark): TreeItemOverrides {
@@ -12,12 +11,12 @@ export class PathTreeItemProvider extends TreeItemProvider {
     let treeItemOverrides: Partial<vscode.TreeItem>;
     if (displayName) {
       treeItemOverrides = {
-        description: `…${path.join(...bookmarkPath.split(path.sep).splice(-3))}:${bookmark.lineNumber}`,
+        description: `…${path.join(...bookmarkPath.split(path.sep).splice(-3))}:${bookmark.start}${bookmark.end ? `-${bookmark.end}` : ''}`,
         label: displayName,
       };
     } else {
       treeItemOverrides = {
-        description: `${bookmark.lineMoniker} ${bookmark.lineNumber}`,
+        description: bookmark.getDescription(),
         label:
           bookmark.defaultName !== bookmarkPath || vscode.workspace.workspaceFolders?.length !== 1
             ? bookmark.defaultName
@@ -28,9 +27,6 @@ export class PathTreeItemProvider extends TreeItemProvider {
   }
 
   protected compareBookmarks(a: Bookmark, b: Bookmark): number {
-    const a1 = (a.metadata[BOOKMARK_DISPLAY_NAME_KEY] as string | undefined) || a.uri.fsPath;
-    const b1 = (b.metadata[BOOKMARK_DISPLAY_NAME_KEY] as string | undefined) || b.uri.fsPath;
-
-    return NaturalComparer.compare(a1, b1) || a.lineNumber - b.lineNumber;
+    return a.compare(b);
   }
 }

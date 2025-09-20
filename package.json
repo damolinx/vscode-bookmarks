@@ -481,7 +481,7 @@
       },
       {
         "id": "bookmark.editBookmark.lineNumber",
-        "label": "Line Number"
+        "label": "Line or Range"
       },
       {
         "id": "bookmark.editBookmark.notes",

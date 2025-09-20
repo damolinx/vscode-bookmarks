@@ -22,8 +22,8 @@ export const DEFAULT_LINE_NUMBER = 1;
 export interface BookmarkUpdate {
   displayName?: string;
   kind?: BookmarkKind;
-  lineNumber?: number;
   notes?: string;
+  selection?: { start: number; end?: number };
 }
 
 /**
@@ -31,7 +31,7 @@ export interface BookmarkUpdate {
  */
 export class Bookmark {
   private _defaultName?: string;
-  private _lineNumber: number;
+  private _selection: { start: number; end?: number };
   private _uri: vscode.Uri;
 
   /**
@@ -58,11 +58,15 @@ export class Bookmark {
     this._uri = pathOrUri instanceof vscode.Uri ? pathOrUri : vscode.Uri.parse(pathOrUri);
     this.metadata = metadata;
 
-    const lineFragment = this._uri.fragment.substring(1);
+    const lineFragment = this._uri.fragment;
     if (lineFragment) {
-      this._lineNumber = parseInt(lineFragment);
+      const rangeInfo = lineFragment.split('-');
+      this._selection = {
+        start: parseInt(rangeInfo[0].substring(1)) ?? DEFAULT_LINE_NUMBER,
+        end: rangeInfo[1] ? parseInt(rangeInfo[1].substring(1)) : undefined,
+      };
     } else {
-      this._lineNumber = DEFAULT_LINE_NUMBER;
+      this._selection = { start: DEFAULT_LINE_NUMBER };
       this._uri = this._uri.with({ fragment: `L${DEFAULT_LINE_NUMBER}` });
     }
   }
@@ -87,7 +91,8 @@ export class Bookmark {
     return (
       NaturalComparer.compare(thisA, thatA) ||
       NaturalComparer.compare(thisB, thatB) ||
-      this.lineNumber - that.lineNumber
+      this.start - that.start ||
+      (this.end ?? 0) - (that.end ?? 0)
     );
   }
 
@@ -146,23 +151,42 @@ export class Bookmark {
     }
   }
 
+  public getDescription(): string {
+    if (['vscode-notebook', 'vscode-notebook-cell'].includes(this.uri.scheme)) {
+      return 'cell';
+    }
+    if (this.end && this.start !== this.end) {
+      return `selection ${this.start}-${this.end}`;
+    }
+
+    return `line ${this.start}`;
+  }
+
   /**
    * Bookmark line number. When the URI represents a notebook cell this value
    * is 0-based, otherwise lines numbers are 1-based.
    */
-  public get lineNumber(): number {
-    return this._lineNumber;
+  public get start(): number {
+    return this._selection.start;
+  }
+
+  /**
+   * Bookmark line number. When the URI represents a notebook cell this value
+   * is 0-based, otherwise lines numbers are 1-based.
+   */
+  public get end(): number | undefined {
+    return this._selection.end;
   }
 
   /**
    * Set Bookmark line number.
    */
-  private set lineNumber(value: number) {
-    // TODO: validate positive integer (or really make this immutable).
-    if (this._lineNumber !== value) {
-      this._defaultName = undefined;
-      this._lineNumber = value;
-      this._uri = this._uri.with({ fragment: `L${value}` });
+  private set selection(value: { start: number; end?: number }) {
+    if (this._selection.start !== value.start || this._selection.end !== value.end) {
+      this._selection = value;
+      this._uri = this._uri.with({
+        fragment: `L${value.start}${value.end ? `-L${value.end}` : ''}`,
+      });
     }
   }
 
@@ -211,7 +235,7 @@ export class Bookmark {
    * `this` if there are no effective changes.
    */
   public with(change: BookmarkUpdate): Bookmark {
-    let { displayName, kind, lineNumber, notes } = change;
+    let { displayName, kind, selection, notes } = change;
     if (displayName === undefined) {
       if (this.hasDisplayName) {
         displayName = this.displayName;
@@ -222,8 +246,8 @@ export class Bookmark {
     if (kind === undefined) {
       kind = this.kind;
     }
-    if (lineNumber === undefined) {
-      lineNumber = this.lineNumber;
+    if (selection === undefined) {
+      selection = this._selection;
     }
     if (notes === undefined) {
       notes = this.notes;
@@ -232,7 +256,8 @@ export class Bookmark {
     if (
       this.displayName === displayName &&
       this.kind === kind &&
-      this.lineNumber === lineNumber &&
+      this.start === selection.start &&
+      this.end === selection.end &&
       this.notes === notes
     ) {
       return this;
@@ -242,8 +267,8 @@ export class Bookmark {
     if (displayName != undefined) {
       bookmark.displayName = displayName;
     }
-    if (lineNumber !== undefined) {
-      bookmark.lineNumber = lineNumber;
+    if (selection !== undefined) {
+      bookmark.selection = selection;
     }
     if (notes !== undefined) {
       bookmark.notes = notes;

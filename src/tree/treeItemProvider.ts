@@ -38,7 +38,7 @@ export abstract class TreeItemProvider {
     };
 
     treeItem.contextValue = 'bookmark';
-    if (bookmark.lineMoniker !== 'line') {
+    if (bookmark.lineMoniker === 'cell') {
       treeItem.contextValue += ';noline';
     }
 

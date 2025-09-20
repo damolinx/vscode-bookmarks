@@ -298,7 +298,9 @@ export class BookmarkManager implements vscode.Disposable {
       // TODO: Push this to datastore so a rename is a single operation. Right now, this could
       // end up updating/saving the same datastore for as many bookmarks as matched.
       return oldBookmarks.map((oldBookmark) => {
-        const newBookmarkUri = newUri.with({ fragment: `L${oldBookmark.lineNumber}` });
+        const newBookmarkUri = newUri.with({
+          fragment: `L${oldBookmark.start}${oldBookmark.end ? `-L${oldBookmark.end}` : ''}`,
+        });
         return oldBookmark.container.datastore.replaceAsync(oldBookmark.uri, newBookmarkUri);
       });
     });

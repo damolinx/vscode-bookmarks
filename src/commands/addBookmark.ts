@@ -13,6 +13,7 @@ export async function addBookmarkAsync(
   treeView: TreeView<BookmarkTreeItem | undefined>,
   pathOrUri: string | Uri | undefined,
   parentOrKind: BookmarkContainer | BookmarkKind,
+  asSelection?: true,
 ): Promise<void> {
   let targetUri: Uri | undefined;
   if (pathOrUri instanceof Uri) {
@@ -24,9 +25,13 @@ export async function addBookmarkAsync(
     // information only, missing the target cell location.
     targetUri = window.activeTextEditor?.document.uri;
   } else if (window.activeTextEditor) {
-    const targetLine = window.activeTextEditor.selection.start.line;
+    const { selection } = window.activeTextEditor;
+    let fragment = `L${selection.start.line + 1}`;
+    if (!asSelection && selection.start.line !== selection.end.line) {
+      fragment += `-L${selection.end.line + 1}`;
+    }
     targetUri = window.activeTextEditor.document.uri.with({
-      fragment: `L${targetLine + 1}`,
+      fragment,
     });
   }
 

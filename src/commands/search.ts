@@ -11,7 +11,7 @@ export async function search(
     return {
       bookmark,
       buttons: [],
-      description: `line ${bookmark.lineNumber}`,
+      description: bookmark.getDescription(),
       detail: bookmark.container.id,
       label: bookmark.displayName,
     };

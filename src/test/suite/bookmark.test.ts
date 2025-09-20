@@ -27,7 +27,8 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     const bookmark = new Bookmark(workspaceContainer, sourceUri);
 
     assert.strictEqual(bookmark.kind, workspaceContainer.kind);
-    assert.strictEqual(bookmark.lineNumber, DEFAULT_LINE_NUMBER);
+    assert.strictEqual(bookmark.start, DEFAULT_LINE_NUMBER);
+    assert.strictEqual(bookmark.end, undefined);
     assert.strictEqual(bookmark.uri.toString(), expectedUri);
 
     const normalizedExpectedPath = normalize(expectedPath);
@@ -36,7 +37,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     assert.strictEqual(bookmark.hasDisplayName, false);
   });
 
-  test('basic props (with line-number)', () => {
+  test('basic props (with start-number)', () => {
     const expectedLineNumber = 6;
     const expectedPath = '/workspace/test.txt';
     const expectedUri = `file://${expectedPath}#L${expectedLineNumber}`;
@@ -44,7 +45,27 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     const bookmark = new Bookmark(globalContainer, expectedUri);
 
     assert.strictEqual(bookmark.kind, globalContainer.kind);
-    assert.strictEqual(bookmark.lineNumber, expectedLineNumber);
+    assert.strictEqual(bookmark.start, expectedLineNumber);
+    assert.strictEqual(bookmark.end, undefined);
+    assert.strictEqual(bookmark.uri.toString(), expectedUri);
+
+    const normalizedExpectedPath = normalize(expectedPath);
+    assert.strictEqual(bookmark.defaultName, normalizedExpectedPath);
+    assert.strictEqual(bookmark.displayName, normalizedExpectedPath);
+    assert.strictEqual(bookmark.hasDisplayName, false);
+  });
+
+  test('basic props (with start and end number)', () => {
+    const expectedStartLineNumber = 6;
+    const expectedEndLineNumber = 60;
+    const expectedPath = '/workspace/test.txt';
+    const expectedUri = `file://${expectedPath}#L${expectedStartLineNumber}-L${expectedEndLineNumber}`;
+
+    const bookmark = new Bookmark(globalContainer, expectedUri);
+
+    assert.strictEqual(bookmark.kind, globalContainer.kind);
+    assert.strictEqual(bookmark.start, expectedStartLineNumber);
+    assert.strictEqual(bookmark.end, expectedEndLineNumber);
     assert.strictEqual(bookmark.uri.toString(), expectedUri);
 
     const normalizedExpectedPath = normalize(expectedPath);
