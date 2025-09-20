@@ -1,6 +1,7 @@
-# Change Log
+# Changelog
 
 ## 0.4.20
+
 - Support bookmarking line ranges.
 - **Export Data** prints formatted JSON.
 - Fix: Use a WOFF instead of a SVG so selected nodes shows the right "add-bookmark" button color.
