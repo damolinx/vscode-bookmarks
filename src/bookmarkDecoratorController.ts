@@ -24,19 +24,6 @@ export class BookmarkDecoratorController implements vscode.Disposable {
     this.hideDecorators();
   }
 
-  /**
-   * Get decorator icon path.
-   */
-  public getIconPath(): string | vscode.Uri {
-    switch (vscode.window.activeColorTheme.kind) {
-      case vscode.ColorThemeKind.Dark:
-      case vscode.ColorThemeKind.HighContrast:
-        return this.context.asAbsolutePath('resources/images/dark/bookmark.svg');
-      default:
-        return this.context.asAbsolutePath('resources/images/light/bookmark.svg');
-    }
-  }
-
   private hideDecorators(): void {
     if (this.visibilityDisposable) {
       this.visibilityDisposable.dispose();
@@ -46,8 +33,13 @@ export class BookmarkDecoratorController implements vscode.Disposable {
 
   private showDecorators() {
     const decorationType = vscode.window.createTextEditorDecorationType({
-      gutterIconPath: this.getIconPath(),
       rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed,
+      light: {
+        gutterIconPath: this.context.asAbsolutePath('resources/images/light/bookmark.svg'),
+      },
+      dark: {
+        gutterIconPath: this.context.asAbsolutePath('resources/images/dark/bookmark.svg'),
+      },
     });
 
     this.visibilityDisposable = vscode.Disposable.from(

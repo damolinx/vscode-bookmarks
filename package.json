@@ -37,21 +37,26 @@
         "command": "bookmarks.addBookmark.global",
         "title": "Bookmark Editor (Global)",
         "category": "Bookmarks",
-        "icon": "$(add)",
         "enablement": "bookmarks.editorSupported"
       },
       {
         "command": "bookmarks.addBookmark.tree",
         "title": "Bookmark Current Editor Line",
         "category": "Bookmarks",
-        "icon": "$(add)",
+        "icon": {
+          "dark": "resources/images/dark/add-bookmark.svg",
+          "light": "resources/images/light/add-bookmark.svg"
+        },
         "enablement": "bookmarks.editorSupported"
       },
       {
         "command": "bookmarks.addBookmark.workspace",
         "title": "Bookmark Editor (Workspace)",
         "category": "Bookmarks",
-        "icon": "$(add)",
+        "icon": {
+          "dark": "resources/images/dark/add-bookmark.svg",
+          "light": "resources/images/light/add-bookmark.svg"
+        },
         "enablement": "bookmarks.editorSupported && workbenchState != empty"
       },
       {

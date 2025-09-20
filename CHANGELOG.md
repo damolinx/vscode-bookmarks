@@ -4,6 +4,7 @@
 
 - Renamed **Remove** action to **Delete** to clarify permanent removal of bookmarks / bookmark-folders.
 - Fix: **Delete** action should not be available for root folders.
+- Fix: Gutter-icons do not update in response to theme changes.
 
 ## 0.4.18
 
