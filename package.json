@@ -43,20 +43,14 @@
         "command": "bookmarks.addBookmark.tree",
         "title": "Bookmark Current Editor Line",
         "category": "Bookmarks",
-        "icon": {
-          "dark": "resources/images/dark/add-bookmark.svg",
-          "light": "resources/images/light/add-bookmark.svg"
-        },
+        "customColor": true,
+        "icon": "$(add-bookmark)",
         "enablement": "bookmarks.editorSupported"
       },
       {
         "command": "bookmarks.addBookmark.workspace",
         "title": "Bookmark Editor (Workspace)",
         "category": "Bookmarks",
-        "icon": {
-          "dark": "resources/images/dark/add-bookmark.svg",
-          "light": "resources/images/light/add-bookmark.svg"
-        },
         "enablement": "bookmarks.editorSupported && workbenchState != empty"
       },
       {
@@ -244,6 +238,15 @@
         }
       }
     ],
+    "icons": {
+      "add-bookmark": {
+        "description": "Add bookmark icon",
+        "default": {
+          "fontPath": "resources/icons/add-bookmark.woff",
+          "fontCharacter": "\\e900"
+        }
+      }
+    },
     "keybindings": [
       {
         "command": "bookmarks.remove.tree",
