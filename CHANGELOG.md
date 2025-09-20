@@ -1,6 +1,7 @@
 # Change Log
 
 ## 0.4.20
+
 - Fix: Use a WOFF instead of a SVG so selected nodes shows the right "add-bookmark" button color.
 
 ## 0.4.19
