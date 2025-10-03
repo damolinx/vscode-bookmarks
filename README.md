@@ -113,6 +113,9 @@ In the **Notes** context menu for a given bookmark, use:
 
 ## Navigation
 
+Clicking a bookmark in the **Bookmarks** view opens its target editor and selects the target range. For multi-line bookmarks the default *start-to-start* selection made ranges look like they were missing the last line and made single-line bookmarks harder to spot, so the default selection mode is now *full-line*. You can change this behavior in the **Bookmarks: Selection Mode** setting.
+
+
 ### Commands
 
 There are two commands, **Bookmarks: Go to Next in Current Editor** and **Bookmarks: Go to Previous in Current Editor**, that can be used to jump between bookmarks set in the current editor.
@@ -123,8 +126,7 @@ The following commands are available for other extensions to use: `bookmarks.nav
 
 ## Visualization
 
-Bookmarks are expected to be rendered as markers on the corresponding editor gutter. This is supported via the **Bookmarks: Toggle In-Editor Markers** command but it is disabled by default due to [VSCode #5923](https://github.com/Microsoft/vscode/issues/5923) which causes these markers to affect the breakpoint markers in some cases (unacceptable experience).
-You can also use the **Hide In-Editor Markers** and **Show In-Editor Markers** actions in the **Bookmarks** view menu.
+Clicking a bookmark in the **Bookmarks** view selects its target range in the appropriate editor. Bookmarks can also be rendered as markers on the corresponding editor gutter. This is supported via the **Bookmarks: Toggle In-Editor Markers** command but it is disabled by default due to [VSCode #5923](https://github.com/Microsoft/vscode/issues/5923) which causes these markers to affect the breakpoint markers in some cases (unacceptable experience). You can also use the **Hide In-Editor Markers** and **Show In-Editor Markers** actions in the **Bookmarks** view menu.
 
 <p align="center">
   <img width="448" alt="image" src="https://user-images.githubusercontent.com/38414719/185772569-eebf133d-adfc-4ff2-9c20-9066508a3345.png">

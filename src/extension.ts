@@ -9,6 +9,7 @@ import { addBookmarkAsync } from './commands/addBookmark';
 import { addBookmarkFolderAsync } from './commands/addBookmarkFolder';
 import { exportBookmarks } from './commands/exportBookmarks';
 import { importBookmarks } from './commands/importBookmarks';
+import { openBookmark } from './commands/openBookmark';
 import { openFolderBookmarks } from './commands/openFolderBookmarks';
 import { removeBookmarkOrFolderAsync } from './commands/removeBookmarkOrFolder';
 import { renameBookmarkFolderAsync } from './commands/renameBookmarkFolder';
@@ -129,6 +130,10 @@ export async function activate(context: vscode.ExtensionContext) {
     vscode.commands.registerCommand(
       'bookmarks.navigate.previous.editor',
       (pathOrUri?: string | vscode.Uri): Thenable<void> => navigateAsync(manager, false, pathOrUri),
+    ),
+    vscode.commands.registerCommand(
+      '_bookmarks.open',
+      (bookmark: Bookmark): Thenable<void> => openBookmark(bookmark),
     ),
     vscode.commands.registerCommand(
       'bookmarks.openFolder.tree',

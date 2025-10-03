@@ -2,7 +2,8 @@
 
 ## 0.4.21
 
-- Update description for line selection (*selection ...* changes to *lines ...*)
+- Add **Bookmarks: Selection Style** to control bookmark selection behavior, and default to `Full-line` as it provides better visibility.
+- Update description for line selection (*selection ...* changes to *lines ...*).
 
 ## 0.4.20
 

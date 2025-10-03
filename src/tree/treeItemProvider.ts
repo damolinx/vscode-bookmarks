@@ -33,8 +33,8 @@ export abstract class TreeItemProvider {
 
     treeItem.command = {
       title: 'Open',
-      command: 'vscode.open',
-      arguments: [bookmark.uri],
+      command: '_bookmarks.open',
+      arguments: [bookmark],
     };
 
     treeItem.contextValue = 'bookmark';

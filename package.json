@@ -234,6 +234,24 @@
             "default": false,
             "description": "Render bookmark markers are displayed in editors.",
             "scope": "application"
+          },
+          "bookmarks.selectionStyle": {
+            "type": "string",
+            "default": "fullLine",
+            "description": "Controls how bookmarks select lines in the editor.",
+            "enum": [
+              "default",
+              "fullLine"
+            ],
+            "enumItemLabels": [
+              "Default",
+              "Full-line"
+            ],
+            "enumDescriptions": [
+              "Selects from the start of the first line to the start of the last line (VS Code default behavior).",
+              "Selects entire lines from start to end, including the last line fully."
+            ],
+            "scope": "application"
           }
         }
       }
