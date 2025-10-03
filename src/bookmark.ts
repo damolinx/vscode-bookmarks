@@ -156,7 +156,7 @@ export class Bookmark {
       return 'cell';
     }
     if (this.end && this.start !== this.end) {
-      return `selection ${this.start}-${this.end}`;
+      return `lines ${this.start} to ${this.end}`;
     }
 
     return `line ${this.start}`;

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.21
+
+- Update description for line selection (*selection ...* changes to *lines ...*)
+
 ## 0.4.20
 
 - Support bookmarking line ranges.
