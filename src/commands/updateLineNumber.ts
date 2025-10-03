@@ -27,15 +27,20 @@ export async function updateLineNumberAsync(
   const result = await window.showInputBox({
     prompt: 'Update bookmark line or range',
     placeHolder: 'Provide a line or start-end line range (e.g. 42 or 10-20)',
+    ignoreFocusOut: true,
     value: `${bookmark.start}${bookmark.end ? `-${bookmark.end}` : ''}`,
     validateInput: (value) => {
-      const [start, end] = parseValue(value);
+      const normalizedValue = value.trim();
+      const [start, end] = parseValue(normalizedValue);
       if (
+        normalizedValue.startsWith('-') ||
         start === undefined ||
         Number.isNaN(start) ||
         (end !== undefined && Number.isNaN(end)) ||
         (maxLineNumber !== undefined &&
-          (start > maxLineNumber || (end !== undefined && end > maxLineNumber)))
+          (start < 1 ||
+            start > maxLineNumber ||
+            (end !== undefined && (end < 1 || end > maxLineNumber))))
       ) {
         return maxLineNumber
           ? `Line values must be between 1 and ${maxLineNumber}`
@@ -64,6 +69,6 @@ export async function updateLineNumberAsync(
   }
 
   function parseValue(value: string): number[] {
-    return value.trim().split('-').filter(Boolean).map(Number);
+    return value.split('-').filter(Boolean).map(Number);
   }
 }
