@@ -232,7 +232,7 @@
           "bookmarks.marker.showByDefault": {
             "type": "boolean",
             "default": false,
-            "description": "Render bookmark markers are displayed in editors.",
+            "description": "Controls whether bookmark markers are shown in the editor gutter. In certain cases, markers may occupy the same gutter space and interfere with setting or removing breakpoints on that line.",
             "scope": "application"
           },
           "bookmarks.selectionStyle": {
