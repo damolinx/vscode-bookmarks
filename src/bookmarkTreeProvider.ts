@@ -6,16 +6,14 @@ import { TreeItemProvider } from './tree/treeItemProvider';
 import { createTreeProvider, TreeViewKind } from './tree/treeUtils';
 
 const VIEW_CONTEXT_KEY = 'bookmarks.tree.view';
-const VIEW_MEMENTO_KEY = 'bookmarks.preferences.view';
+const VIEW_PREFERENCE_KEY = 'bookmarks.treeLabelMode';
 
 export type BookmarkTreeItem = Bookmark | BookmarkContainer;
 export type EventType = undefined | BookmarkTreeItem | BookmarkTreeItem[];
 
 export class BookmarkTreeProvider
-  implements vscode.Disposable, vscode.TreeDataProvider<BookmarkTreeItem>
-{
-  private readonly context: vscode.ExtensionContext;
-  private readonly disposable: vscode.Disposable;
+  implements vscode.Disposable, vscode.TreeDataProvider<BookmarkTreeItem> {
+  private readonly disposables: vscode.Disposable[];
   private readonly manager: BookmarkManager;
   public readonly onDidChangeTreeData: vscode.Event<EventType>;
   private readonly onDidChangeTreeDataEmitter: vscode.EventEmitter<EventType>;
@@ -26,29 +24,35 @@ export class BookmarkTreeProvider
    * @param context Extension context.
    * @param manager Bookmark manager.
    */
-  constructor(context: vscode.ExtensionContext, manager: BookmarkManager) {
-    this.context = context;
+  constructor(manager: BookmarkManager) {
     this.manager = manager;
     this.onDidChangeTreeDataEmitter = new vscode.EventEmitter<EventType>();
     this.onDidChangeTreeData = this.onDidChangeTreeDataEmitter.event;
 
-    const kind = context.globalState.get<TreeViewKind>(VIEW_MEMENTO_KEY, 'path');
+    const kind = vscode.workspace.getConfiguration().get<TreeViewKind>(VIEW_PREFERENCE_KEY, 'name');
     this.treeItemProvider = { kind, provider: createTreeProvider(kind) };
     vscode.commands.executeCommand('setContext', VIEW_CONTEXT_KEY, kind);
 
-    this.disposable = vscode.Disposable.from(
+    this.disposables = [
       this.manager.onDidAddBookmark(() => this.refresh()),
       this.manager.onDidChangeBookmark(() => this.refresh()),
       this.manager.onDidRemoveBookmark(() => this.refresh()),
       this.onDidChangeTreeDataEmitter,
-    );
+      vscode.workspace.onDidChangeConfiguration(async (e) => {
+        if (e.affectsConfiguration(VIEW_PREFERENCE_KEY)) {
+          await this.setViewKind(
+            vscode.workspace.getConfiguration().get<TreeViewKind>(VIEW_PREFERENCE_KEY, 'name'),
+          );
+        }
+      }),
+    ];
   }
 
   /**
    * Dispose this object.
    */
   public dispose() {
-    this.disposable.dispose();
+    vscode.Disposable.from(...this.disposables).dispose();
   }
 
   /**
@@ -111,13 +115,16 @@ export class BookmarkTreeProvider
    * Set current view kind. If mode is changed, tree will be refreshed.
    */
   public async setViewKind(kind: TreeViewKind): Promise<void> {
-    if (this.treeItemProvider.kind !== kind) {
-      this.treeItemProvider = { kind, provider: createTreeProvider(kind) };
-      this.refresh();
-      await Promise.all([
-        vscode.commands.executeCommand('setContext', VIEW_CONTEXT_KEY, kind),
-        this.context.globalState.update(VIEW_MEMENTO_KEY, kind),
-      ]);
+    if (this.treeItemProvider.kind === kind) {
+      return;
     }
+
+    this.treeItemProvider = { kind, provider: createTreeProvider(kind) };
+    await Promise.all([
+      vscode.commands.executeCommand('setContext', VIEW_CONTEXT_KEY, kind),
+      vscode.workspace.getConfiguration().update(VIEW_PREFERENCE_KEY, kind, vscode.ConfigurationTarget.Global),
+    ]);
+
+    this.refresh();
   }
 }

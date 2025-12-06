@@ -1,6 +1,6 @@
 # Bookmarks for VS Code
 
-This extension helps you efficiently manage and track files or specific locations within your projects. Use it to leave breadcrumbs while debugging, navigate your code more easily, or quickly switch between tasks by bookmarking all open editors.
+This extension helps you manage and organize files or specific locations within your projects. Use it to bookmark lines while debugging, navigate your code more easily, and switch between tasks by bookmarking all open editors.
 
 - Save bookmarks globally or per workspace.
 - Organize bookmarks into folders.
@@ -12,7 +12,7 @@ This extension helps you efficiently manage and track files or specific location
 
 ## Bookmark
 
-A _bookmark_ is a reference to a specific location within a document. Bookmarks are grouped as `Workspace` (tied to the current workspace) or `Global` (independent of any workspace). They use absolute URIs to describe their locations, ensuring compatibility with any file system supported by VS Code. The UI dynamically adjusts how bookmarks are displayed, such as showing relative paths when applicable to the current workspace.
+A _bookmark_ is a reference to a specific location within a document. Bookmarks are grouped as **Workspace** (tied to the current workspace) or **Global** (independent of any workspace). They use absolute URIs to describe their locations, ensuring compatibility with any file system supported by VS Code. The UI dynamically adjusts how bookmarks are displayed, such as showing relative paths when applicable to the current workspace.
 
 A bookmark's identity is tied to its URL, which normally includes a one-based line fragment (e.g., `file://workspace/file.rb#L1`) or a line range (e.g., `file://workspace/file.rb#L44-L133`).
 
@@ -29,13 +29,13 @@ The **Bookmarks** View is the main UI component for this extension. Bookmarks ar
 - **Global**: shows bookmarks that are always available, regardless of what the current workspace is.
 - **Workspace**: shows bookmarks associated with the currently open workspace, if any.
 
-You can change the display mode of the tree:
+You can change the display mode of the tree using the **Bookmarks: Tree Label Mode** setting or the **View** menu on the tree view itself. The following values are available:
 
 - **Name**: shows the file name and target line range. A path hint is shown as a description.
 - **Path**: shows the file path relative to the currently open workspace. The associated line range is shown as a description.
 
 <p align="center">
-  <img width="448" alt="image" src="https://user-images.githubusercontent.com/38414719/224102129-5dede300-3708-4e43-afab-9baf02f47084.png">
+  <img width="448" alt="View action on Bookmarks tree view" src="https://user-images.githubusercontent.com/38414719/224102129-5dede300-3708-4e43-afab-9baf02f47084.png">
 </p>
 
 ## Adding a Bookmark
@@ -58,7 +58,7 @@ When a bookmark is created bu dragging a file onto the **Bookmarks** view, line 
 
 ### Tree
 
-There is a `+` button available on each category node (`Global`, `Workspace`) that bookmarks the selection in the active editor.
+There is a `+` button available on each category node (**Global**, **Workspace**) that bookmarks the selection in the active editor.
 
 ## Removing One or All Bookmarks
 
@@ -114,7 +114,6 @@ In the **Notes** context menu for a given bookmark, use:
 ## Navigation
 
 Clicking a bookmark in the **Bookmarks** view opens its target editor and selects the target range. For multi-line bookmarks the default *start-to-start* selection made ranges look like they were missing the last line and made single-line bookmarks harder to spot, so the default selection mode is now *full-line*. You can change this behavior in the **Bookmarks: Selection Mode** setting.
-
 
 ### Commands
 

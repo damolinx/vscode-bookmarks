@@ -252,6 +252,24 @@
               "Selects entire lines from start to end, including the last line fully."
             ],
             "scope": "application"
+          },
+          "bookmarks.treeLabelMode": {
+            "type": "string",
+            "enum": [
+              "name",
+              "path"
+            ],
+            "enumDescriptions": [
+              "Display only the filename of the bookmarked item in the tree view.",
+              "Display the full path of the bookmarked item in the tree view."
+            ],
+            "enumItemLabels": [
+              "Name",
+              "Path"
+            ],
+            "default": "name",
+            "description": "Controls how bookmark labels are displayed in the tree view.",
+            "scope": "application"
           }
         }
       }

@@ -1,8 +1,11 @@
 # Changelog
 
+## 0.4.22
+- Add **Bookmarks: Tree Label Format** setting to control, via setting, how bookmark labels are displayed.
+
 ## 0.4.21
 
-- Add **Bookmarks: Selection Style** to control bookmark selection behavior, and default to `Full-line` as it provides better visibility.
+- Add **Bookmarks: Selection Style** setting to control bookmark selection behavior, and default to `Full-line` as it provides better visibility.
 - Update description for line selection (*selection ...* changes to *lines ...*).
 
 ## 0.4.20
