@@ -1,8 +1,12 @@
 # Changelog
 
+## 0.4.22
+
+- Add **Bookmarks: Tree Label Format** setting to control, via setting, how bookmark labels are displayed.
+
 ## 0.4.21
 
-- Add **Bookmarks: Selection Style** to control bookmark selection behavior, and default to `Full-line` as it provides better visibility.
+- Add **Bookmarks: Selection Style** setting to control bookmark selection behavior, and default to `Full-line` as it provides better visibility.
 - Update description for line selection (*selection ...* changes to *lines ...*).
 
 ## 0.4.20
@@ -183,7 +187,7 @@
 - Add **Bookmarks: Go to Next in Current Editor** and **Bookmarks: Go to Previous in Current Editor** commands.
 - Add **Remove All** command to context menu of **Workspace** and `Global` tree nodes.
 - Add support to visualize bookmarks as editor decorators.
-  - They must be kept off by default because of [VSCode #5923](https://github.com/Microsoft/vscode/issues/5923).
+  - They must be kept off by default because of [VS Code #5923](https://github.com/Microsoft/vscode/issues/5923).
 
 ## 0.1.0/0.1.1
 

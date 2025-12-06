@@ -2,7 +2,7 @@
   "name": "damolinx-bookmarks",
   "displayName": "Bookmarks for VS Code",
   "description": "Create annotated file bookmarks, scoped globally or to individual workspaces — perfect for keeping track of key file locations across your projects.",
-  "version": "0.4.21",
+  "version": "0.4.22",
   "publisher": "damolinx",
   "icon": "resources/images/icon.png",
   "repository": {
@@ -232,7 +232,7 @@
           "bookmarks.marker.showByDefault": {
             "type": "boolean",
             "default": false,
-            "description": "Render bookmark markers are displayed in editors.",
+            "description": "Controls whether bookmark markers are shown in the editor gutter. In certain cases, markers may occupy the same gutter space and interfere with setting or removing breakpoints on that line.",
             "scope": "application"
           },
           "bookmarks.selectionStyle": {
@@ -251,6 +251,24 @@
               "Selects from the start of the first line to the start of the last line (VS Code default behavior).",
               "Selects entire lines from start to end, including the last line fully."
             ],
+            "scope": "application"
+          },
+          "bookmarks.treeLabelMode": {
+            "type": "string",
+            "enum": [
+              "name",
+              "path"
+            ],
+            "enumDescriptions": [
+              "Display only the filename of the bookmarked item in the tree view.",
+              "Display the full path of the bookmarked item in the tree view."
+            ],
+            "enumItemLabels": [
+              "Name",
+              "Path"
+            ],
+            "default": "name",
+            "description": "Controls how bookmark labels are displayed in the tree view.",
             "scope": "application"
           }
         }

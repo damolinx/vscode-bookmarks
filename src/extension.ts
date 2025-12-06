@@ -27,7 +27,7 @@ import { EDITOR_SUPPORTED_CONTEXT_KEY, UNSUPPORTED_SCHEMES } from './constants';
 export async function activate(context: vscode.ExtensionContext) {
   const manager = new BookmarkManager(context);
   const decoratorController = new BookmarkDecoratorController(context, manager);
-  const treeProvider = new BookmarkTreeProvider(context, manager);
+  const treeProvider = new BookmarkTreeProvider(manager);
   const treeView = vscode.window.createTreeView('bookmarks', {
     dragAndDropController: new BookmarkTreeDragAndDropController(manager),
     showCollapseAll: true,
