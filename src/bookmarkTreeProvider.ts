@@ -12,7 +12,8 @@ export type BookmarkTreeItem = Bookmark | BookmarkContainer;
 export type EventType = undefined | BookmarkTreeItem | BookmarkTreeItem[];
 
 export class BookmarkTreeProvider
-  implements vscode.Disposable, vscode.TreeDataProvider<BookmarkTreeItem> {
+  implements vscode.Disposable, vscode.TreeDataProvider<BookmarkTreeItem>
+{
   private readonly disposables: vscode.Disposable[];
   private readonly manager: BookmarkManager;
   public readonly onDidChangeTreeData: vscode.Event<EventType>;
@@ -122,7 +123,9 @@ export class BookmarkTreeProvider
     this.treeItemProvider = { kind, provider: createTreeProvider(kind) };
     await Promise.all([
       vscode.commands.executeCommand('setContext', VIEW_CONTEXT_KEY, kind),
-      vscode.workspace.getConfiguration().update(VIEW_PREFERENCE_KEY, kind, vscode.ConfigurationTarget.Global),
+      vscode.workspace
+        .getConfiguration()
+        .update(VIEW_PREFERENCE_KEY, kind, vscode.ConfigurationTarget.Global),
     ]);
 
     this.refresh();

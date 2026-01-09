@@ -5,9 +5,7 @@ import { BookmarkContainer } from './bookmarkContainer';
 import { BookmarkManager } from './bookmarkManager';
 import { BookmarkTreeItem } from './bookmarkTreeProvider';
 
-export class BookmarkTreeDragAndDropController
-  implements vscode.TreeDragAndDropController<BookmarkTreeItem>
-{
+export class BookmarkTreeDragAndDropController implements vscode.TreeDragAndDropController<BookmarkTreeItem> {
   private readonly bookmarkManager: BookmarkManager;
   public readonly dropMimeTypes: readonly string[];
   public readonly dragMimeTypes: readonly string[];
