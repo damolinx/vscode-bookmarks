@@ -20,9 +20,9 @@ export class BookmarkTreeDragAndDropController implements vscode.TreeDragAndDrop
     return target instanceof BookmarkContainer
       ? target
       : (target?.container ??
-          this.bookmarkManager.getRootContainer(
-            vscode.workspace.workspaceFolders?.length ? 'workspace' : 'global',
-          ));
+        this.bookmarkManager.getRootContainer(
+          vscode.workspace.workspaceFolders?.length ? 'workspace' : 'global',
+        ));
   }
 
   public async handleDrag(
@@ -46,7 +46,7 @@ export class BookmarkTreeDragAndDropController implements vscode.TreeDragAndDrop
   ): Promise<void> {
     const targetContainer = this.getTargetContainer(target);
 
-    // DO NOT process all mimeTypes blindly: dragging af tree node automatically
+    // DO NOT process all mimeTypes blindly: dragging a tree node automatically
     // adds 'text/uri-list' on top of 'application/vnd.code.tree.bookmarks'. The
     // former is intended only for editor drops.
 
