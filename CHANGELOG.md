@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.23
+
+- Upgrade minimum VS Code version to 1.105 (Cursor upgraded extensibility compat back in November 2025).
+
+
 ## 0.4.22
 
 - Add **Bookmarks: Tree Label Format** setting to control, via setting, how bookmark labels are displayed.
