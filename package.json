@@ -2,7 +2,7 @@
   "name": "damolinx-bookmarks",
   "displayName": "Bookmarks for VS Code",
   "description": "Create annotated file bookmarks, scoped globally or to individual workspaces — perfect for keeping track of key file locations across your projects.",
-  "version": "0.4.22",
+  "version": "0.4.23",
   "publisher": "damolinx",
   "icon": "resources/images/icon.png",
   "repository": {
@@ -245,11 +245,11 @@
             ],
             "enumItemLabels": [
               "Default",
-              "Full-line"
+              "Full line"
             ],
             "enumDescriptions": [
               "Selects from the start of the first line to the start of the last line (VS Code default behavior).",
-              "Selects entire lines from start to end, including the last line fully."
+              "Selects from the start of the first line to the end of the last line."
             ],
             "scope": "application"
           },
