@@ -20,9 +20,9 @@ export class BookmarkTreeDragAndDropController implements vscode.TreeDragAndDrop
     return target instanceof BookmarkContainer
       ? target
       : (target?.container ??
-        this.bookmarkManager.getRootContainer(
-          vscode.workspace.workspaceFolders?.length ? 'workspace' : 'global',
-        ));
+          this.bookmarkManager.getRootContainer(
+            vscode.workspace.workspaceFolders?.length ? 'workspace' : 'global',
+          ));
   }
 
   public async handleDrag(

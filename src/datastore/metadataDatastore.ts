@@ -78,7 +78,7 @@ export class MetadataDatastore extends Datastore<MetadataRawDatastore> {
    * @param override Allow overriding a matching entry, otherwise ignore.
    * @returns List of added URIs (no duplicates).
    */
-  public async addAsync(
+  public override async addAsync(
     entries: { uri: vscode.Uri; metadata?: RawMetadata }[],
     override = false,
   ): Promise<vscode.Uri[]> {
@@ -97,7 +97,7 @@ export class MetadataDatastore extends Datastore<MetadataRawDatastore> {
    * @param uris URIs to remove (line data is significant).
    * @returns List of removed URIs (no duplicates).
    */
-  public async removeAsync(uris: vscode.Uri | Iterable<vscode.Uri>): Promise<vscode.Uri[]> {
+  public override async removeAsync(uris: vscode.Uri | Iterable<vscode.Uri>): Promise<vscode.Uri[]> {
     const removedUris = await super.removeAsync(uris);
     if (removedUris) {
       await this.parent.addAsync(
@@ -111,7 +111,7 @@ export class MetadataDatastore extends Datastore<MetadataRawDatastore> {
   /**
    * Remove all data.
    */
-  public async removeAllAsync(): Promise<void> {
+  public override async removeAllAsync(): Promise<void> {
     await this.rawStore.setAsync(undefined);
     await this.parent.addAsync(
       [{ uri: this.rawStore.uri, metadata: this.rawStore.metadata }],
@@ -126,7 +126,7 @@ export class MetadataDatastore extends Datastore<MetadataRawDatastore> {
    * @param newUri Target URI.
    * @returns Metadata that was associated with `replaceUri`, if `uri` was found.
    */
-  public async replaceAsync(uri: vscode.Uri, newUri: vscode.Uri): Promise<RawMetadata | undefined> {
+  public override async replaceAsync(uri: vscode.Uri, newUri: vscode.Uri): Promise<RawMetadata | undefined> {
     const replacedMetadata = await super.replaceAsync(uri, newUri);
     if (replacedMetadata) {
       await this.parent.addAsync(

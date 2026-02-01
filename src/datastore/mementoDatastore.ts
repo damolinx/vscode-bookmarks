@@ -74,7 +74,7 @@ export class MementoDatastore extends Datastore<MementoRawDatastore> {
   /**
    * Upgrade datastore.
    */
-  public async upgradeAsync(): Promise<boolean> {
+  public override async upgradeAsync(): Promise<boolean> {
     const tasks: Thenable<void>[] = [];
     const v1 = this.rawStore.memento.get<V1StoreType>(V1_MEMENTO_KEY_NAME, {});
     let saveV1 = false;
