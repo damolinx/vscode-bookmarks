@@ -540,15 +540,15 @@
     }
   },
   "scripts": {
-    "compile": "npm run compile:check-types && node esbuild.mjs",
-    "compile:check-types": "tsc --noEmit",
+    "compile": "npm run ts:check-types && npm run ts:compile",
     "lint": "eslint \"src/**/*.ts\" --fix",
-    "watch": "tsc -w -p ./",
-    "pretest": "npm run compile",
     "test": "node ./out/test/runTest.js",
-    "package": "npm run compile:check-types && node esbuild.mjs --production",
+    "ts:check-types": "tsc --noEmit",
+    "ts:compile": "tsc -p ./",
+    "ts:watch": "tsc -w -p ./",
     "vsce-package": "vsce package",
-    "vscode:prepublish": "npm run package"
+    "vscode:prepublish": "npm run ts:check-types && node esbuild.mjs --production",
+    "watch": "npm run ts:watch"
   },
   "devDependencies": {
     "@eslint/js": "^9.30.0",

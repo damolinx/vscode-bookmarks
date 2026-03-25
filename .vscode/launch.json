@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Run Extension",
+      "name": "Debug Extension",
       "type": "extensionHost",
       "request": "launch",
       "runtimeExecutable": "${execPath}",
@@ -12,7 +12,9 @@
       "env": {
         "VSCODE_EXT_BOOKMARKS_DEBUG": "true"
       },
-      "outFiles": [],
+      "outFiles": [
+        "${workspaceFolder}/out/**/*.js"
+      ],
       "preLaunchTask": "npm: watch",
       "resolveSourceMapLocations": [
         "${workspaceFolder}/out/**",
@@ -26,10 +28,13 @@
       "runtimeExecutable": "${execPath}",
       "args": [
         "--extensionDevelopmentPath=${workspaceFolder}",
-        "--extensionTestsPath=${workspaceFolder}/out/test/suite/index"
+        "--extensionTestsPath=${workspaceFolder}/out/test/suite/index",
+        "--disable-extensions"
       ],
-      "outFiles": [],
-      "preLaunchTask": "npm: watch",
+      "outFiles": [
+        "${workspaceFolder}/out/**/*.js"
+      ],
+      "preLaunchTask": "npm: compile",
       "resolveSourceMapLocations": [
         "${workspaceFolder}/out/**",
         "!**/node_modules/**"
