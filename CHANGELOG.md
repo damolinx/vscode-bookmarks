@@ -2,6 +2,7 @@
 
 ## 0.4.24
 
+- Add **Refresh** action to the **Bookmarks** view title bar.
 - Clean-up internal APIs, for better performance (avoids a couple of bad complexity cases) and correctness (URIs not compared correctly in all cases).
 
 ## 0.4.23

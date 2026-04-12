@@ -499,6 +499,11 @@
           "group": "1_commands"
         },
         {
+          "command": "bookmarks.refreshBookmarks",
+          "when": "view == bookmarks",
+          "group": "navigation"
+        },
+        {
           "command": "bookmarks.search",
           "when": "view == bookmarks",
           "group": "navigation"
