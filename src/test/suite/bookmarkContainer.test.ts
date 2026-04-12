@@ -105,7 +105,7 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
       'global',
       createMockDatastore(...expectedUris),
     );
-    assert.ok(container.isEmpty);
+    assert.ok(!container.isEmpty);
   });
 
   test('displayName', () => {
