@@ -13,7 +13,12 @@ export abstract class TreeItemProvider {
 
   protected abstract getBookmarkOverrides(bookmark: Bookmark): TreeItemOverrides;
 
-  protected getBookmarkContainerOverrides(_container: BookmarkContainer): TreeItemOverrides {
+  protected getBookmarkContainerOverrides(container: BookmarkContainer): TreeItemOverrides {
+    if (container.isRoot) {
+      return container.kind === 'global'
+        ? { tooltip: 'A shared collection of bookmarks that persists across all workspaces' }
+        : { tooltip: 'A collection of bookmarks tied to the currently open workspace' };
+    }
     return {};
   }
 
