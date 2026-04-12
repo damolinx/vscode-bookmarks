@@ -98,14 +98,14 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     );
   });
 
-  test('count', () => {
+  test('isEmpty', () => {
     const expectedUris = ['file://global/file1#L11', 'file://global/file2#L22'];
     const container = new BookmarkContainer(
       'Global',
       'global',
       createMockDatastore(...expectedUris),
     );
-    assert.strictEqual(container.count, expectedUris.length);
+    assert.ok(container.isEmpty);
   });
 
   test('displayName', () => {
@@ -165,8 +165,8 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
 
     const movedItem = await container1.moveAsync(container1.getItems()[0], container2);
     assert.ok(movedItem);
-    assert.strictEqual(container1.count, 0);
-    assert.strictEqual(container2.count, 1);
+    assert.ok(container1.isEmpty);
+    assert.ok(!container2.isEmpty);
     assert.strictEqual(container2.getItems()[0]?.uri.toString(), expectedUris[0]);
   });
 
@@ -185,8 +185,8 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
 
     const movedItem = await container1.moveAsync(container1.getItems()[0], container2);
     assert.ok(!movedItem);
-    assert.strictEqual(container1.count, 1);
-    assert.strictEqual(container2.count, 1);
+    assert.ok(!container1.isEmpty);
+    assert.ok(!container2.isEmpty);
   });
 
   test('moveAsync: folder success', async () => {

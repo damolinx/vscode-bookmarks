@@ -1,5 +1,5 @@
 import * as vscode from 'vscode';
-import { basename } from 'path';
+import { posix } from 'path';
 import { Bookmark, BookmarkKind } from './bookmark';
 import { CONTAINER_SCHEME, Datastore, RawData, RawMetadata } from './datastore/datastore';
 import { MetadataDatastore } from './datastore/metadataDatastore';
@@ -7,6 +7,7 @@ import { MetadataDatastore } from './datastore/metadataDatastore';
 export class BookmarkContainer {
   public readonly datastore: Datastore;
   public readonly displayName: string;
+  private _id?: string;
   public readonly kind: BookmarkKind;
   public readonly container?: BookmarkContainer;
   public readonly uri: vscode.Uri;
@@ -29,7 +30,7 @@ export class BookmarkContainer {
   public static createUriForName(name: string, parent?: BookmarkContainer): vscode.Uri {
     const safeName = encodeURIComponent(name);
     return parent
-      ? parent.uri.with({ path: [parent.uri.path, safeName].join('/') })
+      ? vscode.Uri.joinPath(parent.uri, safeName)
       : vscode.Uri.from({ scheme: CONTAINER_SCHEME, path: safeName });
   }
 
@@ -41,28 +42,23 @@ export class BookmarkContainer {
   public async addAsync(
     ...entries: { uri: vscode.Uri; metadata?: RawMetadata }[]
   ): Promise<(Bookmark | BookmarkContainer)[]> {
+    const uriToEntry = new Map(entries.map((e) => [e.uri.toString(true), e]));
     const addedUris = await this.datastore.addAsync(entries);
-    const addedItems = addedUris.map((uri) => {
-      const entry = entries.find((entry) => entry.uri === uri);
+    return addedUris.map((uri) => {
+      const entry = uriToEntry.get(uri.toString(true));
       return this.createItem(uri, entry?.metadata || {});
     });
-
-    return addedItems;
   }
 
-  /**
-   * Number of bookmarks in the container (non-recursive).
-   */
-  public get count(): number {
-    // TODO: recursive flag.
-    return this.datastore.count;
+  public get isEmpty(): boolean {
+    return this.datastore.count === 0;
   }
 
   private createItem(uri: vscode.Uri, metadata: RawMetadata): Bookmark | BookmarkContainer {
     let item: Bookmark | BookmarkContainer;
     if (uri.scheme === CONTAINER_SCHEME) {
       item = new BookmarkContainer(
-        decodeURIComponent(basename(uri.fsPath)),
+        decodeURIComponent(posix.basename(uri.path)),
         this,
         new MetadataDatastore(uri, metadata, this.datastore),
       );
@@ -76,8 +72,8 @@ export class BookmarkContainer {
    * Container Id.
    */
   public get id(): string {
-    // Using DisplayName as dups are not allowed
-    return this.isRoot ? this.kind : [this.container!.id, this.displayName].join('/');
+    this._id ??= this.isRoot ? this.kind : [this.container!.id, this.displayName].join('/');
+    return this._id;
   }
 
   /**
@@ -111,7 +107,7 @@ export class BookmarkContainer {
    * @param uri URI to test against.
    */
   public matchesUri(uri: vscode.Uri): boolean {
-    return uri.authority === this.uri.authority && uri.path === this.uri.path;
+    return uri.toString(true) === this.uri.toString(true);
   }
 
   /**
@@ -164,8 +160,8 @@ export class BookmarkContainer {
     ...items: (Bookmark | BookmarkContainer)[]
   ): Promise<(Bookmark | BookmarkContainer)[]> {
     const removed = await this.datastore.removeAsync(items.map((b) => b.uri));
-    const removedBookmarks = items.filter((b) => removed.includes(b.uri));
-    return removedBookmarks;
+    const removedSet = new Set(removed.map((u) => u.toString(true)));
+    return items.filter((b) => removedSet.has(b.uri.toString(true)));
   }
 
   /**
@@ -198,17 +194,18 @@ export class BookmarkContainer {
   /**
    * Update state to target a new URI (move, rename).
    */
-  private updateContainerState(state: RawData, parentUri: vscode.Uri) {
-    for (const [key, value] of Object.entries(state)) {
-      if (key.startsWith(CONTAINER_SCHEME + ':')) {
-        delete state[key];
+  private updateContainerState(state: RawData, parentUri: vscode.Uri): void {
+    const entries = Object.entries(state);
 
-        const newUri = parentUri.with({
-          path: [parentUri.path, basename(key)].join('/'),
-        });
-        this.updateContainerState(value as RawData, newUri);
-        state[newUri.toString(true)] = value;
+    for (const [key, value] of entries) {
+      if (!key.startsWith(CONTAINER_SCHEME + ':')) {
+        continue;
       }
+      delete state[key];
+
+      const newUri = vscode.Uri.joinPath(parentUri, posix.basename(key));
+      this.updateContainerState(value as RawData, newUri);
+      state[newUri.toString(true)] = value;
     }
   }
 
@@ -222,7 +219,7 @@ export class BookmarkContainer {
       items.map((b) => ({ uri: b.uri, metadata: b.metadata })),
       true /* override */,
     );
-    const upsertedBookmarks = items.filter((b) => upserted.includes(b.uri));
-    return upsertedBookmarks;
+    const upsertedSet = new Set(upserted.map((u) => u.toString(true)));
+    return items.filter((b) => upsertedSet.has(b.uri.toString(true)));
   }
 }

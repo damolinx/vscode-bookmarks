@@ -1,10 +1,11 @@
 import * as vscode from 'vscode';
+import { posix } from 'path';
 import { BookmarkContainer } from './bookmarkContainer';
 import { RawMetadata } from './datastore/datastore';
 import { NaturalComparer } from './tree/treeUtils';
 
-export const BOOKMARK_DISPLAY_NAME_KEY = 'displayName';
-export const BOOKMARK_NOTES_KEY = 'notes';
+export const BOOKMARK_DISPLAY_NAME_KEY = 'displayName' as const;
+export const BOOKMARK_NOTES_KEY = 'notes' as const;
 
 /**
  * Supported Bookmark kinds.
@@ -21,7 +22,6 @@ export const DEFAULT_LINE_NUMBER = 1;
  */
 export interface BookmarkUpdate {
   displayName?: string;
-  kind?: BookmarkKind;
   notes?: string;
   selection?: { start: number; end?: number };
 }
@@ -31,17 +31,10 @@ export interface BookmarkUpdate {
  */
 export class Bookmark {
   private _defaultName?: string;
-  private _selection: { start: number; end?: number };
-  private _uri: vscode.Uri;
-
-  /**
-   * Parent container.
-   */
-  public readonly container: BookmarkContainer;
-  /**
-   * Metadata.
-   */
-  public readonly metadata: RawMetadata;
+  private _id?: string;
+  private _name?: string;
+  public readonly selection: { readonly start: number; readonly end?: number };
+  public readonly uri: vscode.Uri;
 
   /**
    * Constructor.
@@ -50,24 +43,17 @@ export class Bookmark {
    * @param metadata Additional data.
    */
   constructor(
-    container: BookmarkContainer,
-    pathOrUri: string | vscode.Uri,
-    metadata: RawMetadata = {},
+    public readonly container: BookmarkContainer,
+    uri: vscode.Uri,
+    public readonly metadata: RawMetadata = {},
   ) {
-    this.container = container;
-    this._uri = pathOrUri instanceof vscode.Uri ? pathOrUri : vscode.Uri.parse(pathOrUri);
-    this.metadata = metadata;
-
-    const lineFragment = this._uri.fragment;
-    if (lineFragment) {
-      const rangeInfo = lineFragment.split('-');
-      this._selection = {
-        start: parseInt(rangeInfo[0].substring(1)) ?? DEFAULT_LINE_NUMBER,
-        end: rangeInfo[1] ? parseInt(rangeInfo[1].substring(1)) : undefined,
-      };
+    const selection = this.parseLineFragment(uri);
+    if (selection) {
+      this.selection = Object.freeze(selection);
+      this.uri = uri;
     } else {
-      this._selection = { start: DEFAULT_LINE_NUMBER };
-      this._uri = this._uri.with({ fragment: `L${DEFAULT_LINE_NUMBER}` });
+      this.selection = Object.freeze({ start: DEFAULT_LINE_NUMBER });
+      this.uri = uri.with({ fragment: `L${DEFAULT_LINE_NUMBER}` });
     }
   }
 
@@ -78,19 +64,9 @@ export class Bookmark {
    * zero if they're equal, and a positive value otherwise.
    */
   public compare(that: Bookmark) {
-    if (this.kind !== that.kind) {
-      return NaturalComparer.compare(this.kind, that.kind);
-    }
-
-    const thisA = this.displayName;
-    const thisB = '';
-
-    const thatA = that.displayName;
-    const thatB = '';
-
     return (
-      NaturalComparer.compare(thisA, thatA) ||
-      NaturalComparer.compare(thisB, thatB) ||
+      NaturalComparer.compare(this.kind, that.kind) ||
+      NaturalComparer.compare(this.displayName, that.displayName) ||
       this.start - that.start ||
       (this.end ?? 0) - (that.end ?? 0)
     );
@@ -101,9 +77,7 @@ export class Bookmark {
    * the current workspace so don't use as Id.
    */
   public get defaultName(): string {
-    if (this._defaultName === undefined) {
-      this._defaultName = vscode.workspace.asRelativePath(this.uri);
-    }
+    this._defaultName ??= vscode.workspace.asRelativePath(this.uri);
     return this._defaultName;
   }
 
@@ -115,25 +89,18 @@ export class Bookmark {
   }
 
   /**
-   * Set the bookmark name to use in UI elements.
-   */
-  private set displayName(value: string | undefined) {
-    if (value) {
-      this.metadata[BOOKMARK_DISPLAY_NAME_KEY] = value;
-    } else {
-      delete this.metadata[BOOKMARK_DISPLAY_NAME_KEY];
-    }
-  }
-
-  /**
    * Checks if bookmark defines a custom display name.
    */
   public get hasDisplayName(): boolean {
     return !!this.metadata[BOOKMARK_DISPLAY_NAME_KEY];
   }
 
+  /**
+   * Unique id based on bookmakrk hierarchy
+   */
   public get id(): string {
-    return [this.container.id, this.uri.toString(true)].join('/');
+    this._id ??= [this.container.id, this.name].join('/');
+    return this._id;
   }
 
   public get kind(): BookmarkKind {
@@ -141,20 +108,22 @@ export class Bookmark {
   }
 
   public get lineMoniker(): 'cell' | 'line' {
-    // Heuristic
-    switch (this.uri.scheme) {
-      case 'vscode-notebook':
-      case 'vscode-notebook-cell':
-        return 'cell';
-      default:
-        return 'line';
-    }
+    return this.isNotebook() ? 'cell' : 'line';
+  }
+
+  /**
+   * Bookmark name from {@link uri}.
+   */
+  public get name(): string {
+    this._name ??= `${posix.basename(this.uri.path)}:${this.start}${this.end !== undefined ? `:${this.end}` : ''}`;
+    return this._name;
   }
 
   public getDescription(): string {
-    if (['vscode-notebook', 'vscode-notebook-cell'].includes(this.uri.scheme)) {
+    if (this.isNotebook()) {
       return 'cell';
     }
+
     if (this.end && this.start !== this.end) {
       return `lines ${this.start} to ${this.end}`;
     }
@@ -162,12 +131,16 @@ export class Bookmark {
     return `line ${this.start}`;
   }
 
+  private isNotebook() {
+    return this.uri.scheme.startsWith('vscode-notebook');
+  }
+
   /**
    * Bookmark line number. When the URI represents a notebook cell this value
    * is 0-based, otherwise lines numbers are 1-based.
    */
   public get start(): number {
-    return this._selection.start;
+    return this.selection.start;
   }
 
   /**
@@ -175,19 +148,7 @@ export class Bookmark {
    * is 0-based, otherwise lines numbers are 1-based.
    */
   public get end(): number | undefined {
-    return this._selection.end;
-  }
-
-  /**
-   * Set Bookmark line number.
-   */
-  private set selection(value: { start: number; end?: number }) {
-    if (this._selection.start !== value.start || this._selection.end !== value.end) {
-      this._selection = value;
-      this._uri = this._uri.with({
-        fragment: `L${value.start}${value.end ? `-L${value.end}` : ''}`,
-      });
-    }
+    return this.selection.end;
   }
 
   /**
@@ -196,11 +157,17 @@ export class Bookmark {
    * @param ignoreLineNumber Ignore line-number information.
    */
   public matchesUri(uri: vscode.Uri, ignoreLineNumber?: boolean): boolean {
-    return (
-      uri.authority === this.uri.authority &&
-      uri.path === this.uri.path &&
-      (ignoreLineNumber || uri.fragment === this.uri.fragment)
-    );
+    if (uri.authority !== this.uri.authority || uri.path !== this.uri.path) {
+      return false;
+    }
+
+    if (ignoreLineNumber) {
+      return true;
+    }
+
+    const thisSelection = this.selection;
+    const thatSelection = this.parseLineFragment(uri) ?? { start: DEFAULT_LINE_NUMBER };
+    return thatSelection.start === thisSelection.start && thatSelection.end === thisSelection.end;
   }
 
   /**
@@ -210,69 +177,66 @@ export class Bookmark {
     return this.metadata[BOOKMARK_NOTES_KEY] as string | undefined;
   }
 
-  /**
-   * Set notes associated with bookmark.
-   */
-  private set notes(value: string | undefined) {
-    if (value) {
-      this.metadata[BOOKMARK_NOTES_KEY] = value;
-    } else {
-      delete this.metadata[BOOKMARK_NOTES_KEY];
+  private parseLineFragment(uri: vscode.Uri): { start: number; end?: number } | undefined {
+    const match = /^L(\d+)(?:-L(\d+))?$/.exec(uri.fragment);
+    if (!match) {
+      return;
     }
+
+    return {
+      start: Number(match[1]),
+      end: match[2] ? Number(match[2]) : undefined,
+    };
   }
 
   /**
-   * Bookmark URI. Prefer this value to identify a bookmark.
-   */
-  public get uri(): vscode.Uri {
-    return this._uri;
-  }
-
-  /**
-   * Derive a {@link Bookmark} from `this` (similar to {@link Uri.with}).
+   * Derive a {@link Bookmark} from `this` (similar to {@link vscode.Uri.with}).
    * @param change An object that describes a change.
    * @return A {@link Bookmark} that reflects the given change. Returns
    * `this` if there are no effective changes.
    */
   public with(change: BookmarkUpdate): Bookmark {
-    let { displayName, kind, selection, notes } = change;
-    if (displayName === undefined) {
-      if (this.hasDisplayName) {
-        displayName = this.displayName;
+    let changed = false;
+    const metadata = { ...this.metadata };
+
+    if (Object.hasOwn(change, 'displayName')) {
+      const newDisplayName = change.displayName?.trim();
+      if (newDisplayName !== metadata[BOOKMARK_DISPLAY_NAME_KEY]) {
+        changed = true;
+        if (newDisplayName) {
+          metadata[BOOKMARK_DISPLAY_NAME_KEY] = newDisplayName;
+        } else {
+          delete metadata[BOOKMARK_DISPLAY_NAME_KEY];
+        }
       }
-    } else if (!displayName) {
-      displayName = undefined;
-    }
-    if (kind === undefined) {
-      kind = this.kind;
-    }
-    if (selection === undefined) {
-      selection = this._selection;
-    }
-    if (notes === undefined) {
-      notes = this.notes;
     }
 
-    if (
-      this.displayName === displayName &&
-      this.kind === kind &&
-      this.start === selection.start &&
-      this.end === selection.end &&
-      this.notes === notes
-    ) {
-      return this;
+    if (Object.hasOwn(change, 'notes')) {
+      const newNotes = change.notes?.trim();
+      if (newNotes !== metadata[BOOKMARK_NOTES_KEY]) {
+        changed = true;
+        if (newNotes) {
+          metadata[BOOKMARK_NOTES_KEY] = newNotes;
+        } else {
+          delete metadata[BOOKMARK_NOTES_KEY];
+        }
+      }
     }
 
-    const bookmark = new Bookmark(this.container, this.uri);
-    if (displayName != undefined) {
-      bookmark.displayName = displayName;
+    let uri = this.uri;
+    if (Object.hasOwn(change, 'selection')) {
+      const newFragment = change.selection
+        ? `L${change.selection.start}${change.selection.end ? `-L${change.selection.end}` : ''}`
+        : '';
+      if (newFragment !== uri.fragment) {
+        changed = true;
+        uri = uri.with({
+          fragment: newFragment,
+        });
+      }
     }
-    if (selection !== undefined) {
-      bookmark.selection = selection;
-    }
-    if (notes !== undefined) {
-      bookmark.notes = notes;
-    }
+
+    const bookmark = changed ? new Bookmark(this.container, uri, metadata) : this;
     return bookmark;
   }
 }

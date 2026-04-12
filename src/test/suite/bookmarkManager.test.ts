@@ -47,9 +47,11 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     const globalContainer = manager.getRootContainer('global');
     const workspaceContainer = manager.getRootContainer('workspace');
 
-    const expectedGlobalBookmarks = expectedGlobal.map((s) => new Bookmark(globalContainer, s));
+    const expectedGlobalBookmarks = expectedGlobal.map(
+      (s) => new Bookmark(globalContainer, vscode.Uri.parse(s)),
+    );
     const expectedWorkspaceBookmarks = expectedWorkspace.map(
-      (s) => new Bookmark(workspaceContainer, s),
+      (s) => new Bookmark(workspaceContainer, vscode.Uri.parse(s)),
     );
 
     assert.deepStrictEqual(manager.getBookmarks({ kind: 'global' }), expectedGlobalBookmarks);
@@ -68,9 +70,11 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     const globalContainer = manager.getRootContainer('global');
     const workspaceContainer = manager.getRootContainer('workspace');
 
-    const expectedGlobalBookmarks = expectedGlobal.map((s) => new Bookmark(globalContainer, s));
+    const expectedGlobalBookmarks = expectedGlobal.map(
+      (s) => new Bookmark(globalContainer, vscode.Uri.parse(s)),
+    );
     const expectedWorkspaceBookmarks = expectedWorkspace.map(
-      (s) => new Bookmark(workspaceContainer, s),
+      (s) => new Bookmark(workspaceContainer, vscode.Uri.parse(s)),
     );
 
     assert.deepStrictEqual(manager.getBookmarks({ uri: expectedGlobalBookmarks[0].uri }), [
@@ -93,9 +97,11 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     const globalContainer = manager.getRootContainer('global');
     const workspaceContainer = manager.getRootContainer('workspace');
 
-    const expectedGlobalBookmarks = expectedGlobal.map((s) => new Bookmark(globalContainer, s));
+    const expectedGlobalBookmarks = expectedGlobal.map(
+      (s) => new Bookmark(globalContainer, vscode.Uri.parse(s)),
+    );
     const expectedWorkspaceBookmarks = expectedWorkspace.map(
-      (s) => new Bookmark(workspaceContainer, s),
+      (s) => new Bookmark(workspaceContainer, vscode.Uri.parse(s)),
     );
     const expectedBookmarks = expectedGlobalBookmarks.concat(expectedWorkspaceBookmarks);
 
@@ -122,9 +128,11 @@ suite(`Suite: ${basename(__filename, '.test.js')}`, () => {
     const manager = createBookmarkManager(expectedGlobal, expectedWorkspace);
     const globalContainer = manager.getRootContainer('global');
     const workspaceContainer = manager.getRootContainer('workspace');
-    const expectedGlobalBookmarks = expectedGlobal.map((s) => new Bookmark(globalContainer, s));
+    const expectedGlobalBookmarks = expectedGlobal.map(
+      (s) => new Bookmark(globalContainer, vscode.Uri.parse(s)),
+    );
     const expectedWorkspaceBookmarks = expectedWorkspace.map(
-      (s) => new Bookmark(workspaceContainer, s),
+      (s) => new Bookmark(workspaceContainer, vscode.Uri.parse(s)),
     );
 
     assert.deepStrictEqual(manager.getBookmarks({ uri: expectedGlobalBookmarks[0].uri }), [

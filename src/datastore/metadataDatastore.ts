@@ -97,7 +97,9 @@ export class MetadataDatastore extends Datastore<MetadataRawDatastore> {
    * @param uris URIs to remove (line data is significant).
    * @returns List of removed URIs (no duplicates).
    */
-  public override async removeAsync(uris: vscode.Uri | Iterable<vscode.Uri>): Promise<vscode.Uri[]> {
+  public override async removeAsync(
+    uris: vscode.Uri | Iterable<vscode.Uri>,
+  ): Promise<vscode.Uri[]> {
     const removedUris = await super.removeAsync(uris);
     if (removedUris) {
       await this.parent.addAsync(
@@ -126,7 +128,10 @@ export class MetadataDatastore extends Datastore<MetadataRawDatastore> {
    * @param newUri Target URI.
    * @returns Metadata that was associated with `replaceUri`, if `uri` was found.
    */
-  public override async replaceAsync(uri: vscode.Uri, newUri: vscode.Uri): Promise<RawMetadata | undefined> {
+  public override async replaceAsync(
+    uri: vscode.Uri,
+    newUri: vscode.Uri,
+  ): Promise<RawMetadata | undefined> {
     const replacedMetadata = await super.replaceAsync(uri, newUri);
     if (replacedMetadata) {
       await this.parent.addAsync(

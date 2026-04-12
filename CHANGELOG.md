@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.24
+
+- Clean-up internal APIs, for better performance (avoids a couple of bad complexity cases) and correctness (URIs not compared correctly in all cases).
+
 ## 0.4.23
 
 - Upgrade minimum VS Code version to 1.105 (Cursor upgraded extensibility compat back in November 2025).

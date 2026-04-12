@@ -88,10 +88,10 @@ export async function activate(context: vscode.ExtensionContext) {
       updateLineNumberAsync(manager, treeView, bookmark),
     ),
     cr('bookmarks.editBookmark.notes.remove.tree', (bookmark: Bookmark) =>
-      updateNotesAsync(manager, treeView, bookmark, ''),
+      updateNotesAsync(manager, bookmark, ''),
     ),
     cr('bookmarks.editBookmark.notes.update.tree', (bookmark: Bookmark) =>
-      updateNotesAsync(manager, treeView, bookmark),
+      updateNotesAsync(manager, bookmark),
     ),
     cr('bookmarks.export.tree', (container: BookmarkContainer) =>
       exportBookmarks(manager, container.kind),
