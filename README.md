@@ -102,7 +102,7 @@ In the **Line or Range** context menu for a given bookmark, use:
 
 ### Notes
 
-Attach text notes to a bookmark for reference. Notes appear in the bookmark’s tooltip.
+Attach text notes to a bookmark for reference. Notes appear in the bookmark's tooltip.
 
 #### Context Menu
 
