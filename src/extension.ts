@@ -34,16 +34,12 @@ export async function activate(context: vscode.ExtensionContext) {
     treeDataProvider: treeProvider,
   });
 
-  context.subscriptions.push(decoratorController, manager, treeProvider, treeView);
-
-  // Register event handlers
   context.subscriptions.push(
-    // Refresh tree so node names reflect current workspace.
+    decoratorController,
+    manager,
+    treeProvider,
+    treeView,
     vscode.workspace.onDidChangeWorkspaceFolders(() => treeProvider.refresh()),
-    // Reveal a node when added.
-    manager.onDidAddBookmark(
-      async (bookmarks) => bookmarks?.length && (await treeView.reveal(bookmarks[0])),
-    ),
   );
 
   const {
