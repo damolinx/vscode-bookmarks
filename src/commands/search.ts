@@ -12,7 +12,7 @@ export async function search(
       bookmark,
       buttons: [],
       description: bookmark.getDescription(),
-      detail: bookmark.container.id,
+      detail: `${bookmark.container.id}${bookmark.notes ? ` · ${bookmark.notes}` : ''}`,
       label: bookmark.displayName,
     };
   });
