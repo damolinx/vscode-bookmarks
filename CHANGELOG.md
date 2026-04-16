@@ -1,7 +1,8 @@
 # Changelog
 
 ## 0.4.25
-- Add inline **✕** (Delete) action. 
+- Add inline **✕** (Delete) action.
+- Move **Open All** to own group for visibility.
 
 ## 0.4.24
 

@@ -453,7 +453,7 @@
         {
           "command": "bookmarks.openFolder.tree",
           "when": "view == bookmarks && viewItem =~ /bookmarkContainer/ && !(viewItem =~ /root/)",
-          "group": "1_main@3"
+          "group": "2_other@1"
         },
         {
           "command": "bookmarks.refreshBookmarks",
