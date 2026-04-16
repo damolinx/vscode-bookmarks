@@ -177,8 +177,7 @@
         "command": "bookmarks.remove.tree",
         "title": "Delete",
         "category": "Bookmarks",
-        "icon": "$(remove-close)",
-        "enablement": "focusedView == bookmarks"
+        "icon": "$(remove-close)"
       },
       {
         "command": "bookmarks.removeBookmarks.global",
@@ -465,6 +464,11 @@
           "command": "bookmarks.remove.tree",
           "when": "view == bookmarks && !(viewItem =~ /root/)",
           "group": "3_other@10"
+        },
+        {
+          "command": "bookmarks.remove.tree",
+          "when": "view == bookmarks && !(viewItem =~ /root/)",
+          "group": "inline"
         },
         {
           "command": "bookmarks.removeBookmarks.tree",

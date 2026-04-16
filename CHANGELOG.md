@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.4.25
+- Add inline **✕** (Delete) action. 
+
 ## 0.4.24
 
 - Add **Refresh** action to the **Bookmarks** view title bar.
