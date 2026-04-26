@@ -577,7 +577,7 @@
     "mocha": "^11.0.0",
     "prettier": "^3.6.2",
     "source-map-support": "^0.5.21",
-    "typescript": "^5.9.0",
+    "typescript": "^6.0.3",
     "typescript-eslint": "^8.59.0"
   },
   "overrides": {

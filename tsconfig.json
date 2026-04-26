@@ -14,7 +14,8 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "types": [
-      "node"
+      "node",
+      "mocha"
     ]
   },
   "exclude": [
