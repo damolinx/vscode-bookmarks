@@ -1,6 +1,9 @@
 # Changelog
 
+## 0.4.26
+
 ## 0.4.25
+
 - Add inline **✕** (Delete) action.
 - Move **Open All** to own group for visibility.
 - **Search** command searches in bookmark notes.
