@@ -34,7 +34,6 @@ export class Bookmark {
   private _id?: string;
   private _name?: string;
   public readonly selection: { readonly start: number; readonly end?: number };
-  public readonly uri: vscode.Uri;
 
   /**
    * Constructor.
@@ -44,13 +43,12 @@ export class Bookmark {
    */
   constructor(
     public readonly container: BookmarkContainer,
-    uri: vscode.Uri,
+    public readonly uri: vscode.Uri,
     public readonly metadata: RawMetadata = {},
   ) {
     const selection = this.parseLineFragment(uri);
     if (selection) {
       this.selection = Object.freeze(selection);
-      this.uri = uri;
     } else {
       this.selection = Object.freeze({ start: DEFAULT_LINE_NUMBER });
       this.uri = uri.with({ fragment: `L${DEFAULT_LINE_NUMBER}` });

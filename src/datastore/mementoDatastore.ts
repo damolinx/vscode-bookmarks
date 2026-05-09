@@ -30,15 +30,11 @@ export type V1StoreType = RawData;
  * {@link vscode.Memento}-based datastore for {@link RawData}.
  */
 class MementoRawDatastore implements RawDatastore {
-  public readonly memento: vscode.Memento;
-
   /**
    * Constructor.
    * @param memento Backing store.
    */
-  constructor(memento: vscode.Memento) {
-    this.memento = memento;
-  }
+  constructor(public readonly memento: vscode.Memento) {}
 
   /**
    * Gets the store state. `undefined` means there is no saved state.

@@ -10,10 +10,6 @@ export const CONTAINER_METADATA_KEY = 'container';
  * This is currently only supported for {@link CONTAINER_SCHEME} URIs.
  */
 class MetadataRawDatastore implements RawDatastore {
-  public readonly uri: vscode.Uri;
-  public readonly metadata: RawMetadata;
-  private readonly metadataKey: keyof RawData;
-
   /**
    * Constructor.
    * @param uri Metadata Id.
@@ -21,16 +17,13 @@ class MetadataRawDatastore implements RawDatastore {
    * @param metadataKey Metadata-key being virtualized.
    */
   constructor(
-    uri: vscode.Uri,
-    metadata: RawMetadata,
-    metadataKey: keyof RawData = CONTAINER_METADATA_KEY,
+    public readonly uri: vscode.Uri,
+    public readonly metadata: RawMetadata,
+    public readonly metadataKey: keyof RawData = CONTAINER_METADATA_KEY,
   ) {
     if (uri.scheme !== CONTAINER_SCHEME) {
       throw new Error(`Scheme must be '${CONTAINER_SCHEME}' but is '${uri.scheme}'`);
     }
-    this.metadata = metadata;
-    this.metadataKey = metadataKey;
-    this.uri = uri;
   }
 
   /**
@@ -58,8 +51,6 @@ class MetadataRawDatastore implements RawDatastore {
  * This class uses a {@link vscode.Memento} as backing store extension data.
  */
 export class MetadataDatastore extends Datastore<MetadataRawDatastore> {
-  private readonly parent: Datastore;
-
   /**
    * Constructor.
    * @param uri Metadata Id.
@@ -67,9 +58,12 @@ export class MetadataDatastore extends Datastore<MetadataRawDatastore> {
    * @param parent Parent datastore. This is needed because {@link MetadataDatastore}
    * virtualizes a metadata entry so this store is unable to persist data on its own.
    */
-  constructor(uri: vscode.Uri, metadata: RawMetadata, parent: Datastore) {
+  constructor(
+    uri: vscode.Uri,
+    metadata: RawMetadata,
+    private readonly parent: Datastore,
+  ) {
     super(new MetadataRawDatastore(uri, metadata));
-    this.parent = parent;
   }
 
   /**

@@ -42,15 +42,11 @@ export interface RawDatastore {
  * The abstraction allows use any arbitrary datastore while enforcing necessary rules.
  */
 export class Datastore<TStore extends RawDatastore = RawDatastore> {
-  public readonly rawStore: TStore;
-
   /**
    * Constructor.
    * @param rawStore Raw datastore.
    */
-  constructor(rawStore: TStore) {
-    this.rawStore = rawStore;
-  }
+  constructor(public readonly rawStore: TStore) {}
 
   /**
    * Add new entries.

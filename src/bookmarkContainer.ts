@@ -5,23 +5,23 @@ import { CONTAINER_SCHEME, Datastore, RawData, RawMetadata } from './datastore/d
 import { MetadataDatastore } from './datastore/metadataDatastore';
 
 export class BookmarkContainer {
-  public readonly datastore: Datastore;
-  public readonly displayName: string;
   private _id?: string;
   public readonly kind: BookmarkKind;
   public readonly container?: BookmarkContainer;
   public readonly uri: vscode.Uri;
 
-  constructor(name: string, kindOrParent: BookmarkKind | BookmarkContainer, datastore: Datastore) {
-    this.datastore = datastore;
-    this.displayName = name;
+  constructor(
+    public readonly displayName: string,
+    kindOrParent: BookmarkKind | BookmarkContainer,
+    public readonly datastore: Datastore,
+  ) {
     if (kindOrParent instanceof BookmarkContainer) {
       this.kind = kindOrParent.kind;
       this.container = kindOrParent;
     } else {
       this.kind = kindOrParent;
     }
-    this.uri = BookmarkContainer.createUriForName(name, this.container);
+    this.uri = BookmarkContainer.createUriForName(displayName, this.container);
   }
 
   /**

@@ -15,7 +15,6 @@ export class BookmarkTreeProvider
   implements vscode.Disposable, vscode.TreeDataProvider<BookmarkTreeItem>
 {
   private readonly disposables: vscode.Disposable[];
-  private readonly manager: BookmarkManager;
   public readonly onDidChangeTreeData: vscode.Event<EventType>;
   private readonly onDidChangeTreeDataEmitter: vscode.EventEmitter<EventType>;
   private treeItemProvider: Readonly<{ kind: TreeViewKind; provider: TreeItemProvider }>;
@@ -25,8 +24,7 @@ export class BookmarkTreeProvider
    * @param context Extension context.
    * @param manager Bookmark manager.
    */
-  constructor(manager: BookmarkManager) {
-    this.manager = manager;
+  constructor(private readonly manager: BookmarkManager) {
     this.onDidChangeTreeDataEmitter = new vscode.EventEmitter<EventType>();
     this.onDidChangeTreeData = this.onDidChangeTreeDataEmitter.event;
 

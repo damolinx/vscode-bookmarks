@@ -3,19 +3,17 @@ import { Bookmark } from './bookmark';
 import { BookmarkManager } from './bookmarkManager';
 
 export class BookmarkDecoratorController implements vscode.Disposable {
-  private readonly context: vscode.ExtensionContext;
   private visibilityDisposable?: vscode.Disposable;
-  private readonly manager: BookmarkManager;
 
   /**
    * Constructor.
    * @param context Extension context.
    * @param manager Bookmark manager.
    */
-  constructor(context: vscode.ExtensionContext, manager: BookmarkManager) {
-    this.context = context;
-    this.manager = manager;
-  }
+  constructor(
+    private readonly context: vscode.ExtensionContext,
+    private readonly manager: BookmarkManager,
+  ) {}
 
   /**
    * Dispose this object.
