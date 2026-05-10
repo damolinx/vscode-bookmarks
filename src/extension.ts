@@ -194,7 +194,7 @@ async function getMatchingBookmarksAsync(
 
   const documentBookmarks = manager
     .getBookmarks()
-    .filter((b) => b.uri.path === uri?.path) as Bookmark[];
+    .filter((b) => b.uri.scheme === uri?.scheme && b.uri.fsPath === uri?.fsPath) as Bookmark[];
   if (documentBookmarks.length === 0) {
     return; // No bookmarks matching document.
   }

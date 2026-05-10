@@ -2,6 +2,7 @@
 
 ## 0.4.26
 
+- Fix: `Uri` comparisons might fail on Windows due to VSCode's API inconsistent normalization.
 - Fix: Markers are not enabled on first attempt.
 
 ## 0.4.25
