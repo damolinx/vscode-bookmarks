@@ -46,7 +46,7 @@ export class BookmarkDecoratorController implements vscode.Disposable {
         showDecorations(this.manager, editors),
       ),
       vscode.workspace.onDidChangeTextDocument((event) => {
-        // TODO: this can be optimzed to track lines changed, but more
+        // TODO: this can be optimized to track lines changed, but more
         // importantly would be to add "auto-update" of bookmarks.
         const editor = vscode.window.visibleTextEditors.find((e) => event.document === e.document);
         if (editor) {
@@ -77,7 +77,9 @@ export class BookmarkDecoratorController implements vscode.Disposable {
         });
         affectedEditors = [...visibleEditors];
       } else {
-        affectedEditors = vscode.window.visibleTextEditors;
+        affectedEditors = vscode.window.visibleTextEditors.filter(
+          (e) => e.viewColumn !== undefined,
+        );
       }
 
       if (affectedEditors.length) {

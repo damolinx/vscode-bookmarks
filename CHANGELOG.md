@@ -2,6 +2,8 @@
 
 ## 0.4.26
 
+- Fix: Markers are not enabled on first attempt.
+
 ## 0.4.25
 
 - Add inline **✕** (Delete) action.
