@@ -51,9 +51,6 @@ export class BookmarkManager implements vscode.Disposable {
     );
   }
 
-  /**
-   * Dispose this object.
-   */
   public dispose() {
     this.disposable.dispose();
   }

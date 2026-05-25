@@ -47,9 +47,6 @@ export class BookmarkTreeProvider
     ];
   }
 
-  /**
-   * Dispose this object.
-   */
   public dispose() {
     vscode.Disposable.from(...this.disposables).dispose();
   }

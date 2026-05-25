@@ -15,9 +15,6 @@ export class BookmarkDecoratorController implements vscode.Disposable {
     private readonly manager: BookmarkManager,
   ) {}
 
-  /**
-   * Dispose this object.
-   */
   public dispose() {
     this.hideDecorators();
   }
