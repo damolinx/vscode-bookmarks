@@ -155,7 +155,11 @@ export class Bookmark {
    * @param ignoreLineNumber Ignore line-number information.
    */
   public matchesUri(uri: vscode.Uri, ignoreLineNumber?: boolean): boolean {
-    if (uri.authority !== this.uri.authority || uri.path !== this.uri.path) {
+    if (
+      uri.authority !== this.uri.authority ||
+      uri.scheme !== uri.scheme ||
+      uri.fsPath !== this.uri.fsPath
+    ) {
       return false;
     }
 
