@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.27
+
+- Upgrade minimum VS Code version to 1.125.
+
 ## 0.4.26
 
 - Fix: `Uri` comparisons might fail on Windows due to VSCode's API inconsistent normalization.

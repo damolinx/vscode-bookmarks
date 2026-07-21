@@ -2,7 +2,7 @@
   "name": "damolinx-bookmarks",
   "displayName": "Bookmarks for VS Code",
   "description": "Create annotated file bookmarks, scoped globally or to individual workspaces — perfect for keeping track of key file locations across your projects.",
-  "version": "0.4.26",
+  "version": "0.4.27",
   "publisher": "damolinx",
   "icon": "resources/images/icon.png",
   "repository": {
@@ -13,7 +13,7 @@
     "url": "https://github.com/damolinx/vscode-bookmarks/issues"
   },
   "engines": {
-    "vscode": "^1.105.0"
+    "vscode": "^1.125.0"
   },
   "categories": [
     "Other"
@@ -564,7 +564,7 @@
     "@stylistic/eslint-plugin": "^5",
     "@types/mocha": "^10",
     "@types/node": "^22",
-    "@types/vscode": "~1.105",
+    "@types/vscode": "~1.125",
     "@typescript-eslint/eslint-plugin": "^8",
     "@typescript-eslint/parser": "^8",
     "@vscode/test-electron": "^2",
